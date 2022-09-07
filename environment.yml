@@ -1,0 +1,15 @@
+name: SARS2-mut-rates
+channels:
+  - conda-forge
+  - defaults
+  - bioconda
+
+dependencies:
+  - altair=4.2
+  - entrez-direct=16.2
+  - jupyterlab
+  - pandas=1.4
+  - papermill=2.3.4
+  - python=3.9
+  - snakemake=7.14
+  - usher=0.5.6
