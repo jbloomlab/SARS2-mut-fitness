@@ -1,13 +1,16 @@
 """Top-level ``snakemake`` file that runs pipeline."""
 
 
+import glob
+
+
 configfile: "config.yaml"
 
 
 rule all:
     """Target rule with desired output files."""
     input:
-        "results/mat/samples_by_clade"
+        "_temp.txt"
 
 
 rule get_mat_tree:
@@ -50,11 +53,41 @@ rule mat_samples:
         "scripts/mat_samples.py"
 
 
-rule mat_samples_by_clade:
+checkpoint samples_by_clade:
     """Get samples in mutation-annotated tree by nextstrain clade."""
     input:
         csv=rules.mat_samples.output.csv,
     output:
         subdir=directory("results/mat/samples_by_clade"),
     script:
-        "scripts/mat_samples_by_clade.py"
+        "scripts/samples_by_clade.py"
+
+
+def clades(wc):
+    """Return list of all clades."""
+    subdir = checkpoints.samples_by_clade.get(**wc).output.subdir
+    return [
+        os.path.splitext(os.path.basename(f))[0] for f in glob.glob(f"{subdir}/*.txt")
+    ]
+
+
+rule mat_clade_subset:
+    """Get mutation-annotated tree for just a clade."""
+    input:
+        mat=rules.get_mat_tree.output.mat,
+        samples=os.path.join(rules.samples_by_clade.output.subdir, "{clade}.txt"),
+    output:
+        mat="results/mat/mats_by_clade/{clade}_mat_tree.pb",
+    shell:
+        "matUtils extract -i {input.mat} -s {input.samples} -o {output.mat}"
+
+
+rule _temp:
+    input:
+        lambda wc: [
+            f"results/mat/mats_by_clade/{clade}_mat_tree.pb" for clade in clades(wc)
+        ],
+    output:
+        "_temp.txt"
+    shell:
+        "echo not_implemented"
