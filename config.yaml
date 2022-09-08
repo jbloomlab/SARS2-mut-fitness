@@ -6,7 +6,14 @@ mat_tree: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/202
 ref_fasta: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/bigZips/wuhCor1.fa.gz
 ref_gtf: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/bigZips/genes/ncbiGenes.gtf.gz
 
+# Only keep nextstrain clades with at least this many samples in mutation-annotated tree
+min_clade_samples: 5000
+
+# Founder genotypes for nextstrain clades from Richard Neher
+clade_founder_json: https://raw.githubusercontent.com/neherlab/SC2_variant_rates/cd6e016a511098123b6ce9ed874f58a7b789b34c/data/clade_gts.json
+
 # For counting mutations, exclude any branches with more than this many nucleotide
-# mutations or more than this many reversions to reference
+# mutations or more than this many reversions to reference or clade founder
 max_nt_mutations: 4
 max_reversions_to_ref: 1
+max_reversions_to_clade_founder: 1

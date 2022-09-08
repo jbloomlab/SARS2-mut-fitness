@@ -59,6 +59,8 @@ checkpoint samples_by_clade:
         csv=rules.mat_samples.output.csv,
     output:
         subdir=directory("results/mat/samples_by_clade"),
+    params:
+        min_clade_samples=config["min_clade_samples"],
     script:
         "scripts/samples_by_clade.py"
 
@@ -100,18 +102,41 @@ rule translate_mat:
         """
 
 
+rule clade_founder_json:
+    """Get JSON with nexstrain clade founders (indels not included)."""
+    params:
+        url=config["clade_founder_json"],
+    output:
+        json="results/clade_founders_no_indels/clade_founders.json",
+    shell:
+        "curl {params.url} > {output.json}"
+
+
+rule clade_founder_fasta:
+    """Get FASTA for a nextstrain clade founder (indels not included)."""
+    input:
+        json=rules.clade_founder_json.output.json,
+        ref_fasta=rules.get_ref_fasta.output.ref_fasta,
+    output:
+        fasta="results/clade_founders_no_indels/{clade}.fa",
+    script:
+        "scripts/clade_founder_fasta.py"
+
+
 rule count_mutations:
     """Count mutations, excluding branches with too many mutations or reversions."""
     input:
         tsv=rules.translate_mat.output.tsv,
         ref_fasta=rules.get_ref_fasta.output.ref_fasta,
+        clade_founder_fasta=rules.clade_founder_fasta.output.fasta,
     output:
         csv="results/mutation_counts/counts_by_clade/{clade}.csv",
     params:
         max_nt_mutations=config["max_nt_mutations"],
         max_reversions_to_ref=config["max_reversions_to_ref"],
+        max_reversions_to_clade_founder=config["max_reversions_to_clade_founder"],
     log:
-        notebook="results/mutations_counts/counts_by_clade/{clade}_count_mutations.ipynb",
+        notebook="results/mutation_counts/counts_by_clade/{clade}_count_mutations.ipynb",
     notebook:
         "notebooks/count_mutations.py.ipynb"
 
