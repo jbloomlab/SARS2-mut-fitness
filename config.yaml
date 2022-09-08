@@ -5,3 +5,8 @@ mat_tree: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/202
 # Reference GTF and FASTA, and location of spike coding sequence
 ref_fasta: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/bigZips/wuhCor1.fa.gz
 ref_gtf: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/bigZips/genes/ncbiGenes.gtf.gz
+
+# For counting mutations, exclude any branches with more than this many nucleotide
+# mutations or more than this many reversions to reference
+max_nt_mutations: 4
+max_reversions_to_ref: 1

@@ -82,10 +82,44 @@ rule mat_clade_subset:
         "matUtils extract -i {input.mat} -s {input.samples} -o {output.mat}"
 
 
+rule translate_mat:
+    """Translate mutations on mutation-annotated tree for clade."""
+    input:
+        mat=rules.mat_clade_subset.output.mat,
+        ref_fasta=rules.get_ref_fasta.output.ref_fasta,
+        ref_gtf=rules.get_ref_gtf.output.ref_gtf,
+    output:
+        tsv="results/mat/mats_by_clade/{clade}_translated_mutations.tsv",
+    shell:
+        """
+        matUtils summary \
+            -i {input.mat} \
+            -g {input.ref_gtf} \
+            -f {input.ref_fasta} \
+            -t {output.tsv}
+        """
+
+
+rule count_mutations:
+    """Count mutations, excluding branches with too many mutations or reversions."""
+    input:
+        tsv=rules.translate_mat.output.tsv,
+        ref_fasta=rules.get_ref_fasta.output.ref_fasta,
+    output:
+        csv="results/mutation_counts/counts_by_clade/{clade}.csv",
+    params:
+        max_nt_mutations=config["max_nt_mutations"],
+        max_reversions_to_ref=config["max_reversions_to_ref"],
+    log:
+        notebook="results/mutations_counts/counts_by_clade/{clade}_count_mutations.ipynb",
+    notebook:
+        "notebooks/count_mutations.py.ipynb"
+
+
 rule _temp:
     input:
         lambda wc: [
-            f"results/mat/mats_by_clade/{clade}_mat_tree.pb" for clade in clades(wc)
+            f"results/mutation_counts/counts_by_clade/{clade}.csv" for clade in clades(wc)
         ],
     output:
         "_temp.txt"

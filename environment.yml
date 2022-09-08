@@ -6,6 +6,7 @@ channels:
 
 dependencies:
   - altair=4.2
+  - biopython=1.79
   - entrez-direct=16.2
   - jupyterlab
   - pandas=1.4
