@@ -68,30 +68,41 @@ def clades_w_adequate_counts(wc):
     )
 
 
-rule samples_by_clade:
-    """Get samples in mutation-annotated tree by nextstrain clade."""
+rule samples_by_clade_subset:
+    """Get samples in mutation-annotated tree by nextstrain clade and subset."""
     input:
         csv=rules.mat_samples.output.csv,
     output:
-        txt="results/mat_by_clade_subset/{clade}.txt",
+        txt="results/mat_by_clade_subset/{clade}_{subset}.txt",
+    params:
+        match_regex=lambda wc: config["sample_subsets"][wc.subset]
     run:
         (
             pd.read_csv(input.csv)
             .query("nextstrain_clade == @wildcards.clade")
+            .query(f"sample.str.match('{params.match_regex}')")
             ["sample"]
             .to_csv(output.txt, index=False, header=False)
         )
 
 
 rule mat_clade_subset:
-    """Get mutation-annotated tree for just a clade."""
+    """Get mutation-annotated tree for just a clade and subset."""
     input:
         mat=rules.get_mat_tree.output.mat,
-        samples=rules.samples_by_clade.output.txt,
+        samples=rules.samples_by_clade_subset.output.txt,
     output:
-        mat="results/mat_by_clade_subset/{clade}_mat_tree.pb",
+        mat="results/mat_by_clade_subset/{clade}_{subset}.pb",
     shell:
-        "matUtils extract -i {input.mat} -s {input.samples} -o {output.mat}"
+        """
+        if [ -s {input.samples} ]; then
+            echo "Extracting samples from {input.samples}"
+            matUtils extract -i {input.mat} -s {input.samples} -o {output.mat}
+        else
+            echo "No samples in {input.samples}"
+            touch {output.mat}
+        fi
+        """
 
 
 rule translate_mat:
@@ -101,7 +112,7 @@ rule translate_mat:
         ref_fasta=rules.get_ref_fasta.output.ref_fasta,
         ref_gtf=rules.get_ref_gtf.output.ref_gtf,
     output:
-        tsv="results/mat_by_clade_subset/{clade}_translated_mutations.tsv",
+        tsv="results/mat_by_clade_subset/{clade}_{subset}_mutations.tsv",
     shell:
         """
         matUtils summary \
@@ -140,13 +151,13 @@ rule count_mutations:
         ref_fasta=rules.get_ref_fasta.output.ref_fasta,
         clade_founder_fasta=rules.clade_founder_fasta.output.fasta,
     output:
-        csv="results/mutation_counts/counts_by_clade/{clade}.csv",
+        csv="results/mutation_counts/{clade}_{subset}.csv",
     params:
         max_nt_mutations=config["max_nt_mutations"],
         max_reversions_to_ref=config["max_reversions_to_ref"],
         max_reversions_to_clade_founder=config["max_reversions_to_clade_founder"],
     log:
-        notebook="results/mutation_counts/counts_by_clade/{clade}_count_mutations.ipynb",
+        notebook="results/mutation_counts/{clade}_{subset}_count_mutations.ipynb",
     notebook:
         "notebooks/count_mutations.py.ipynb"
 
@@ -155,8 +166,9 @@ rule synonymous_mut_rates:
     """Compute overall rates of synonymous mutations."""
     input:
         counts=lambda wc: [
-            f"results/mutation_counts/counts_by_clade/{clade}.csv"
+            f"results/mutation_counts/{clade}_{subset}.csv"
             for clade in clades_w_adequate_counts(wc)
+            for subset in config["sample_subsets"]
         ],
     output:
         "_temp.txt",

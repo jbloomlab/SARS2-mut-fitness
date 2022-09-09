@@ -11,7 +11,7 @@ min_clade_samples: 10000
 
 # Subset samples based on whether they start with these regex matches
 sample_subsets:
-  all: "*"
+  all: .  # regex to match anything
   USA: USA
   England: England
 
