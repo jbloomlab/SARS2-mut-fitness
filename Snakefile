@@ -12,7 +12,7 @@ configfile: "config.yaml"
 rule all:
     """Target rule with desired output files."""
     input:
-        "_temp.txt"
+        "results/mutation_counts/aggregated.csv",
 
 
 rule get_mat_tree:
@@ -162,14 +162,32 @@ rule count_mutations:
         "notebooks/count_mutations.py.ipynb"
 
 
-rule synonymous_mut_rates:
-    """Compute overall rates of synonymous mutations."""
+rule aggregate_mutation_counts:
+    """Aggregate the mutation counts for all clades and subsets."""
     input:
         counts=lambda wc: [
             f"results/mutation_counts/{clade}_{subset}.csv"
             for clade in clades_w_adequate_counts(wc)
             for subset in config["sample_subsets"]
         ],
+    output:
+        csv="results/mutation_counts/aggregated.csv",
+    run:
+        pd.concat(
+            [
+                pd.read_csv(f).assign(
+                    clade=os.path.splitext(os.path.basename(f))[0].split("_")[0],
+                    subset=os.path.splitext(os.path.basename(f))[0].split("_")[1],
+                )
+                for f in input.counts
+            ]
+        ).to_csv(output.csv, index=False)
+
+
+rule synonymous_mut_rates:
+    """Compute overall rates of synonymous mutations."""
+    input:
+        csv=rules.aggregate_mutation_counts.output.csv,
     output:
         "_temp.txt",
         csv="results/synonymous_mut_rates/rates.csv",
