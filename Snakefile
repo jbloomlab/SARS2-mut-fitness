@@ -141,12 +141,15 @@ rule count_mutations:
         "notebooks/count_mutations.py.ipynb"
 
 
-rule _temp:
+rule synonymous_mut_rates:
+    """Compute overall rates of synonymous mutations."""
     input:
-        lambda wc: [
+        counts=lambda wc: [
             f"results/mutation_counts/counts_by_clade/{clade}.csv" for clade in clades(wc)
         ],
     output:
-        "_temp.txt"
-    shell:
-        "echo not_implemented"
+        csv="results/synonymous_mut_rates/rates.csv",
+    log:
+        notebook="results/synonymous_mut_rates/synonymous_mut_rates.ipynb",
+    notebook:
+        "notebooks/synonymous_mut_rates.py.ipynb"
