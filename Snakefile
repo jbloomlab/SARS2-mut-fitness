@@ -3,6 +3,8 @@
 
 import glob
 
+import pandas as pd
+
 
 configfile: "config.yaml"
 
@@ -43,43 +45,51 @@ rule get_ref_gtf:
         "wget -O - {params.url} | gunzip -c > {output.ref_gtf}"
 
 
-rule mat_samples:
+checkpoint mat_samples:
     """Get all samples in mutation-annotated tree with their dates and clades."""
     input:
         mat=rules.get_mat_tree.output.mat,
     output:
         csv="results/mat/samples.csv",
+        clade_counts="results/mat/sample_clade_counts.csv",
+    params:
+        min_clade_samples=config["min_clade_samples"],
     script:
         "scripts/mat_samples.py"
 
 
-checkpoint samples_by_clade:
+def clades_w_adequate_counts(wc):
+    """Return list of all clades with adequate sample counts."""
+    return (
+        pd.read_csv(checkpoints.mat_samples.get(**wc).output.clade_counts)
+        .query("adequate_sample_counts")
+        ["nextstrain_clade"]
+        .tolist()
+    )
+
+
+rule samples_by_clade:
     """Get samples in mutation-annotated tree by nextstrain clade."""
     input:
         csv=rules.mat_samples.output.csv,
     output:
-        subdir=directory("results/mat/samples_by_clade"),
-    params:
-        min_clade_samples=config["min_clade_samples"],
-    script:
-        "scripts/samples_by_clade.py"
-
-
-def clades(wc):
-    """Return list of all clades."""
-    subdir = checkpoints.samples_by_clade.get(**wc).output.subdir
-    return [
-        os.path.splitext(os.path.basename(f))[0] for f in glob.glob(f"{subdir}/*.txt")
-    ]
+        txt="results/mat_by_clade_subset/{clade}.txt",
+    run:
+        (
+            pd.read_csv(input.csv)
+            .query("nextstrain_clade == @wildcards.clade")
+            ["sample"]
+            .to_csv(output.txt, index=False, header=False)
+        )
 
 
 rule mat_clade_subset:
     """Get mutation-annotated tree for just a clade."""
     input:
         mat=rules.get_mat_tree.output.mat,
-        samples=os.path.join(rules.samples_by_clade.output.subdir, "{clade}.txt"),
+        samples=rules.samples_by_clade.output.txt,
     output:
-        mat="results/mat/mats_by_clade/{clade}_mat_tree.pb",
+        mat="results/mat_by_clade_subset/{clade}_mat_tree.pb",
     shell:
         "matUtils extract -i {input.mat} -s {input.samples} -o {output.mat}"
 
@@ -91,7 +101,7 @@ rule translate_mat:
         ref_fasta=rules.get_ref_fasta.output.ref_fasta,
         ref_gtf=rules.get_ref_gtf.output.ref_gtf,
     output:
-        tsv="results/mat/mats_by_clade/{clade}_translated_mutations.tsv",
+        tsv="results/mat_by_clade_subset/{clade}_translated_mutations.tsv",
     shell:
         """
         matUtils summary \
@@ -145,9 +155,11 @@ rule synonymous_mut_rates:
     """Compute overall rates of synonymous mutations."""
     input:
         counts=lambda wc: [
-            f"results/mutation_counts/counts_by_clade/{clade}.csv" for clade in clades(wc)
+            f"results/mutation_counts/counts_by_clade/{clade}.csv"
+            for clade in clades_w_adequate_counts(wc)
         ],
     output:
+        "_temp.txt",
         csv="results/synonymous_mut_rates/rates.csv",
     log:
         notebook="results/synonymous_mut_rates/synonymous_mut_rates.ipynb",

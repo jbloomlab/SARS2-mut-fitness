@@ -1,13 +1,19 @@
 # matutils pre-built mutation-annotated tree from
 # http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/
-mat_tree: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2022/09/06/public-2022-09-06.all.masked.nextclade.pangolin.pb.gz
+mat_tree: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2022/09/08/public-2022-09-08.all.masked.nextclade.pangolin.pb.gz
 
 # Reference GTF and FASTA, and location of spike coding sequence
 ref_fasta: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/bigZips/wuhCor1.fa.gz
 ref_gtf: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/bigZips/genes/ncbiGenes.gtf.gz
 
 # Only keep nextstrain clades with at least this many samples in mutation-annotated tree
-min_clade_samples: 5000
+min_clade_samples: 10000
+
+# Subset samples based on whether they start with these regex matches
+sample_subsets:
+  all: "*"
+  USA: USA
+  England: England
 
 # Founder genotypes for nextstrain clades from Richard Neher
 clade_founder_json: https://raw.githubusercontent.com/neherlab/SC2_variant_rates/cd6e016a511098123b6ce9ed874f58a7b789b34c/data/clade_gts.json
