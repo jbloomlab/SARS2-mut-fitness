@@ -189,7 +189,6 @@ rule synonymous_mut_rates:
     input:
         csv=rules.aggregate_mutation_counts.output.csv,
     output:
-        "_temp.txt",
         csv="results/synonymous_mut_rates/rates.csv",
     log:
         notebook="results/synonymous_mut_rates/synonymous_mut_rates.ipynb",
