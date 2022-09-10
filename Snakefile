@@ -133,13 +133,14 @@ rule clade_founder_json:
         "curl {params.url} > {output.json}"
 
 
-rule clade_founder_fasta:
-    """Get FASTA for a nextstrain clade founder (indels not included)."""
+rule clade_founder_fasta_and_muts:
+    """Get FASTA and mutations for nextstrain clade founder (indels not included)."""
     input:
         json=rules.clade_founder_json.output.json,
         ref_fasta=rules.get_ref_fasta.output.ref_fasta,
     output:
         fasta="results/clade_founders_no_indels/{clade}.fa",
+        muts="results/clade_founders_no_indels/{clade}_ref_to_founder_muts.csv",
     script:
         "scripts/clade_founder_fasta.py"
 
@@ -149,13 +150,16 @@ rule count_mutations:
     input:
         tsv=rules.translate_mat.output.tsv,
         ref_fasta=rules.get_ref_fasta.output.ref_fasta,
-        clade_founder_fasta=rules.clade_founder_fasta.output.fasta,
+        clade_founder_fasta=rules.clade_founder_fasta_and_muts.output.fasta,
+        ref_to_founder_muts=rules.clade_founder_fasta_and_muts.output.muts,
     output:
         csv="results/mutation_counts/{clade}_{subset}.csv",
     params:
         max_nt_mutations=config["max_nt_mutations"],
         max_reversions_to_ref=config["max_reversions_to_ref"],
         max_reversions_to_clade_founder=config["max_reversions_to_clade_founder"],
+        exclude_ref_to_founder_muts=config["exclude_ref_to_founder_muts"],
+        sites_to_exclude=config["sites_to_exclude"],
     log:
         notebook="results/mutation_counts/{clade}_{subset}_count_mutations.ipynb",
     notebook:

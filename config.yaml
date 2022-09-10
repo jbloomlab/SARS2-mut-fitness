@@ -23,3 +23,27 @@ clade_founder_json: https://raw.githubusercontent.com/neherlab/SC2_variant_rates
 max_nt_mutations: 4
 max_reversions_to_ref: 1
 max_reversions_to_clade_founder: 1
+
+# Exclude nucleotide mutations from reference to clade founder and their reversions.
+# These sites have higher than normal errors due to calling of missing bases to reference.
+exclude_ref_to_founder_muts: true
+
+# sites to exclude the following sites (set to null for no exclusions)
+sites_to_exclude:
+  # Sites in Table S1 of https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1009175
+  - 153
+  - 1149
+  - 2198
+  - 3145
+  - 3564
+  - 3778
+  - 4050
+  - 6255
+  - 8022
+  - 8790
+  - 13402
+  - 13947
+  - 22802
+  - 24389
+  - 24390
+  - 24933
