@@ -57,4 +57,4 @@ sites_to_exclude:
 
 # for analysis of synonymous mutation spectra, only keep clade subsets with at least
 # this many non-excluded mutation counts
-synonymous_spectra_min_count: 10000
+synonymous_spectra_min_counts: 10000

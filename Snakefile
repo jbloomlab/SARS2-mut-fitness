@@ -12,7 +12,7 @@ configfile: "config.yaml"
 rule all:
     """Target rule with desired output files."""
     input:
-        "results/mutation_counts/aggregated.csv",
+        "results/synonymous_mut_rates/synonymous_mut_rates.html",
 
 
 rule get_mat_tree:
@@ -189,15 +189,21 @@ rule aggregate_mutation_counts:
 
 
 rule synonymous_mut_rates:
-    """Compute overall rates of synonymous mutations."""
+    """Compute and analyze rates and spectra of synonymous mutations."""
     input:
         csv=rules.aggregate_mutation_counts.output.csv,
+        nb="notebooks/synonymous_mut_rates.ipynb",
     output:
-        csv="results/synonymous_mut_rates/rates.csv",
+        nb="results/synonymous_mut_rates/synonymous_mut_rates.ipynb",
+        nb_html="results/synonymous_mut_rates/synonymous_mut_rates.html",
     params:
         synonymous_spectra_min_counts=config["synonymous_spectra_min_counts"],
-        subset_order=list(config["sample_subsets"]),
-    log:
-        notebook="results/synonymous_mut_rates/synonymous_mut_rates.ipynb",
-    notebook:
-        "notebooks/synonymous_mut_rates.py.ipynb"
+        subset_order="{subset_order: " + str(list(config['sample_subsets'])) + "}",
+    shell:
+        """
+        papermill {input.nb} {output.nb} \
+            -p synonymous_spectra_min_counts {params.synonymous_spectra_min_counts} \
+            -y "{params.subset_order}" \
+            -p input_csv {input.csv}
+        jupyter nbconvert {output.nb} --to html
+        """
