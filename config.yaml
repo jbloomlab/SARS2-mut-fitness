@@ -54,3 +54,7 @@ sites_to_exclude:
   - 7328  # ~6% of all mutations in clade 21I, also highly mutated (~4% of all) in several other clades
   - 28095  # ~11% of all mutations in clade 20I
   - 29362  # ~30% of all mutations in clade 21C
+
+# for analysis of synonymous mutation spectra, only keep clade subsets with at least
+# this many non-excluded mutation counts
+synonymous_spectra_min_count: 10000

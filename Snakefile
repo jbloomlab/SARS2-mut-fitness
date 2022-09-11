@@ -194,6 +194,9 @@ rule synonymous_mut_rates:
         csv=rules.aggregate_mutation_counts.output.csv,
     output:
         csv="results/synonymous_mut_rates/rates.csv",
+    params:
+        synonymous_spectra_min_counts=config["synonymous_spectra_min_counts"],
+        subset_order=list(config["sample_subsets"]),
     log:
         notebook="results/synonymous_mut_rates/synonymous_mut_rates.ipynb",
     notebook:
