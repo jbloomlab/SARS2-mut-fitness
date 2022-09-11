@@ -47,3 +47,10 @@ sites_to_exclude:
   - 24389
   - 24390
   - 24933
+  # sites specified for exclusion because they have extremely high mutation
+  # frequency in some clade
+  - 5629  # T5629G is much higher (~5% of all) in clade 20A than any other mutation.
+  - 6851  # C6851A and its reversion are top two mutations in 20C at ~5% and ~3% of all mutations
+  - 7328  # ~6% of all mutations in clade 21I, also highly mutated (~4% of all) in several other clades
+  - 28095  # ~11% of all mutations in clade 20I
+  - 29362  # ~30% of all mutations in clade 21C
