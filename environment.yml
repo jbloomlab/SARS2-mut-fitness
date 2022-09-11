@@ -1,4 +1,4 @@
-name: SARS2-mut-rates
+name: SARS2-mut-spectrum
 channels:
   - conda-forge
   - defaults
