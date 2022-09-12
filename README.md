@@ -48,7 +48,7 @@ We perform some crucial filtering to remove spurious mutations as can arise from
 
  4. We ignore all mutations at error-prone or problematic sites as specified in [config.yaml](config.yaml).
 
- 5. We ignore any clades with small numbers of sequence samples as indicated in [config.yaml](config.yaml)].
+ 5. We ignore any clades with small numbers of sequence samples as indicated in [config.yaml](config.yaml).
 
  6. Note also that indels are ignored, as they are not captured in the mutation-annotated tree.
 
