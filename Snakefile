@@ -12,7 +12,7 @@ configfile: "config.yaml"
 rule all:
     """Target rule with desired output files."""
     input:
-        "results/synonymous_mut_rates/synonymous_mut_rates.html",
+        "results/ref/coding_sites.csv",
 
 
 rule get_mat_tree:
@@ -43,6 +43,16 @@ rule get_ref_gtf:
         ref_gtf="results/ref/ref.gtf",
     shell:
         "wget -O - {params.url} | gunzip -c > {output.ref_gtf}"
+
+
+rule ref_coding_sites:
+    """Get all sites in reference that are part of a coding sequence."""
+    input:
+        gtf=rules.get_ref_gtf.output.ref_gtf
+    output:
+        csv="results/ref/coding_sites.csv",
+    script:
+        "scripts/ref_coding_sites.py"
 
 
 checkpoint mat_samples:
