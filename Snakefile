@@ -2,6 +2,9 @@
 
 
 import glob
+import os
+
+import Bio.SeqIO
 
 import pandas as pd
 
@@ -12,7 +15,7 @@ configfile: "config.yaml"
 rule all:
     """Target rule with desired output files."""
     input:
-        "results/ref/coding_sites.csv",
+        "results/coding_nts/coding_nts.csv",
 
 
 rule get_mat_tree:
@@ -196,6 +199,31 @@ rule aggregate_mutation_counts:
                 for f in input.counts
             ]
         ).to_csv(output.csv, index=False)
+
+
+rule ref_and_founder_nts:
+    """Get nucleotide at each coding site for reference and clade founders."""
+    input:
+        coding_sites=rules.ref_coding_sites.output.csv,
+        ref_fasta=rules.get_ref_fasta.output.ref_fasta,
+        fastas=lambda wc: [
+            f"results/clade_founders_no_indels/{clade}.fa"
+            for clade in clades_w_adequate_counts(wc)
+        ],
+    output:
+        csv="results/coding_nts/coding_nts.csv",
+    run:
+        coding_sites=pd.read_csv(input.coding_sites)["site"].tolist()
+        records = []
+        for f_name in [input.ref_fasta, *input.fastas]:
+            seq = str(Bio.SeqIO.read(f_name, "fasta").seq)
+            name = os.path.splitext(os.path.basename(f_name))[0]
+            for site in coding_sites:
+                records.append((name, site, seq[site - 1]))
+        os.makedirs(os.path.dirname(output.csv), exist_ok=True)
+        pd.DataFrame.from_records(records, columns=["clade", "site", "nt"]).to_csv(
+            output.csv, index=False,
+        )
 
 
 rule synonymous_mut_rates:
