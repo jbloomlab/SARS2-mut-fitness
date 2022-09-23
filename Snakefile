@@ -15,7 +15,7 @@ configfile: "config.yaml"
 rule all:
     """Target rule with desired output files."""
     input:
-        "results/coding_nts/coding_nts.csv",
+        "results/synonymous_mut_rates/synonymous_mut_rates.html",
 
 
 rule get_mat_tree:
@@ -229,7 +229,8 @@ rule ref_and_founder_nts:
 rule synonymous_mut_rates:
     """Compute and analyze rates and spectra of synonymous mutations."""
     input:
-        csv=rules.aggregate_mutation_counts.output.csv,
+        mutation_counts_csv=rules.aggregate_mutation_counts.output.csv,
+        ref_and_founder_nts_csv=rules.ref_and_founder_nts.output.csv,
         nb="notebooks/synonymous_mut_rates.ipynb",
     output:
         nb="results/synonymous_mut_rates/synonymous_mut_rates.ipynb",
