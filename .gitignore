@@ -1,5 +1,5 @@
 .*
-!.gitignore
+!.git*
 _*
 *.out
 
@@ -7,3 +7,6 @@ results/*
 !results/synonymous_mut_rates
 results/synonymous_mut_rates/*
 !results/synonymous_mut_rates/synonymous_mut_rates.html
+!results/mutation_counts
+results/mutation_counts/*
+!results/mutation_counts/aggregated.csv

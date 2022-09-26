@@ -8,6 +8,7 @@ dependencies:
   - altair=4.2
   - biopython=1.79
   - entrez-direct=16.2
+  - git-lfs
   - jupyterlab
   - pandas=1.4
   - papermill=2.3.4
