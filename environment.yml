@@ -9,6 +9,7 @@ dependencies:
   - biopython=1.79
   - entrez-direct=16.2
   - git-lfs
+  - jupyter_contrib_nbextensions
   - jupyterlab
   - pandas=1.4
   - papermill=2.3.4
