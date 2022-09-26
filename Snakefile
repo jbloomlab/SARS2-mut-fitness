@@ -243,6 +243,7 @@ rule synonymous_mut_rates:
         papermill {input.nb} {output.nb} \
             -p synonymous_spectra_min_counts {params.synonymous_spectra_min_counts} \
             -y "{params.subset_order}" \
-            -p input_csv {input.csv}
+            -p mutation_counts_csv {input.mutation_counts_csv} \
+            -p ref_and_founder_nts_csv {input.ref_and_founder_nts_csv}
         jupyter nbconvert {output.nb} --to html
         """
