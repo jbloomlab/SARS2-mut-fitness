@@ -19,7 +19,7 @@ codons_4fold = {
 sites = pd.read_csv(snakemake.input.coding_sites).sort_values("site")
 
 dfs = []
-for f_name in [snakemake.input.ref_fasta, *snakemake.input.fastas]:
+for f_name in snakemake.input.fastas:
     seq = str(Bio.SeqIO.read(f_name, "fasta").seq)
     name = os.path.splitext(os.path.basename(f_name))[0]
     dfs.append(
@@ -33,6 +33,7 @@ for f_name in [snakemake.input.ref_fasta, *snakemake.input.fastas]:
                 & x["preceding_2nt"].isin(codons_4fold)
             )
         )
+        .drop(columns="preceding_2nt")
     )
 
 pd.concat(dfs).to_csv(snakemake.output.csv, index=False)

@@ -1,9 +1,6 @@
 """Top-level ``snakemake`` file that runs pipeline."""
 
 
-import glob
-import os
-
 import pandas as pd
 
 
@@ -177,9 +174,24 @@ rule count_mutations:
         "notebooks/count_mutations.py.ipynb"
 
 
+rule clade_founder_nts:
+    """Get nucleotide at each coding site for clade founders."""
+    input:
+        coding_sites=rules.ref_coding_sites.output.csv,
+        fastas=lambda wc: [
+            f"results/clade_founders_no_indels/{clade}.fa"
+            for clade in clades_w_adequate_counts(wc)
+        ],
+    output:
+        csv="results/clade_founder_nts/clade_founder_nts.csv",
+    script:
+        "scripts/clade_founder_nts.py"
+
+
 rule aggregate_mutation_counts:
     """Aggregate the mutation counts for all clades and subsets."""
     input:
+        clade_founder_nts=rules.clade_founder_nts.output.csv,
         counts=lambda wc: [
             f"results/mutation_counts/{clade}_{subset}.csv"
             for clade in clades_w_adequate_counts(wc)
@@ -187,38 +199,15 @@ rule aggregate_mutation_counts:
         ],
     output:
         csv="results/mutation_counts/aggregated.csv",
-    run:
-        pd.concat(
-            [
-                pd.read_csv(f).assign(
-                    clade=os.path.splitext(os.path.basename(f))[0].split("_")[0],
-                    subset=os.path.splitext(os.path.basename(f))[0].split("_")[1],
-                )
-                for f in input.counts
-            ]
-        ).to_csv(output.csv, index=False)
-
-
-rule ref_and_founder_nts:
-    """Get nucleotide at each coding site for reference and clade founders."""
-    input:
-        coding_sites=rules.ref_coding_sites.output.csv,
-        ref_fasta=rules.get_ref_fasta.output.ref_fasta,
-        fastas=lambda wc: [
-            f"results/clade_founders_no_indels/{clade}.fa"
-            for clade in clades_w_adequate_counts(wc)
-        ],
-    output:
-        csv="results/coding_nts/coding_nts.csv",
     script:
-        "scripts/ref_and_founder_nts.py"
+        "scripts/aggregate_mutation_counts.py"
 
 
 rule synonymous_mut_rates:
     """Compute and analyze rates and spectra of synonymous mutations."""
     input:
         mutation_counts_csv=rules.aggregate_mutation_counts.output.csv,
-        ref_and_founder_nts_csv=rules.ref_and_founder_nts.output.csv,
+        clade_founder_nts_csv=rules.clade_founder_nts.output.csv,
         nb="notebooks/synonymous_mut_rates.ipynb",
     output:
         nb="results/synonymous_mut_rates/synonymous_mut_rates.ipynb",
@@ -232,6 +221,6 @@ rule synonymous_mut_rates:
             -p synonymous_spectra_min_counts {params.synonymous_spectra_min_counts} \
             -y "{params.subset_order}" \
             -p mutation_counts_csv {input.mutation_counts_csv} \
-            -p ref_and_founder_nts_csv {input.ref_and_founder_nts_csv}
+            -p clade_founder_nts_csv {input.clade_founder_nts_csv}
         jupyter nbconvert {output.nb} --to html
         """
