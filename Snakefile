@@ -4,8 +4,6 @@
 import glob
 import os
 
-import Bio.SeqIO
-
 import pandas as pd
 
 
@@ -212,18 +210,8 @@ rule ref_and_founder_nts:
         ],
     output:
         csv="results/coding_nts/coding_nts.csv",
-    run:
-        coding_sites=pd.read_csv(input.coding_sites)["site"].tolist()
-        records = []
-        for f_name in [input.ref_fasta, *input.fastas]:
-            seq = str(Bio.SeqIO.read(f_name, "fasta").seq)
-            name = os.path.splitext(os.path.basename(f_name))[0]
-            for site in coding_sites:
-                records.append((name, site, seq[site - 1]))
-        os.makedirs(os.path.dirname(output.csv), exist_ok=True)
-        pd.DataFrame.from_records(records, columns=["clade", "site", "nt"]).to_csv(
-            output.csv, index=False,
-        )
+    script:
+        "scripts/ref_and_founder_nts.py"
 
 
 rule synonymous_mut_rates:
