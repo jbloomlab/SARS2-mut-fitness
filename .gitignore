@@ -4,9 +4,15 @@ _*
 *.out
 
 results/*
+
 !results/synonymous_mut_rates
 results/synonymous_mut_rates/*
 !results/synonymous_mut_rates/synonymous_mut_rates.html
+
 !results/mutation_counts
 results/mutation_counts/*
 !results/mutation_counts/aggregated.csv
+
+!results/clade_founder_nts
+results/clade_founder_nts/*
+!results/clade_founder_nts/clade_founder_nts.csv
