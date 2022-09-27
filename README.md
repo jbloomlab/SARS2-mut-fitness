@@ -1,11 +1,9 @@
-# SARS-CoV-2 mutational spectrum
+# SARS-CoV-2 observed versus expected mutation counts
 
 ## Overview
 This repository analyzes the mutational spectrum of human SARS-CoV-2.
 
 This analysis was originally based off starting to replicate analyses [Neher (2022)](https://www.biorxiv.org/content/10.1101/2022.08.22.504731v1.full), but then checking the assumption that underlying synonymous mutation spectra were conserved across clades.
-
-Study by Jesse Bloom, Richard Neher, Kelley Harris.
 
 ## Structure of repository and running the analysis
 The analysis is entirely reproducible.
@@ -31,6 +29,15 @@ The created files are placed in [./results/](results).
 Only some of those results files are tracked in this repo (others are too large to track).
 
 ## Overview of analysis
+Basic steps, performed for each Nextstrain clade:
+
+ - Count occurrences of all mutations along the [UShER](https://usher-wiki.readthedocs.io/) tree with some filtering to remove spurious ones.
+
+ - Estimate the underlying mutation rates using 4-fold degenerate synonymous sites.
+
+ - Based on the mutation rates and total number of observed synonymous mutations at those sites, calculate **expected** number of occurrences of each nucleotide mutation.
+
+ - Compare observed to expected mutation counts to estimate selection.
 
 ### Counting mutations
 Mutation counts are extracted from the pre-built mutation-annotated tree that is made available for use with the [UShER](https://usher-wiki.readthedocs.io/) package.
