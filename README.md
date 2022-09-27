@@ -46,23 +46,25 @@ We perform some crucial filtering to remove spurious mutations as can arise from
 
  2. We ignore any branches with multiple mutations at the same codon.
 
- 3. If a switch is set in [config.yaml](config.yaml), we specify to exclude any mutations that are reversions from the clade founder to the reference, and also the reverse complement of these mutations. This is designed to remove missing bases called to reference, and also complements of those mutations induced by spurious nodes with such miscalls on downstream branches in the tree.
+ 3. If a switch is set in [config.yaml](config.yaml) (it currently is), we specify to exclude any mutations that are reversions from the clade founder to the reference, and also the reverse complement of these mutations. This is designed to remove missing bases called to reference, and also complements of those mutations induced by spurious nodes with such miscalls on downstream branches in the tree.
 
- 4. We specify to exclude all mutations at error-prone or problematic sites as specified in [config.yaml](config.yaml).
+ 4. We specify to exclude all mutations at error-prone or problematic sites as manually specified in [config.yaml](config.yaml).
 
- 5. We ignore any clades with small numbers of sequence samples as indicated in [config.yaml](config.yaml).
+ 5. We ignore any clades with small numbers of sequence samples as indicated in [config.yaml](config.yaml) as these are expected to have too much noise.
 
  6. Note also that indels are ignored, as they are not captured in the mutation-annotated tree.
 
 The above mutation counts both for all sequences for a clade, and for the sample subsets defined in [config.yaml](config.yaml) are stored in [results/mutation_counts/aggregated.csv](results/mutation_counts/aggregated.csv).
+Note that mutations are annotated by the protein(s) they affect, if they are synonymous, if they are at 4-fold degenerate sites, etc.
 
 ### Analysis of 4-fold synonymous mutation spectrum / rates
 
 We then analyze the mutation spectra and rate of mutations.
 For this analysis, we only consider synonymous mutations at sites (third codon positions) that are four-fold degenerate in the founder sequence for each clade.
-The file [results/clade_founder_nts/clade_founder_nts.csv](results/clade_founder_nts/clade_founder_nts.csv) specifies which this sites are for each clade.
+The file [results/clade_founder_nts/clade_founder_nts.csv](results/clade_founder_nts/clade_founder_nts.csv) specifies which these sites are for each clade.
 
 Specifically, we determine the relative fraction of all 4-fold synonymous mutations that are each type of nucleotide change, and also the relative **rates** of the different types of mutations, which are just computed as the fraction of all mutations of that type normalized by the composition of the sequence at these 4-fold degenerate sites.
+These rates for each clade with sufficient counts are written to the file [results/synonymous_mut_rates/rates_by_clade.csv](results/synonymous_mut_rates/rates_by_clade.csv).
 
 We also perform analyses for subsets of sequences from different regions (as specified in [config.yaml](config.yaml)) as well as for the the genome partitioned into halves--these analyses are designed to check that results are not due to artifacts related to sequencing pipelines or hotspots in the genome.
 For all of these analyses, we only include subsets/partitions with at least the minimum number of mutations indicated in [config.yaml](config.yaml).
@@ -73,10 +75,12 @@ You can look at the HTML rendering of running that Jupyter notebook at [results/
 ### Caveats of analysis
 None of these are expected to seriously affect the accuracy of the current analysis, but they could become problematic if the same analysis is applied to substantially more diverged clades:
 
- - For computing the rates of mutations, we do not exclude sites / mutations to exclude from the computation of the sequence composition that is used to normalize the counts of different mutations to rates.
+ - For computing the rates of mutations from 4-fold degenerate synonymous sites, we do not exclude sites / mutations to exclude from the computation of the sequence composition that is used to normalize the counts of different mutations to rates. This would become a problem if you start to specify a very large number of sites to exclude in [config.yaml](config.yaml), or if the sequences become highly diverged from the reference (as we exclude reversions to reference and their complement).
  
- - Multiple mutations in same codon are excluded from analysis.
- 
+ - Multiple mutations in same codon on a branch are excluded from analysis. This is not expected to have much effect, as this is rare.
+
  - Indels are ignored.
 
  - The way that codon positions are assigned for identify synonymous sites will fail if there are non-in-frame indels.
+
+ - Four-fold synonymous sites are identified in the clade founder, which could lead to mis-identification if seuqences in a clade become highly diverged from the founder.
