@@ -55,6 +55,6 @@ sites_to_exclude:
   - 28095  # ~11% of all mutations in clade 20I
   - 29362  # ~30% of all mutations in clade 21C
 
-# for analysis of synonymous mutation spectra/rates, only keep clade subsets with at least
-# this many non-excluded mutation counts
-synonymous_spectra_min_counts: 12000
+# for analysis of 4-fold synonymous mutation spectra/rates, only keep clade subsets with
+# at least this many non-excluded mutation counts
+synonymous_spectra_min_counts: 5000

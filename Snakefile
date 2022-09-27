@@ -10,6 +10,7 @@ configfile: "config.yaml"
 rule all:
     """Target rule with desired output files."""
     input:
+        "results/synonymous_mut_rates/rates_by_clade.csv",
         "results/synonymous_mut_rates/synonymous_mut_rates.html",
 
 
@@ -210,6 +211,7 @@ rule synonymous_mut_rates:
         clade_founder_nts_csv=rules.clade_founder_nts.output.csv,
         nb="notebooks/synonymous_mut_rates.ipynb",
     output:
+        rates_by_clade="results/synonymous_mut_rates/rates_by_clade.csv",
         nb="results/synonymous_mut_rates/synonymous_mut_rates.ipynb",
         nb_html="results/synonymous_mut_rates/synonymous_mut_rates.html",
     params:
@@ -221,6 +223,7 @@ rule synonymous_mut_rates:
             -p synonymous_spectra_min_counts {params.synonymous_spectra_min_counts} \
             -y "{params.subset_order}" \
             -p mutation_counts_csv {input.mutation_counts_csv} \
-            -p clade_founder_nts_csv {input.clade_founder_nts_csv}
+            -p clade_founder_nts_csv {input.clade_founder_nts_csv} \
+            -p rates_by_clade_csv {output.rates_by_clade}
         jupyter nbconvert {output.nb} --to html
         """

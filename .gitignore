@@ -8,6 +8,7 @@ results/*
 !results/synonymous_mut_rates
 results/synonymous_mut_rates/*
 !results/synonymous_mut_rates/synonymous_mut_rates.html
+!results/synonymous_mut_rates/rates_by_clade.csv
 
 !results/mutation_counts
 results/mutation_counts/*
