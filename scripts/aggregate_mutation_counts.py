@@ -21,8 +21,7 @@ clade_founder_nts = pd.read_csv(snakemake.input.clade_founder_nts).rename(
 # if they correspond, the following merge should be one-to-one with no NaN
 merge_cols = ["nt_site", "protein", "clade", "clade_founder_nt"]
 merge_check = (
-    counts
-    [merge_cols]
+    counts[merge_cols]
     .drop_duplicates()
     .merge(clade_founder_nts, validate="one_to_one", how="left")
 )

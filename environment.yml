@@ -7,7 +7,14 @@ channels:
 dependencies:
   - altair=4.2
   - biopython=1.79
+  - black-jupyter
   - entrez-direct=16.2
+  - flake8
+  - flake8-bugbear
+  - flake8-builtins
+  - flake8-comprehensions
+  - flake8-import-order
+  - flake8-nb
   - git-lfs
   - jupyter_contrib_nbextensions
   - jupyterlab

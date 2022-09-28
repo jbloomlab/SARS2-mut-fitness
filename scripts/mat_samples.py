@@ -22,11 +22,11 @@ df = (
 df.to_csv(snakemake.output.csv, index=False)
 
 clade_counts = (
-    df
-    .groupby("nextstrain_clade", as_index=False)
+    df.groupby("nextstrain_clade", as_index=False)
     .aggregate(count=pd.NamedAgg("sample", "count"))
     .assign(
-        adequate_sample_counts=lambda x: x["count"] >= snakemake.params.min_clade_samples
+        adequate_sample_counts=lambda x: x["count"]
+        >= snakemake.params.min_clade_samples
     )
 )
 

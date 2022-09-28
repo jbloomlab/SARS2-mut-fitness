@@ -20,7 +20,9 @@ if snakemake.params.exclude_ref_to_founder_muts:
     muts_to_exclude = pd.concat(
         [
             pd.read_csv(f).assign(clade=clade)
-            for f, clade in zip(snakemake.input.muts_to_exclude, snakemake.params.clades)
+            for f, clade in zip(
+                snakemake.input.muts_to_exclude, snakemake.params.clades
+            )
         ]
     )
     to_exclude = pd.concat([sites_to_exclude, muts_to_exclude])
@@ -29,7 +31,7 @@ else:
 
 
 (
-    to_exclude
-    .sort_values(["clade", "site", "mutation"])
-    .to_csv(snakemake.output.csv, index=False)
+    to_exclude.sort_values(["clade", "site", "mutation"]).to_csv(
+        snakemake.output.csv, index=False
+    )
 )

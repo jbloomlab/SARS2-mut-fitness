@@ -28,7 +28,9 @@ Note that the pipeline uses Python scripts in [./scripts/](scripts) and Jupyter 
 The created files are placed in [./results/](results).
 Only some of those results files are tracked in this repo (others are too large to track).
 
-## Overview of analysis
+Note that you can format and flake the analysis by running the commands `black` and `flake8_nb`.
+
+## Analysis
 Basic steps, performed for each Nextstrain clade:
 
  - Count occurrences of all mutations along the [UShER](https://usher-wiki.readthedocs.io/) tree with some filtering to remove spurious ones.
