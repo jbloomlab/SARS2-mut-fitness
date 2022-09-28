@@ -17,3 +17,7 @@ results/mutation_counts/*
 !results/clade_founder_nts
 results/clade_founder_nts/*
 !results/clade_founder_nts/clade_founder_nts.csv
+
+!results/expected_vs_actual_mut_counts
+results/expected_vs_actual_mut_counts/*
+!results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv
