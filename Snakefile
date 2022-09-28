@@ -10,7 +10,7 @@ configfile: "config.yaml"
 rule all:
     """Target rule with desired output files."""
     input:
-        "results/expected_vs_actual_mut_counts.csv",
+        "results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv",
 
 
 rule get_mat_tree:
@@ -272,6 +272,8 @@ rule merge_expected_and_actual_counts:
         actual=rules.aggregate_mutation_counts.output.csv,
         muts_to_exclude=rules.aggregate_mutations_to_exclude.output.csv,
     output:
-        csv="results/expected_vs_actual_mut_counts.csv",
-    script:
-        "scripts/merge_expected_and_actual_counts.py"
+        csv="results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv",
+    log:
+        notebook="results/expected_vs_actual_mut_counts/merged_expected_and_actual_counts.ipynb",
+    notebook:
+        "notebooks/merge_expected_and_actual_counts.py.ipynb"
