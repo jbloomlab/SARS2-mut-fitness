@@ -79,6 +79,20 @@ For all of these analyses, we only include subsets/partitions with at least the 
 Most of the analysis of the synonymous mutation spectrum is done by [notebooks/synonymous_mut_rates.ipynb](notebooks/synonymous_mut_rates.ipynb).
 You can look at the HTML rendering of running that Jupyter notebook at [results/synonymous_mut_rates/synonymous_mut_rates.html](results/synonymous_mut_rates/synonymous_mut_rates.html): download and open that notebook to look at the interactive `altair` plots.
 
+### Computation of "expected" number of occurrences for each mutation
+
+We next compute the "expected" number of observations of each mutation in the absence of selection based on the underlying mutation rates.
+Specifically, above we have computed the relative rates of each type of mutation at 4-fold degenerate sites (they are normalized to the frequency of the parent nucleotide).
+To get the expected numbers, for each clade, we first compute $T$ that satisfies 
+$$N_s = T \sum\limits_{nt_1} s_{nt_1} \sum\limits_{nt_2 \ne nt_1} r_{nt_1\rightarrow nt_2}$$
+where $N_s$ is the total number of mutations at 4-fold degenerate synonymous sites observed for the clade, $s_{nt}$ is the number of 4-fold synonymous sites in the clade founder that are nucleotide $nt$, and $r_{nt_1\rightarrow nt_2}$ is the non-normalized rate of mutations from nucleotide $nt_1$ to $nt_2$ at 4-fold degenerate synonymous sites.
+
+The expected number of mutations at each site (under neutrality) from the parental identity of $nt_1$ to some other identity of $nt_2$ is then simply $T \times r_{nt_1\rightarrow nt_2}$, which we will call the normalized rate for that clade.
+
+We compute these expected numbers of mutations versus the actual numbers of mutations at each site, only considering actual mutations that are single nucleotide changes from the clade founder codon.
+
+The expected and actual number of counts at each site are in [results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv](results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv).
+
 ### Caveats of analysis
 None of these are expected to seriously affect the accuracy of the current analysis, but they could become problematic if the same analysis is applied to substantially more diverged clades:
 
@@ -93,3 +107,7 @@ None of these are expected to seriously affect the accuracy of the current analy
  - Four-fold synonymous sites are identified in the clade founder, which could lead to mis-identification if seuqences in a clade become highly diverged from the founder.
 
  - Multiple mutations in the same codon in a clade can violate the assumptions about how sites are defined as synonymous, etc.
+ 
+ - We don't consider non-uniformity in mutation rate across the primary sequence.
+ 
+ - If there are partial sequences in the tree (such that some sites are observed more than others), that is not accounted for.
