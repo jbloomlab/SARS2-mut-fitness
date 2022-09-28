@@ -4,6 +4,7 @@ import Bio.SeqIO
 
 import pandas as pd
 
+
 # codons that start with these two nucleotides are 4-fold degenerate
 codons_4fold = {
     "TC",  # serine
@@ -16,7 +17,21 @@ codons_4fold = {
     "GG",  # glycine
 }
 
-sites = pd.read_csv(snakemake.input.coding_sites).sort_values("site")
+sites = (
+    pd.read_csv(snakemake.input.coding_sites).sort_values("site")
+    .assign(
+        codon_position=lambda x: x["codon_position"].str.split(";"),
+        gene=lambda x: x["gene"].str.split(";"),
+    )
+    .explode(["codon_position", "gene"])
+    .assign(codon_position=lambda x: x["codon_position"].astype(int))
+)
+
+
+def get_codon(row):
+    r = row["site"]
+    codon_pos = row["codon_position"]
+    return f"{seq[r - codon_pos]}{seq[r - codon_pos + 1]}{seq[r - codon_pos + 2]}"
 
 dfs = []
 for f_name in snakemake.input.fastas:
@@ -27,13 +42,18 @@ for f_name in snakemake.input.fastas:
         .assign(
             clade=name,
             nt=lambda x: x["site"].map(lambda r: seq[r - 1]),
-            preceding_2nt=lambda x: x["site"].map(lambda r: seq[r - 3: r - 1]),
+            codon=lambda x: x.apply(get_codon, axis=1),
             four_fold_degenerate=lambda x: (
-                (x["codon_position"].astype(str) == "3")
-                & x["preceding_2nt"].isin(codons_4fold)
+                (x["codon_position"] == 3) & x["codon"].str[: 2].isin(codons_4fold)
             )
         )
-        .drop(columns="preceding_2nt")
+        .groupby(["clade", "site", "nt"], as_index=False)
+        .aggregate(
+            gene=pd.NamedAgg("gene", lambda s: ";".join(s)),
+            codon=pd.NamedAgg("codon", lambda s: ";".join(s)),
+            codon_position=pd.NamedAgg("codon_position", lambda s: ";".join(map(str, s))),
+            four_fold_degenerate=pd.NamedAgg("four_fold_degenerate", "all"),
+        )
     )
 
 pd.concat(dfs).to_csv(snakemake.output.csv, index=False)

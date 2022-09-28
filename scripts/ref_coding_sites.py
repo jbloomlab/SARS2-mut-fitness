@@ -51,8 +51,7 @@ sites = (
     .groupby("site", as_index=False)
     .aggregate(
         codon_position=pd.NamedAgg(
-            "codon_position",
-            lambda s: s.values[0] if s.nunique() == 1 else "mixed",
+            "codon_position", lambda s: ";".join(map(str, s.values)),
         ),
         gene=pd.NamedAgg("gene", lambda s: ";".join(s)),
     )
