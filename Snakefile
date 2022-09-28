@@ -12,6 +12,8 @@ rule all:
     input:
         "results/synonymous_mut_rates/rates_by_clade.csv",
         "results/synonymous_mut_rates/synonymous_mut_rates.html",
+        "results/expected_mut_counts/expected_mut_counts.csv",
+        "results/expected_mut_counts/expected_mut_counts.html",
 
 
 rule get_mat_tree:
@@ -225,5 +227,25 @@ rule synonymous_mut_rates:
             -p mutation_counts_csv {input.mutation_counts_csv} \
             -p clade_founder_nts_csv {input.clade_founder_nts_csv} \
             -p rates_by_clade_csv {output.rates_by_clade}
+        jupyter nbconvert {output.nb} --to html
+        """
+
+
+rule expected_mut_counts:
+    """Compute expected mutation counts from synonymous mutation rates and counts."""
+    input:
+        rates_by_clade=rules.synonymous_mut_rates.output.rates_by_clade,
+        clade_founder_nts_csv=rules.clade_founder_nts.output.csv,
+        nb="notebooks/expected_mut_counts.ipynb",
+    output:
+        expected_counts="results/expected_mut_counts/expected_mut_counts.csv",
+        nb="results/expected_mut_counts/expected_mut_counts.ipynb",
+        nb_html="results/expected_mut_counts/expected_mut_counts.html",
+    shell:
+        """
+        papermill {input.nb} {output.nb} \
+            -p clade_founder_nts_csv {input.clade_founder_nts_csv} \
+            -p rates_by_clade_csv {input.rates_by_clade} \
+            -p expected_counts_csv {output.expected_counts}
         jupyter nbconvert {output.nb} --to html
         """
