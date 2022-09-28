@@ -10,10 +10,7 @@ configfile: "config.yaml"
 rule all:
     """Target rule with desired output files."""
     input:
-        "results/synonymous_mut_rates/rates_by_clade.csv",
-        "results/synonymous_mut_rates/synonymous_mut_rates.html",
-        "results/expected_mut_counts/expected_mut_counts.csv",
-        "results/expected_mut_counts/expected_mut_counts.html",
+        "results/expected_vs_actual_mut_counts.csv",
 
 
 rule get_mat_tree:
@@ -249,3 +246,32 @@ rule expected_mut_counts:
             -p expected_counts_csv {output.expected_counts}
         jupyter nbconvert {output.nb} --to html
         """
+
+
+rule aggregate_mutations_to_exclude:
+    """Aggregate the set of all mutations to exclude for each clade."""
+    input:
+        muts_to_exclude=lambda wc: [
+            f"results/clade_founders_no_indels/{clade}_ref_to_founder_muts.csv"
+            for clade in clades_w_adequate_counts(wc)
+        ],
+    output:
+        csv="results/expected_vs_actual_mut_counts/mutations_to_exclude.csv",
+    params:
+        clades=lambda wc: clades_w_adequate_counts(wc),
+        sites_to_exclude=config["sites_to_exclude"],
+        exclude_ref_to_founder_muts=config["exclude_ref_to_founder_muts"],
+    script:
+        "scripts/aggregate_mutations_to_exclude.py"
+
+
+rule merge_expected_and_actual_counts:
+    """Merge expected and actual counts."""
+    input:
+        expected=rules.expected_mut_counts.output.expected_counts,
+        actual=rules.aggregate_mutation_counts.output.csv,
+        muts_to_exclude=rules.aggregate_mutations_to_exclude.output.csv,
+    output:
+        csv="results/expected_vs_actual_mut_counts.csv",
+    script:
+        "scripts/merge_expected_and_actual_counts.py"
