@@ -1,7 +1,7 @@
 # SARS-CoV-2 observed versus expected mutation counts
 
 ## Overview
-This repository analyzes the mutational spectrum of human SARS-CoV-2.
+This repository analyzes mutations in human SARS-CoV-2, and looks at how many counts of each mutation are observed versus those expected from mutation rate.
 
 This analysis was originally based off starting to replicate analyses [Neher (2022)](https://www.biorxiv.org/content/10.1101/2022.08.22.504731v1.full), but then checking the assumption that underlying synonymous mutation spectra were conserved across clades.
 
@@ -13,9 +13,9 @@ This requires you to install [conda](https://docs.conda.io/), and then run:
 
     conda env create -f environment.yml
 
-That command will create a `conda` environment named `SARS2-mut-spectrum` which you can activate with:
+That command will create a `conda` environment named `SARS2-mut-rates` which you can activate with:
 
-    conda activate SARS2-mut-spectrum
+    conda activate SARS2-mut-rates
 
 Then run the [snakemake](https://snakemake.readthedocs.io/) pipeline in [Snakefile](Snakefile), which reads its configuration from [config.yaml](config.yaml) by running:
 
@@ -91,3 +91,5 @@ None of these are expected to seriously affect the accuracy of the current analy
  - The way that codon positions are assigned for identify synonymous sites will fail if there are non-in-frame indels.
 
  - Four-fold synonymous sites are identified in the clade founder, which could lead to mis-identification if seuqences in a clade become highly diverged from the founder.
+
+ - Multiple mutations in the same codon in a clade can violate the assumptions about how sites are defined as synonymous, etc.
