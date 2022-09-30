@@ -22,9 +22,10 @@ sites = (
     .sort_values("site")
     .assign(
         codon_position=lambda x: x["codon_position"].str.split(";"),
+        codon_site=lambda x: x["codon_site"].str.split(";"),
         gene=lambda x: x["gene"].str.split(";"),
     )
-    .explode(["codon_position", "gene"])
+    .explode(["codon_position", "codon_site", "gene"])
     .assign(codon_position=lambda x: x["codon_position"].astype(int))
 )
 
@@ -55,6 +56,7 @@ for f_name in snakemake.input.fastas:
             codon_position=pd.NamedAgg(
                 "codon_position", lambda s: ";".join(map(str, s))
             ),
+            codon_site=pd.NamedAgg("codon_site", lambda s: ";".join(s)),
             four_fold_degenerate=pd.NamedAgg("four_fold_degenerate", "all"),
         )
     )

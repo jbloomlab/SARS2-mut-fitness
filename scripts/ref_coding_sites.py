@@ -44,6 +44,10 @@ sites = (
             lambda r: (r["site"] - r["start"]) % 3 + 1,
             axis=1,
         ),
+        codon_site=lambda x: x.apply(
+            lambda r: (r["site"] - r["start"]) // 3 + 1,
+            axis=1,
+        ),
     )
     .drop(columns=["strand", "frame", "start", "end"])
     .groupby("site", as_index=False)
@@ -52,6 +56,7 @@ sites = (
             "codon_position",
             lambda s: ";".join(map(str, s.values)),
         ),
+        codon_site=pd.NamedAgg("codon_site", lambda s: ";".join(map(str, s.values))),
         gene=pd.NamedAgg("gene", lambda s: ";".join(s)),
     )
 )
