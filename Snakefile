@@ -11,6 +11,7 @@ rule all:
     """Target rule with desired output files."""
     input:
         "results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv",
+        "output.txt",
 
 
 rule get_mat_tree:
@@ -277,3 +278,14 @@ rule merge_expected_and_actual_counts:
         notebook="results/expected_vs_actual_mut_counts/merged_expected_and_actual_counts.ipynb",
     notebook:
         "notebooks/merge_expected_and_actual_counts.py.ipynb"
+
+
+rule analyze_clade_differences:
+    """Identify mutations with differential selection between clade pairs."""
+    input:
+        csv="results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv",
+    output:
+        txt="output.txt",
+    notebook:
+        "notebooks/analyze_clade_differences.ipynb"
+        'echo "not implemented"'
