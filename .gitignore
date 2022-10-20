@@ -21,3 +21,6 @@ results/clade_founder_nts/*
 !results/expected_vs_actual_mut_counts
 results/expected_vs_actual_mut_counts/*
 !results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv
+
+dag.pdf
+notebooks/*.html
