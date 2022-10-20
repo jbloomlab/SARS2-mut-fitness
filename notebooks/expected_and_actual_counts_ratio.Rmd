@@ -1,0 +1,94 @@
+---
+title: "Comparing the Direction and Degree of Selection on Mutations Between SARS-CoV-2 Phylogenetic Clades"
+output: html_document
+date: "2022-10-17"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#install.packages("ggplot2")
+#install.packages("stringr")
+library(ggplot2)
+library(stringr)
+```
+
+## SARS-CoV-2 Mutation Data
+
+First, we need to read in the data.
+
+```{r read_data}
+SARS_mutation <- read.csv("../results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv", header=TRUE)
+```
+
+Look at the data table.
+
+```{r head_data}
+head(SARS_mutation, n=5)
+```
+
+Describe the entire dataset. How many clades? How many subsets? How many nucleotide sites? How many mutations to exclude?
+
+```{r data_breakdown}
+
+```
+
+After excluding and filtering by subset. Describe the data again? 
+Distribution of each mutation (e.g., A->T) for each clade (clade along x-axis, count along y, stacked bar graph with 12 types)
+
+```{r visualize_data}
+#Include data from all countries AND exclude branches with very high mutation rates and questionable mutations.
+filtered_SARS_mutation <- subset(SARS_mutation, subset=="all" & exclude=='False')
+
+#Add column with the mutation type (clade founder.mutation).
+filtered_SARS_mutation$mutation_type <- paste(str_sub(filtered_SARS_mutation$nt_mutation,1,1),".",str_sub(filtered_SARS_mutation$nt_mutation,-1,-1),sep="")
+
+#For visualization purposes, reduce the number of bins by combining clades of the same Nextstrain variant.
+filtered_SARS_mutation$variant <- filtered_SARS_mutation$clade
+filtered_SARS_mutation$variant[filtered_SARS_mutation$variant=="20I"] <- "Alpha"
+filtered_SARS_mutation$variant[filtered_SARS_mutation$variant=="21C"] <- "Epsilon"
+filtered_SARS_mutation$variant[filtered_SARS_mutation$variant=="21I" | filtered_SARS_mutation$variant=="21J"] <- "Delta"
+filtered_SARS_mutation$variant[filtered_SARS_mutation$variant=="21K" | filtered_SARS_mutation$variant=="21M" | filtered_SARS_mutation$variant=="22A" | filtered_SARS_mutation$variant=="22B"] <- "Omicron"
+```
+
+Insert information about the plot. Plot to visualize data.
+```{r normalized_counts, echo=FALSE}
+ggplot(filtered_SARS_mutation, aes(fill=mutation_type, y=actual_count/expected_count, x=clade))+ #stacked bar graph for the mutation counts normalized by the expected mutation rate
+  geom_bar(position="stack", stat="identity")+
+  theme_bw()+
+  labs(x="Phylogenetic Clade",y="Normalized Mutation Count")
+```
+
+
+Insert information about the plot. Plot to visualize data.
+```{r expected_counts, echo=FALSE}
+ggplot(filtered_SARS_mutation, aes(color=clade, y=actual_count/expected_count, x=nt_site))+ #stacked bar graph for the expected mutation counts
+  geom_point()+
+  theme_bw()+
+  labs(x="",y="")
+```
+Insert information about the plot. Plot to visualize data.
+```{r insert, echo=FALSE}
+ggplot(filtered_SARS_mutation, aes(fill=log(actual_count/expected_count), y=nt_site, x=clade))+
+  geom_tile()+
+  theme_bw()+
+  labs(x="",y="")
+```
+
+## Contingency Table Analyses
+
+```{r contingency}
+
+```
+
+## False Discovery Rate Correction
+
+```{r false_discovery}
+
+```
+
+## Volcano Plots
+
+```{r pressure, echo=FALSE}
+
+```
