@@ -9,16 +9,24 @@ knitr::opts_chunk$set(echo = TRUE)
 
 #install.packages("ggplot2")
 #install.packages("stringr")
+#install.packages("gtools")
+
 library(ggplot2)
 library(stringr)
+library(gtools)
 ```
+
+Discuss purpose of notebook and steps to achieve that goal. Workflow to produce a volcano plot between any two clades.
+List steps to do analysis (e.g., how to structure the data).
+Do some sanity checks.
 
 ## SARS-CoV-2 Mutation Data
 
 First, we need to read in the data.
 
 ```{r read_data}
-SARS_mutation <- read.csv("../results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv", header=TRUE)
+SARS_mutation <- read.csv("../results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv", header=TRUE) # Read data from 'kfeldmann' computational notebook on server.
+SARS_mutation <- read.csv("https://media.githubusercontent.com/media/jbloomlab/SARS2-mut-rates/main/results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv") # Read data from github.com.
 ```
 
 Look at the data table.
@@ -41,14 +49,14 @@ Distribution of each mutation (e.g., A->T) for each clade (clade along x-axis, c
 filtered_SARS_mutation <- subset(SARS_mutation, subset=="all" & exclude=='False')
 
 #Add column with the mutation type (clade founder.mutation).
-filtered_SARS_mutation$mutation_type <- paste(str_sub(filtered_SARS_mutation$nt_mutation,1,1),".",str_sub(filtered_SARS_mutation$nt_mutation,-1,-1),sep="")
+filtered_SARS_mutation$mutation_type <- paste(str_sub(filtered_SARS_mutation$nt_mutation,1,1), ".", str_sub(filtered_SARS_mutation$nt_mutation,-1,-1), sep="")
 
 #For visualization purposes, reduce the number of bins by combining clades of the same Nextstrain variant.
-filtered_SARS_mutation$variant <- filtered_SARS_mutation$clade
-filtered_SARS_mutation$variant[filtered_SARS_mutation$variant=="20I"] <- "Alpha"
-filtered_SARS_mutation$variant[filtered_SARS_mutation$variant=="21C"] <- "Epsilon"
-filtered_SARS_mutation$variant[filtered_SARS_mutation$variant=="21I" | filtered_SARS_mutation$variant=="21J"] <- "Delta"
-filtered_SARS_mutation$variant[filtered_SARS_mutation$variant=="21K" | filtered_SARS_mutation$variant=="21M" | filtered_SARS_mutation$variant=="22A" | filtered_SARS_mutation$variant=="22B"] <- "Omicron"
+#filtered_SARS_mutation$variant <- filtered_SARS_mutation$clade
+#filtered_SARS_mutation$variant[filtered_SARS_mutation$variant=="20I"] <- "Alpha"
+#filtered_SARS_mutation$variant[filtered_SARS_mutation$variant=="21C"] <- "Epsilon"
+#filtered_SARS_mutation$variant[filtered_SARS_mutation$variant=="21I" | filtered_SARS_mutation$variant=="21J"] <- "Delta"
+#filtered_SARS_mutation$variant[filtered_SARS_mutation$variant=="21K" | filtered_SARS_mutation$variant=="21M" | filtered_SARS_mutation$variant=="22A" | filtered_SARS_mutation$variant=="22B"] <- "Omicron"
 ```
 
 Insert information about the plot. Plot to visualize data.
@@ -78,7 +86,49 @@ ggplot(filtered_SARS_mutation, aes(fill=log(actual_count/expected_count), y=nt_s
 ## Contingency Table Analyses
 
 ```{r contingency}
+# CREATE SUBSET OF DATA TO WORK WITH: ONLY CLADES 20A AND 20B FOR ALL COUNTRIES
+temp <- filtered_SARS_mutation
+filtered_SARS_mutation <- temp[which(temp$clade=="20A" | temp$clade=="20B"),]
 
+# Filter mutation data for Fisher's Exact test, and combine nucleotide sites, mutation types and clades to make an iterative reference.
+fisher_data <- data.frame(nt_mutation_clade=paste(filtered_SARS_mutation$nt_site, filtered_SARS_mutation$mutation_type, filtered_SARS_mutation$clade, sep="_"), observed=filtered_SARS_mutation$actual_count, expected=filtered_SARS_mutation$expected_count)
+
+# Identify unique clades in the dataset.
+clades <- unique(filtered_SARS_mutation$clade)
+
+# Create a two-column matrix with all of the possible clade-clade comparisons (each row contains one comparison).
+clade_comparisons <- combinations(n=length(clades), r=2, v=clades, repeats.allowed=FALSE)
+
+# Combine nucleotide sites and mutation types, and filter list to only include unique nucleotide mutations.
+nt_mutation_list <- unique(paste(filtered_SARS_mutation$nt_site, filtered_SARS_mutation$mutation_type, sep="_"))
+
+# In preparation for combining clade comparisons with unique nucleotide mutations, repeat the nucleotide mutation list by the number of clade comparisons.
+rep_nt_mutation <- data.frame(nt_mutation=rep(nt_mutation_list, each=nrow(clade_comparisons)))
+
+# In preparation for combining clade comparisons with unique nucleotide mutations, repeat the clade comparison matrix by the number of unique nucleotide mutations.
+rep_clades <- do.call("rbind",replicate(length(nt_mutation_list), clade_comparisons, simplify=FALSE))
+
+# Combine the nucleotide mutations to each column in the clade comparison matrix to create a reference for the fisher data.
+comparisons <- data.frame(clade1=paste(rep_nt_mutation$nt_mutation, rep_clades[,1], sep="_"), clade2=paste(rep_nt_mutation$nt_mutation, rep_clades[,2], sep="_"))
+
+# Drop comparisons where the nucleotide site, mutation type, clade reference does not exist in the observed-expected data frame.
+filtered_comparisons <- comparisons[comparisons$clade1 %in% fisher_data$nt_mutation_clade & comparisons$clade2 %in% fisher_data$nt_mutation_clade,]
+
+# Save list of p-values for every comparison. NOTE: Expected counts are not integers and are therefore rounded for the Fisher's Exact test.
+p_values <- data.frame(p_value=apply(filtered_comparisons, 1, FUN=function(c) {fisher.test(fisher_data[c(which(fisher_data$nt_mutation_clade==c[1]), which(fisher_data$nt_mutation_clade==c[2])), c("observed","expected")])$p.value}))
+
+save(p_values,file="fisher_pvalues.Rda")
+load("fisher_pvalues.Rda")
+
+# Combine p-value list with the reference list of clade comparisons.
+
+
+
+# run fishers exact an save p-value to dataframe (clade comparison, site, mutation, p-value, fdr p-value, bonferroni p-value)
+
+# test run volcano plot for each clade comparison
+
+# sanity check analyses (distribution of synonymous p-values)
 ```
 
 ## False Discovery Rate Correction
