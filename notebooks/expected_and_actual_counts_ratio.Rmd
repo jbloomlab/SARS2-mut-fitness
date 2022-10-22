@@ -51,6 +51,9 @@ filtered_SARS_mutation <- subset(SARS_mutation, subset=="all" & exclude=='False'
 #Add column with the mutation type (clade founder.mutation).
 filtered_SARS_mutation$mutation_type <- paste(str_sub(filtered_SARS_mutation$nt_mutation,1,1), ".", str_sub(filtered_SARS_mutation$nt_mutation,-1,-1), sep="")
 
+#Calculate the ratio of actual counts (i.e., observed) to expected counts (i.e., expected) with pseudocount of 0.5.
+filtered_SARS_mutation$observed_expected <- (filtered_SARS_mutation$actual_count+0.5)/(filtered_SARS_mutation$expected_count+0.5)
+
 #For visualization purposes, reduce the number of bins by combining clades of the same Nextstrain variant.
 #filtered_SARS_mutation$variant <- filtered_SARS_mutation$clade
 #filtered_SARS_mutation$variant[filtered_SARS_mutation$variant=="20I"] <- "Alpha"
@@ -86,47 +89,52 @@ ggplot(filtered_SARS_mutation, aes(fill=log(actual_count/expected_count), y=nt_s
 ## Contingency Table Analyses
 
 ```{r contingency}
-# CREATE SUBSET OF DATA TO WORK WITH: ONLY CLADES 20A AND 20B FOR ALL COUNTRIES
-temp <- filtered_SARS_mutation
-filtered_SARS_mutation <- temp[which(temp$clade=="20A" | temp$clade=="20B"),]
+#CREATE SUBSET OF DATA TO WORK WITH: ONLY CLADES 20A AND 20B FOR ALL COUNTRIES
+all_data <- filtered_SARS_mutation
+filtered_SARS_mutation <- all_data[which(all_data$clade=="20A" | all_data$clade=="20B"),]
 
-# Filter mutation data for Fisher's Exact test, and combine nucleotide sites, mutation types and clades to make an iterative reference.
-fisher_data <- data.frame(nt_mutation_clade=paste(filtered_SARS_mutation$nt_site, filtered_SARS_mutation$mutation_type, filtered_SARS_mutation$clade, sep="_"), observed=filtered_SARS_mutation$actual_count, expected=filtered_SARS_mutation$expected_count)
+#Filter mutation data for Fisher's Exact test, and combine nucleotide sites, mutation types and clades to make an iterative reference.
+fisher_data <- data.frame(nt_mutation_clade=paste(filtered_SARS_mutation$nt_site, filtered_SARS_mutation$mutation_type, filtered_SARS_mutation$clade, sep="_"), observed=filtered_SARS_mutation$actual_count, expected=filtered_SARS_mutation$expected_count, observed_expected=filtered_SARS_mutation$observed_expected)
 
-# Identify unique clades in the dataset.
+#Identify unique clades in the dataset.
 clades <- unique(filtered_SARS_mutation$clade)
 
-# Create a two-column matrix with all of the possible clade-clade comparisons (each row contains one comparison).
+#Create a two-column matrix with all of the possible clade-clade comparisons (each row contains one comparison).
 clade_comparisons <- combinations(n=length(clades), r=2, v=clades, repeats.allowed=FALSE)
 
-# Combine nucleotide sites and mutation types, and filter list to only include unique nucleotide mutations.
+#Combine nucleotide sites and mutation types, and filter list to only include unique nucleotide mutations.
 nt_mutation_list <- unique(paste(filtered_SARS_mutation$nt_site, filtered_SARS_mutation$mutation_type, sep="_"))
 
-# In preparation for combining clade comparisons with unique nucleotide mutations, repeat the nucleotide mutation list by the number of clade comparisons.
+#In preparation for combining clade comparisons with unique nucleotide mutations, repeat the nucleotide mutation list by the number of clade comparisons.
 rep_nt_mutation <- data.frame(nt_mutation=rep(nt_mutation_list, each=nrow(clade_comparisons)))
 
-# In preparation for combining clade comparisons with unique nucleotide mutations, repeat the clade comparison matrix by the number of unique nucleotide mutations.
+#In preparation for combining clade comparisons with unique nucleotide mutations, repeat the clade comparison matrix by the number of unique nucleotide mutations.
 rep_clades <- do.call("rbind",replicate(length(nt_mutation_list), clade_comparisons, simplify=FALSE))
 
-# Combine the nucleotide mutations to each column in the clade comparison matrix to create a reference for the fisher data.
+#Combine the nucleotide mutations to each column in the clade comparison matrix to create a reference for the fisher data.
 comparisons <- data.frame(clade1=paste(rep_nt_mutation$nt_mutation, rep_clades[,1], sep="_"), clade2=paste(rep_nt_mutation$nt_mutation, rep_clades[,2], sep="_"))
 
-# Drop comparisons where the nucleotide site, mutation type, clade reference does not exist in the observed-expected data frame.
+#Drop comparisons where the nucleotide site, mutation type, clade reference does not exist in the observed-expected data frame.
 filtered_comparisons <- comparisons[comparisons$clade1 %in% fisher_data$nt_mutation_clade & comparisons$clade2 %in% fisher_data$nt_mutation_clade,]
 
-# Save list of p-values for every comparison. NOTE: Expected counts are not integers and are therefore rounded for the Fisher's Exact test.
+#Save list of p-values for every comparison. NOTE: Expected counts are not integers and are therefore rounded for the Fisher's Exact test.
 p_values <- data.frame(p_value=apply(filtered_comparisons, 1, FUN=function(c) {fisher.test(fisher_data[c(which(fisher_data$nt_mutation_clade==c[1]), which(fisher_data$nt_mutation_clade==c[2])), c("observed","expected")])$p.value}))
 
 save(p_values,file="fisher_pvalues.Rda")
 load("fisher_pvalues.Rda")
 
-# Combine p-value list with the reference list of clade comparisons.
+#Combine p-value list with the clade comparison list.
+comparison_p_values <- cbind(filtered_comparisons, p_values)
+
+#False Discovery Rate and Bonferroni Corrections
 
 
+#Calculate fold change for plotting volcano plots [clade 1 observed/clade 1 expected]/[clade 2 observed/clade 2 expected].
+comparison_p_values$fold_change <- apply(comparison_p_values[,c("clade1","clade2")], 1, FUN=function(c) {foldchange(fisher_data[which(fisher_data$nt_mutation_clade==c[1]),"observed_expected"],fisher_data[which(fisher_data$nt_mutation_clade==c[2]),"observed_expected"])})
 
-# run fishers exact an save p-value to dataframe (clade comparison, site, mutation, p-value, fdr p-value, bonferroni p-value)
-
-# test run volcano plot for each clade comparison
+#Volcano Plot
+ggplot(comparison_p_values, aes(x=fold_change, y=-log10(p_value)))+
+  geom_point()
 
 # sanity check analyses (distribution of synonymous p-values)
 ```
