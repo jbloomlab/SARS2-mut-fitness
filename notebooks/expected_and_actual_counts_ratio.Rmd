@@ -7,10 +7,12 @@ date: "2022-10-17"
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
+#install.packages("data.table")
 #install.packages("ggplot2")
 #install.packages("stringr")
 #install.packages("gtools")
 
+library(data.table)
 library(ggplot2)
 library(stringr)
 library(gtools)
@@ -22,14 +24,17 @@ Do some sanity checks.
 
 ## SARS-CoV-2 Mutation Data
 
-First, we need to read in the data.
+First, read in the comma-delimited data from the 'kfeldmann' computational notebook in the Bloom Lab folder on the Fred Hutch server using either access to the server or from github.com.
 
 ```{r read_data}
-SARS_mutation <- read.csv("../results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv", header=TRUE) # Read data from 'kfeldmann' computational notebook on server.
-SARS_mutation <- read.csv("https://media.githubusercontent.com/media/jbloomlab/SARS2-mut-rates/main/results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv") # Read data from github.com.
+# Read data using access to the Fred Hutch server.
+SARS_mutation <- fread("../results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv", sep=",", header=TRUE)
+
+# Read data from github.com.
+#SARS_mutation <- fread("https://media.githubusercontent.com/media/jbloomlab/SARS2-mut-rates/main/results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv", sep=",", header=TRUE)
 ```
 
-Look at the data table.
+Next, take a look at the first 5 rows of the data.
 
 ```{r head_data}
 head(SARS_mutation, n=5)
@@ -37,116 +42,152 @@ head(SARS_mutation, n=5)
 
 Describe the entire dataset. How many clades? How many subsets? How many nucleotide sites? How many mutations to exclude?
 
-```{r data_breakdown}
+```{r describe_data}
 
 ```
 
-After excluding and filtering by subset. Describe the data again? 
-Distribution of each mutation (e.g., A->T) for each clade (clade along x-axis, count along y, stacked bar graph with 12 types)
+## Filter and Prepare the Data
 
-```{r visualize_data}
-#Include data from all countries AND exclude branches with very high mutation rates and questionable mutations.
-filtered_SARS_mutation <- subset(SARS_mutation, subset=="all" & exclude=='False')
+For the analyses conducted in this notebook, subset the data by "all" to include data collected from all countries. Additionally, remove low-quality mutations or branches with abnormally high mutation rates. Finally, create a column with mutation type (there are 12 possible mutations).
 
-#Add column with the mutation type (clade founder.mutation).
+```{r filter_all_data}
+# Include data from all countries AND exclude branches with very high mutation rates and questionable mutations.
+filtered_SARS_mutation <- subset(SARS_mutation, subset=="all" & exclude=="FALSE")
+
+# Add column with the mutation type (clade founder.mutation).
 filtered_SARS_mutation$mutation_type <- paste(str_sub(filtered_SARS_mutation$nt_mutation,1,1), ".", str_sub(filtered_SARS_mutation$nt_mutation,-1,-1), sep="")
-
-#Calculate the ratio of actual counts (i.e., observed) to expected counts (i.e., expected) with pseudocount of 0.5.
-filtered_SARS_mutation$observed_expected <- (filtered_SARS_mutation$actual_count+0.5)/(filtered_SARS_mutation$expected_count+0.5)
-
-#For visualization purposes, reduce the number of bins by combining clades of the same Nextstrain variant.
-#filtered_SARS_mutation$variant <- filtered_SARS_mutation$clade
-#filtered_SARS_mutation$variant[filtered_SARS_mutation$variant=="20I"] <- "Alpha"
-#filtered_SARS_mutation$variant[filtered_SARS_mutation$variant=="21C"] <- "Epsilon"
-#filtered_SARS_mutation$variant[filtered_SARS_mutation$variant=="21I" | filtered_SARS_mutation$variant=="21J"] <- "Delta"
-#filtered_SARS_mutation$variant[filtered_SARS_mutation$variant=="21K" | filtered_SARS_mutation$variant=="21M" | filtered_SARS_mutation$variant=="22A" | filtered_SARS_mutation$variant=="22B"] <- "Omicron"
 ```
+
+To compare mutations between phylogenetic clades, this notebook will plot volcano plots with p-value on the Y-axis and fold-change on the X-axis. Prior to filtering the data for contingency table analyses, calculate the ratio of observed to expected counts and add a pseudocount to prevent infinities when fold-change is calculated.
+
+```{r pseudocount}
+# Calculate the ratio of actual counts (i.e., observed) to expected counts (i.e., expected) with pseudocount of 0.5.
+filtered_SARS_mutation$observed_expected <- (filtered_SARS_mutation$actual_count+0.5)/(filtered_SARS_mutation$expected_count+0.5)
+```
+
+## Visualize Filtered Data
 
 Insert information about the plot. Plot to visualize data.
-```{r normalized_counts, echo=FALSE}
-ggplot(filtered_SARS_mutation, aes(fill=mutation_type, y=actual_count/expected_count, x=clade))+ #stacked bar graph for the mutation counts normalized by the expected mutation rate
+
+```{r stacked_bar, echo=FALSE}
+# Stacked bar graph for the mutation counts normalized by the expected mutation rate for each clade
+ggplot(filtered_SARS_mutation, aes(fill=mutation_type, y=actual_count/expected_count, x=clade))+
   geom_bar(position="stack", stat="identity")+
   theme_bw()+
   labs(x="Phylogenetic Clade",y="Normalized Mutation Count")
 ```
 
-
 Insert information about the plot. Plot to visualize data.
-```{r expected_counts, echo=FALSE}
-ggplot(filtered_SARS_mutation, aes(color=clade, y=actual_count/expected_count, x=nt_site))+ #stacked bar graph for the expected mutation counts
+
+```{r nucleotide_site, echo=FALSE}
+ggplot(filtered_SARS_mutation, aes(color=mutation_type, y=actual_count/expected_count, x=nt_site))+
   geom_point()+
   theme_bw()+
   labs(x="",y="")
 ```
+
 Insert information about the plot. Plot to visualize data.
-```{r insert, echo=FALSE}
-ggplot(filtered_SARS_mutation, aes(fill=log(actual_count/expected_count), y=nt_site, x=clade))+
-  geom_tile()+
-  theme_bw()+
-  labs(x="",y="")
+
+```{r INSERT, echo=FALSE}
+#ggplot(filtered_SARS_mutation, aes(fill=INSERT, y=INSERT, x=INSERT))+
+  #geom_tile()+
+  #theme_bw()+
+  #labs(x="",y="")
 ```
 
 ## Contingency Table Analyses
 
-```{r contingency}
-#CREATE SUBSET OF DATA TO WORK WITH: ONLY CLADES 20A AND 20B FOR ALL COUNTRIES
-all_data <- filtered_SARS_mutation
-filtered_SARS_mutation <- all_data[which(all_data$clade=="20A" | all_data$clade=="20B"),]
+With such a large data set, it will take potentially hours to calculate the p-values for clade comparisons. To decrease the amount of time it takes to conduct analyses, create a subset of the data with only the clades to be compared.
 
-#Filter mutation data for Fisher's Exact test, and combine nucleotide sites, mutation types and clades to make an iterative reference.
-fisher_data <- data.frame(nt_mutation_clade=paste(filtered_SARS_mutation$nt_site, filtered_SARS_mutation$mutation_type, filtered_SARS_mutation$clade, sep="_"), observed=filtered_SARS_mutation$actual_count, expected=filtered_SARS_mutation$expected_count, observed_expected=filtered_SARS_mutation$observed_expected)
+```{r subset_by_clade}
+# Create a subset of the data using only the clades that are going to be compared.
+clade_SARS_mutation <- filtered_SARS_mutation[which(filtered_SARS_mutation$clade=="20A" | filtered_SARS_mutation$clade=="20B"),]
 
-#Identify unique clades in the dataset.
-clades <- unique(filtered_SARS_mutation$clade)
+# Identify unique clades in the dataset.
+clades <- unique(clade_SARS_mutation$clade)
+```
 
-#Create a two-column matrix with all of the possible clade-clade comparisons (each row contains one comparison).
+Combine nucleotide site, mutation type and clade to create a reference column in the data set. This column will be referenced to obtain observed and expected counts for clade comparisons. Additionally, remove columns from the data set not necessary for contingency table analyses or creating volcano plots.
+
+```{r filter_contingency_data}
+# Filter mutation data for Fisher's Exact test, and combine nucleotide sites, mutation types and clades to make an iterative reference.
+fisher_data <- data.frame(nt_mutation_clade=paste(clade_SARS_mutation$nt_site, clade_SARS_mutation$mutation_type, clade_SARS_mutation$clade, sep="_"), observed=clade_SARS_mutation$actual_count, expected=clade_SARS_mutation$expected_count, observed_expected=clade_SARS_mutation$observed_expected)
+```
+
+Create a two-column matrix of all possible clade comparisons, each column listing one clade in the comparison. This matrix should have [n x (n-1)]/2 rows where n is the number of clades.
+
+```{r clade_comparisons}
+# Create a two-column matrix with all of the possible clade-clade comparisons (each row contains one comparison).
 clade_comparisons <- combinations(n=length(clades), r=2, v=clades, repeats.allowed=FALSE)
+```
 
-#Combine nucleotide sites and mutation types, and filter list to only include unique nucleotide mutations.
-nt_mutation_list <- unique(paste(filtered_SARS_mutation$nt_site, filtered_SARS_mutation$mutation_type, sep="_"))
+For each mutation type (e.g., A -> T) at each nucleotide site, this notebook will generate contingency table analyses for each comparison in the set of clade comparisons. To expand the clade comparison matrix to include mutation types at nucleotide sites, generate a unique list of each mutation type (i.e., three mutations for one clade founder) at each nucleotide site.
 
-#In preparation for combining clade comparisons with unique nucleotide mutations, repeat the nucleotide mutation list by the number of clade comparisons.
+```{r unique_mutations}
+# Combine nucleotide sites and mutation types, and filter list to only include unique nucleotide mutations.
+nt_mutation_list <- unique(paste(clade_SARS_mutation$nt_site, clade_SARS_mutation$mutation_type, sep="_"))
+```
+
+Expand both the clade comparison matrix and the mutation list to create a combined matrix of all possible clade comparisons for each mutation type at each nucleotide site. To do this, repeat the clade comparison matrix by the number of unique mutations, and repeat each mutation in the mutation list by the number of clade comparisons.
+
+```{r combined_clade_comparisons}
+# In preparation for combining clade comparisons with unique nucleotide mutations, repeat the nucleotide mutation list by the number of clade comparisons.
 rep_nt_mutation <- data.frame(nt_mutation=rep(nt_mutation_list, each=nrow(clade_comparisons)))
 
-#In preparation for combining clade comparisons with unique nucleotide mutations, repeat the clade comparison matrix by the number of unique nucleotide mutations.
+# In preparation for combining clade comparisons with unique nucleotide mutations, repeat the clade comparison matrix by the number of unique nucleotide mutations.
 rep_clades <- do.call("rbind",replicate(length(nt_mutation_list), clade_comparisons, simplify=FALSE))
 
-#Combine the nucleotide mutations to each column in the clade comparison matrix to create a reference for the fisher data.
+# Combine the nucleotide mutations to each column in the clade comparison matrix to create a reference for the fisher data.
 comparisons <- data.frame(clade1=paste(rep_nt_mutation$nt_mutation, rep_clades[,1], sep="_"), clade2=paste(rep_nt_mutation$nt_mutation, rep_clades[,2], sep="_"))
+```
 
-#Drop comparisons where the nucleotide site, mutation type, clade reference does not exist in the observed-expected data frame.
+Not every mutation will exist in each clade. Therefore, remove comparisons where observed and expected count data does not exist for one or both clades in the comparison.
+
+```{r filter_for_comparisons}
+# Drop comparisons where the nucleotide site, mutation type, clade reference does not exist in the observed-expected data frame.
 filtered_comparisons <- comparisons[comparisons$clade1 %in% fisher_data$nt_mutation_clade & comparisons$clade2 %in% fisher_data$nt_mutation_clade,]
+```
 
-#Save list of p-values for every comparison. NOTE: Expected counts are not integers and are therefore rounded for the Fisher's Exact test.
-p_values <- data.frame(p_value=apply(filtered_comparisons, 1, FUN=function(c) {fisher.test(fisher_data[c(which(fisher_data$nt_mutation_clade==c[1]), which(fisher_data$nt_mutation_clade==c[2])), c("observed","expected")])$p.value}))
+For each comparison, calculate the probability of obtaining the observed and expected counts assuming there is no difference in selection on mutations between the clades being compared (i.e., p-value) using the Fisher's Exact test.
 
-save(p_values,file="fisher_pvalues.Rda")
+```{r contingency_analysis}
+# Save list of p-values for every comparison. NOTE: Expected counts are not integers and are therefore rounded for the Fisher's Exact test.
+'p_values <- data.frame(p_value=apply(filtered_comparisons, 1, FUN=function(c) {fisher.test(fisher_data[c(which(fisher_data$nt_mutation_clade==c[1]), which(fisher_data$nt_mutation_clade==c[2])), c("observed","expected")])$p.value}))'
+
+# Save and load variable because calculating p-values takes a long time.
+'save(p_values,file="fisher_pvalues.Rda")'
 load("fisher_pvalues.Rda")
 
-#Combine p-value list with the clade comparison list.
+# Combine p-value list with the clade comparison list.
 comparison_p_values <- cbind(filtered_comparisons, p_values)
+```
 
-#False Discovery Rate and Bonferroni Corrections
+## P-Value Correction
 
+```{r p_value_correction}
+# False Discovery Rate and Bonferroni Corrections
 
-#Calculate fold change for plotting volcano plots [clade 1 observed/clade 1 expected]/[clade 2 observed/clade 2 expected].
+```
+
+## Volcano Plot
+
+Use a function to calculate fold-change using the observed-expected ratios calculated with a pseudocount. This value will be the X-axis for the volcano plot. P-values clustering less than zero indicate a difference in degree of selection for one clade, whereas p-values clustering greater than zero indicate a similar difference in degree of selection but for the other clade.
+
+```{r fold-change}
+# Calculate fold change for plotting volcano plots [clade 1 observed/clade 1 expected]/[clade 2 observed/clade 2 expected].
 comparison_p_values$fold_change <- apply(comparison_p_values[,c("clade1","clade2")], 1, FUN=function(c) {foldchange(fisher_data[which(fisher_data$nt_mutation_clade==c[1]),"observed_expected"],fisher_data[which(fisher_data$nt_mutation_clade==c[2]),"observed_expected"])})
+```
 
-#Volcano Plot
+Plot the volcano plot with -log10 p-values on the Y-axis and log fold-change on the X-axis.
+
+```{r volcano_plot}
 ggplot(comparison_p_values, aes(x=fold_change, y=-log10(p_value)))+
   geom_point()
+```
 
+## Verify Analyses Using Analyses With Expected Outcomes
+
+```{r verify_analyses}
 # sanity check analyses (distribution of synonymous p-values)
-```
-
-## False Discovery Rate Correction
-
-```{r false_discovery}
-
-```
-
-## Volcano Plots
-
-```{r pressure, echo=FALSE}
 
 ```
