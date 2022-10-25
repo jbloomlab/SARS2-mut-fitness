@@ -1,7 +1,7 @@
 ---
 title: "Comparing the Direction and Degree of Selection on Mutations Between SARS-CoV-2 Phylogenetic Clades"
 output: html_document
-date: "2022-10-17"
+date: Sys.time()
 ---
 
 ```{r setup, include=FALSE}
@@ -20,8 +20,6 @@ library(gtools)
 
 [INSERT] Discuss purpose of notebook and steps to achieve that goal.
 
-## SARS-CoV-2 Mutation Data
-
 First, read in the comma-delimited data from the 'kfeldmann' computational notebook in the Bloom Lab folder on the Fred Hutch server using either access to the server or from github.com.
 
 ```{r read_data}
@@ -32,32 +30,29 @@ SARS_mutation <- fread("../results/expected_vs_actual_mut_counts/expected_vs_act
 #SARS_mutation <- fread("https://media.githubusercontent.com/media/jbloomlab/SARS2-mut-rates/main/results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv", sep=",", header=TRUE)
 ```
 
-Next, take a look at the first 5 rows of the data.
+## Define Filtering and Analysis Parameters
 
-```{r head_data}
-head(SARS_mutation, n=5)
+```{r parameters}
+# The subset column describes what countries the sequence data came from. Identify what the subset options are.
+unique(SARS_mutation$subset)
+
+# Define what subset of the data to analyze.
+country <- "all"
+
+# Print the clades that are in the data set (i.e., what clades are possible to include in comparisons).
+unique(SARS_mutation$clade)
+
+# Create a list of the clades to include in comparisons.
+clades <- c("20A","20B")
+
+# Define a minimum threshold for the number of expected counts. All mutations below this threshold will be removed.
+min_expected <- 10
+
+# To avoid infinities when calculating fold-change, add a pseudocount to the observed and expected counts.
+pseudo <- 0.5
 ```
 
-Describe the entire data set.
-
-```{r describe_data}
-# How many rows? How many columns?
-dim(SARS_mutation)
-
-# How many phylogenetic clades?
-length(unique(SARS_mutation$clade))
-
-# How many rows for each subset? Data from all countries, only England or only the United States.
-data.frame(all=nrow(SARS_mutation[which(SARS_mutation$subset=="all"),]), England=nrow(SARS_mutation[which(SARS_mutation$subset=="England"),]), USA=nrow(SARS_mutation[which(SARS_mutation$subset=="USA"),]))
-
-# How many nucleotide sites?
-length(unique(SARS_mutation$nt_site))
-
-# How many mutations to exclude for each subset?
-data.frame(all=nrow(SARS_mutation[which(SARS_mutation$subset=="all" & SARS_mutation$exclude=="TRUE"),]), England=nrow(SARS_mutation[which(SARS_mutation$subset=="England" & SARS_mutation$exclude=="TRUE"),]), USA=nrow(SARS_mutation[which(SARS_mutation$subset=="USA" & SARS_mutation$exclude=="TRUE"),]))
-```
-
-## Filter and Prepare the Data
+## Filter and Prepare the SARS-CoV-2 Mutation Data
 
 For the analyses conducted in this notebook, subset the data by "all" to include data collected from all countries. Additionally, remove low-quality mutations or branches with abnormally high mutation rates. Finally, create a column with mutation type (there are 12 possible mutations).
 
@@ -69,14 +64,35 @@ filtered_SARS_mutation <- subset(SARS_mutation, subset=="all" & exclude=="FALSE"
 filtered_SARS_mutation$mutation_type <- paste(str_sub(filtered_SARS_mutation$nt_mutation,1,1), ".", str_sub(filtered_SARS_mutation$nt_mutation,-1,-1), sep="")
 ```
 
-To compare mutations between phylogenetic clades, this notebook will plot volcano plots with p-value on the Y-axis and fold-change on the X-axis. Prior to filtering the data for contingency table analyses, calculate the ratio of observed to expected counts and add a pseudocount to prevent infinities when fold-change is calculated.
+To compare mutations between phylogenetic clades, this notebook will plot volcano plots with p-value on the Y-axis and fold-change on the X-axis. Prior to filtering the data for contingency table analyses, calculate the ratio of observed to expected counts and add a pseudocount to prevent infinities when fold-change is calculated. Mutations with a small count (i.e., 1) are going to be affected by the pseudocount more than mutations with a large count (i.e., 100).
 
 ```{r pseudocount}
 # Calculate the ratio of actual counts (i.e., observed) to expected counts (i.e., expected) with pseudocount of 0.5.
-filtered_SARS_mutation$observed_expected <- (filtered_SARS_mutation$actual_count + 0.5)/(filtered_SARS_mutation$expected_count + 0.5)
+filtered_SARS_mutation$observed_expected <- (filtered_SARS_mutation$actual_count + pseudo)/(filtered_SARS_mutation$expected_count + pseudo)
 ```
 
-## Visualize Filtered Data
+## Characterize the Filtered Data
+
+Take a look at the first 5 rows of the data.
+
+```{r head_data}
+head(filtered_SARS_mutation, n=5)
+```
+
+Describe the entire data set.
+
+```{r describe_data}
+# How many rows? How many columns?
+dim(filtered_SARS_mutation)
+
+# How many phylogenetic clades?
+length(unique(filtered_SARS_mutation$clade))
+
+# How many nucleotide sites?
+length(unique(filtered_SARS_mutation$nt_site))
+```
+
+## Visualize the Filtered Data
 
 [INSERT] information about the plot. Plot to visualize data.
 
@@ -112,10 +128,7 @@ With such a large data set, it will take potentially hours to calculate the p-va
 
 ```{r subset_by_clade}
 # Create a subset of the data using only the clades that are going to be compared.
-clade_SARS_mutation <- filtered_SARS_mutation[which(filtered_SARS_mutation$clade=="20A" | filtered_SARS_mutation$clade=="20B"),]
-
-# Identify unique clades in the dataset.
-clades <- unique(clade_SARS_mutation$clade)
+clade_SARS_mutation <- filtered_SARS_mutation[filtered_SARS_mutation$clade %in% clades,]
 ```
 
 Combine nucleotide site, mutation type and clade to create a reference column in the data set. This column will be referenced to obtain observed and expected counts for clade comparisons. Additionally, remove columns from the data set not necessary for contingency table analyses or creating volcano plots.
