@@ -1,11 +1,11 @@
 ---
 title: "Comparing the Direction and Degree of Selection on Mutations Between SARS-CoV-2 Phylogenetic Clades"
 output: html_document
-date: Sys.time()
+date: "`r format(Sys.Date(), '%d.%m.%Y')`"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
 
 #install.packages("data.table")
 #install.packages("ggplot2")
@@ -45,7 +45,7 @@ unique(SARS_mutation$clade)
 # Create a list of the clades to include in comparisons.
 clades <- c("20A","20B")
 
-# Define a minimum threshold for the number of expected counts. All mutations below this threshold will be removed.
+# Define a minimum threshold for the number of expected counts. Mutations below this threshold will be removed.
 min_expected <- 10
 
 # To avoid infinities when calculating fold-change, add a pseudocount to the observed and expected counts.
@@ -54,11 +54,11 @@ pseudo <- 0.5
 
 ## Filter and Prepare the SARS-CoV-2 Mutation Data
 
-For the analyses conducted in this notebook, subset the data by "all" to include data collected from all countries. Additionally, remove low-quality mutations or branches with abnormally high mutation rates. Finally, create a column with mutation type (there are 12 possible mutations).
+For the analyses conducted in this notebook, subset the data by the country(countries) the sequence data came from. Additionally, remove low-quality mutations or branches with abnormally high mutation rates. Finally, create a column with mutation type (there are 12 possible mutations).
 
 ```{r filter_all_data}
-# Include data from all countries AND exclude branches with very high mutation rates and questionable mutations.
-filtered_SARS_mutation <- subset(SARS_mutation, subset=="all" & exclude=="FALSE")
+# Include data from certain countries AND exclude branches with very high mutation rates and questionable mutations.
+filtered_SARS_mutation <- subset(SARS_mutation, subset==country & exclude=="FALSE" & expected_count>=min_expected)
 
 # Add column with the mutation type (clade founder.mutation).
 filtered_SARS_mutation$mutation_type <- paste(str_sub(filtered_SARS_mutation$nt_mutation,1,1), ".", str_sub(filtered_SARS_mutation$nt_mutation,-1,-1), sep="")
@@ -67,7 +67,7 @@ filtered_SARS_mutation$mutation_type <- paste(str_sub(filtered_SARS_mutation$nt_
 To compare mutations between phylogenetic clades, this notebook will plot volcano plots with p-value on the Y-axis and fold-change on the X-axis. Prior to filtering the data for contingency table analyses, calculate the ratio of observed to expected counts and add a pseudocount to prevent infinities when fold-change is calculated. Mutations with a small count (i.e., 1) are going to be affected by the pseudocount more than mutations with a large count (i.e., 100).
 
 ```{r pseudocount}
-# Calculate the ratio of actual counts (i.e., observed) to expected counts (i.e., expected) with pseudocount of 0.5.
+# Calculate the ratio of actual counts (i.e., observed) to expected counts (i.e., expected) with a pseudocount.
 filtered_SARS_mutation$observed_expected <- (filtered_SARS_mutation$actual_count + pseudo)/(filtered_SARS_mutation$expected_count + pseudo)
 ```
 
@@ -79,7 +79,7 @@ Take a look at the first 5 rows of the data.
 head(filtered_SARS_mutation, n=5)
 ```
 
-Describe the entire data set.
+Describe the filtered data set.
 
 ```{r describe_data}
 # How many rows? How many columns?
@@ -107,7 +107,7 @@ ggplot(filtered_SARS_mutation, aes(fill=mutation_type, y=actual_count/expected_c
 [INSERT] information about the plot. Plot to visualize data.
 
 ```{r nucleotide_site, echo=FALSE}
-ggplot(filtered_SARS_mutation, aes(color=mutation_type, y=actual_count/expected_count, x=nt_site))+
+ggplot(filtered_SARS_mutation, aes(color=mutation_type, y=log(actual_count/expected_count), x=nt_site))+
   geom_point()+
   theme_bw()+
   labs(x="", y="")
@@ -172,11 +172,21 @@ Not every mutation will exist in each clade. Therefore, remove comparisons where
 filtered_comparisons <- comparisons[comparisons$clade1 %in% fisher_data$nt_mutation_clade & comparisons$clade2 %in% fisher_data$nt_mutation_clade,]
 ```
 
+```{r temp}
+filtered_comparisons$clade1_observed <- fisher_data[which(fisher_data$nt_mutation_clade %in% filtered_comparisons$clade1),"observed"]
+filtered_comparisons$clade1_expected <- fisher_data[which(fisher_data$nt_mutation_clade %in% filtered_comparisons$clade1),"expected"]
+filtered_comparisons$clade2_observed <- fisher_data[which(fisher_data$nt_mutation_clade %in% filtered_comparisons$clade2),"observed"]
+filtered_comparisons$clade2_expected <- fisher_data[which(fisher_data$nt_mutation_clade %in% filtered_comparisons$clade2),"expected"]
+
+# alternate p-value calculations between sequential rows
+p_values_alt <- data.frame(p_value=apply(filtered_comparisons, 1, FUN=function(c) {fisher.test(data.frame(clade1=c(as.numeric(c[3]),as.numeric(c[4])),clade2=c(as.numeric(c[5]),as.numeric(c[6]))))$p.value}))
+```
+
 For each comparison, calculate the probability of obtaining the observed and expected counts assuming there is no difference in selection on mutations between the clades being compared (i.e., p-value) using the Fisher's Exact test.
 
 ```{r contingency_analysis}
-# Save list of p-values for every comparison. NOTE: Expected counts are not integers and are therefore rounded for the Fisher's Exact test.
-'p_values <- data.frame(p_value=apply(filtered_comparisons, 1, FUN=function(c) {fisher.test(fisher_data[c(which(fisher_data$nt_mutation_clade==c[1]), which(fisher_data$nt_mutation_clade==c[2])), c("observed","expected")])$p.value}))'
+# Save list of p-values for every comparison. NOTE: Expected counts are not integers and are therefore rounded for the Fisher's Exact test. Mac Desktop Local: "334.273  41.641 375.678"
+p_values <- data.frame(p_value=apply(filtered_comparisons, 1, FUN=function(c) {fisher.test(fisher_data[c(which(fisher_data$nt_mutation_clade==c[1]), which(fisher_data$nt_mutation_clade==c[2])), c("observed","expected")])$p.value}))
 
 # Save and load variable because calculating p-values takes a long time.
 'save(p_values, file="fisher_pvalues.Rda")'
