@@ -46,7 +46,7 @@ unique(SARS_mutation$clade)
 clades <- c("20A","20B")
 
 # Define a minimum threshold for the number of expected counts. Mutations below this threshold will be removed.
-min_expected <- 10
+min_expected <- 0
 
 # To avoid infinities when calculating fold-change, add a pseudocount to the observed and expected counts.
 pseudo <- 0.5
@@ -172,26 +172,35 @@ Not every mutation will exist in each clade. Therefore, remove comparisons where
 filtered_comparisons <- comparisons[comparisons$clade1 %in% fisher_data$nt_mutation_clade & comparisons$clade2 %in% fisher_data$nt_mutation_clade,]
 ```
 
-```{r temp}
-filtered_comparisons$clade1_observed <- fisher_data[which(fisher_data$nt_mutation_clade %in% filtered_comparisons$clade1),"observed"]
+To decrease the amount of time it takes to run the contingency tests, add columns to the filtered comparisons data frame with the observed and expected values for clade 1 and clade 2.
+
+```{r contingency_matrix}
+# Add observed and expected values for each comparison to filtered comparisons data frame.
+{filtered_comparisons$clade1_observed <- fisher_data[which(fisher_data$nt_mutation_clade %in% filtered_comparisons$clade1),"observed"]
 filtered_comparisons$clade1_expected <- fisher_data[which(fisher_data$nt_mutation_clade %in% filtered_comparisons$clade1),"expected"]
 filtered_comparisons$clade2_observed <- fisher_data[which(fisher_data$nt_mutation_clade %in% filtered_comparisons$clade2),"observed"]
-filtered_comparisons$clade2_expected <- fisher_data[which(fisher_data$nt_mutation_clade %in% filtered_comparisons$clade2),"expected"]
+filtered_comparisons$clade2_expected <- fisher_data[which(fisher_data$nt_mutation_clade %in% filtered_comparisons$clade2),"expected"]}
 
-# alternate p-value calculations between sequential rows
-p_values_alt <- data.frame(p_value=apply(filtered_comparisons, 1, FUN=function(c) {fisher.test(data.frame(clade1=c(as.numeric(c[3]),as.numeric(c[4])),clade2=c(as.numeric(c[5]),as.numeric(c[6]))))$p.value}))
+#
+{filtered_comparisons$clade1_obs_exp <- fisher_data[which(fisher_data$nt_mutation_clade %in% filtered_comparisons$clade1),"observed_expected"]
+filtered_comparisons$clade2_obs_exp <- fisher_data[which(fisher_data$nt_mutation_clade %in% filtered_comparisons$clade2),"observed_expected"]}
 ```
 
-For each comparison, calculate the probability of obtaining the observed and expected counts assuming there is no difference in selection on mutations between the clades being compared (i.e., p-value) using the Fisher's Exact test.
+For each comparison, calculate the probability of obtaining the observed and expected counts assuming there is no difference in selection on mutations between the clades being compared (i.e., p-value) using the Fisher's Exact test. 
 
-```{r contingency_analysis}
-# Save list of p-values for every comparison. NOTE: Expected counts are not integers and are therefore rounded for the Fisher's Exact test. Mac Desktop Local: "334.273  41.641 375.678"
-p_values <- data.frame(p_value=apply(filtered_comparisons, 1, FUN=function(c) {fisher.test(fisher_data[c(which(fisher_data$nt_mutation_clade==c[1]), which(fisher_data$nt_mutation_clade==c[2])), c("observed","expected")])$p.value}))
+```{r contingency_table}
+# Iterate through rows and compare clade 1 observed and expected values to clade 2 observed and expected values.
+# NOTE: Expected counts are not integers and are therefore rounded for the Fisher's Exact test. 
+'p_values <- data.frame(p_value=apply(filtered_comparisons, 1, FUN=function(c) {fisher.test(rbind(c(as.numeric(c[3]),as.numeric(c[4])),c(as.numeric(c[5]),as.numeric(c[6]))))$p.value}))'
 
 # Save and load variable because calculating p-values takes a long time.
 'save(p_values, file="fisher_pvalues.Rda")'
 load("fisher_pvalues.Rda")
+```
 
+Combine the p-values calculated using the Fisher's Exact test with the data frame of filtered comparisons.
+
+```{r combine_p_values}
 # Combine p-value list with the clade comparison list.
 comparison_p_values <- cbind(filtered_comparisons, p_values)
 ```
@@ -200,7 +209,8 @@ comparison_p_values <- cbind(filtered_comparisons, p_values)
 
 ```{r p_value_correction}
 # False Discovery Rate and Bonferroni Corrections
-
+# NEED TO CORRECT FOR MORE THAN 2 CLADE COMPARISONS
+comparison_p_values$p_values_corrected <- comparison_p_values$p_value/nrow(comparison_p_values)
 ```
 
 ## Volcano Plot
@@ -209,7 +219,7 @@ Use a function to calculate fold-change using the observed-expected ratios calcu
 
 ```{r fold-change}
 # Calculate fold change for plotting volcano plots [clade 1 observed/clade 1 expected]/[clade 2 observed/clade 2 expected].
-comparison_p_values$fold_change <- apply(comparison_p_values[,c("clade1","clade2")], 1, FUN=function(c) {foldchange(fisher_data[which(fisher_data$nt_mutation_clade==c[1]), "observed_expected"], fisher_data[which(fisher_data$nt_mutation_clade==c[2]), "observed_expected"])})
+comparison_p_values$fold_change <- foldchange(comparison_p_values$clade1_obs_exp, comparison_p_values$clade2_obs_exp)
 ```
 
 Plot the volcano plot with -log10 p-values on the Y-axis and log fold-change on the X-axis.
