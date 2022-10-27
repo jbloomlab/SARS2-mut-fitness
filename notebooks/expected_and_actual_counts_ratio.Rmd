@@ -43,7 +43,7 @@ country <- "all"
 unique(SARS_mutation$clade)
 
 # Create a list of the clades to include in comparisons.
-clades <- c("20A","20B")
+clades <- c("20A","20B","20C")
 
 # Define a minimum threshold for the number of expected counts. Mutations below this threshold will be removed.
 min_expected <- 0
@@ -169,21 +169,27 @@ Not every mutation will exist in each clade. Therefore, remove comparisons where
 
 ```{r filter_for_comparisons}
 # Drop comparisons where the nucleotide site, mutation type, clade reference does not exist in the observed-expected data frame.
+# DOUBLE CHECK THIS: NOT CONVINCED IT IS WORKING
 filtered_comparisons <- comparisons[comparisons$clade1 %in% fisher_data$nt_mutation_clade & comparisons$clade2 %in% fisher_data$nt_mutation_clade,]
 ```
 
-To decrease the amount of time it takes to run the contingency tests, add columns to the filtered comparisons data frame with the observed and expected values for clade 1 and clade 2.
+To decrease the amount of time it takes to run the contingency tests, add columns to the filtered comparisons data frame with the observed counts, expected counts and observed/expected ratios for clade 1 and clade 2.
 
 ```{r contingency_matrix}
-# Add observed and expected values for each comparison to filtered comparisons data frame.
-{filtered_comparisons$clade1_observed <- fisher_data[which(fisher_data$nt_mutation_clade %in% filtered_comparisons$clade1),"observed"]
-filtered_comparisons$clade1_expected <- fisher_data[which(fisher_data$nt_mutation_clade %in% filtered_comparisons$clade1),"expected"]
-filtered_comparisons$clade2_observed <- fisher_data[which(fisher_data$nt_mutation_clade %in% filtered_comparisons$clade2),"observed"]
-filtered_comparisons$clade2_expected <- fisher_data[which(fisher_data$nt_mutation_clade %in% filtered_comparisons$clade2),"expected"]}
+# Create an ID to maintain the order of rows (and thus comparisons) after merging data frames.
+filtered_comparisons$id <- c(1:nrow(filtered_comparisons))
 
-#
-{filtered_comparisons$clade1_obs_exp <- fisher_data[which(fisher_data$nt_mutation_clade %in% filtered_comparisons$clade1),"observed_expected"]
-filtered_comparisons$clade2_obs_exp <- fisher_data[which(fisher_data$nt_mutation_clade %in% filtered_comparisons$clade2),"observed_expected"]}
+# Merge each of the clades in the comparison matrix with the data to align observed, expected and observed/expected values.
+clade1 <- merge(filtered_comparisons[,c("id","clade1")], fisher_data[,c("nt_mutation_clade","observed","expected","observed_expected")], by.x="clade1", by.y="nt_mutation_clade")
+clade2 <- merge(filtered_comparisons[,c("id","clade2")], fisher_data[,c("nt_mutation_clade","observed","expected","observed_expected")], by.x="clade2", by.y="nt_mutation_clade")
+
+# Add observed, expected and observed/expected data to the comparison matrix.
+{filtered_comparisons$clade1_observed <- clade1[order(clade1$id),"observed"]
+filtered_comparisons$clade1_expected <- clade1[order(clade1$id),"expected"]
+filtered_comparisons$clade2_observed <- clade2[order(clade2$id),"observed"]
+filtered_comparisons$clade2_expected <- clade2[order(clade2$id),"expected"]
+filtered_comparisons$clade1_obs_exp <- clade1[order(clade1$id),"observed_expected"]
+filtered_comparisons$clade2_obs_exp <- clade2[order(clade2$id),"observed_expected"]}
 ```
 
 For each comparison, calculate the probability of obtaining the observed and expected counts assuming there is no difference in selection on mutations between the clades being compared (i.e., p-value) using the Fisher's Exact test. 
@@ -194,8 +200,8 @@ For each comparison, calculate the probability of obtaining the observed and exp
 'p_values <- data.frame(p_value=apply(filtered_comparisons, 1, FUN=function(c) {fisher.test(rbind(c(as.numeric(c[3]),as.numeric(c[4])),c(as.numeric(c[5]),as.numeric(c[6]))))$p.value}))'
 
 # Save and load variable because calculating p-values takes a long time.
-'save(p_values, file="fisher_pvalues.Rda")'
-load("fisher_pvalues.Rda")
+'save(p_values, file=paste("pvalues", paste(clades, collapse="_"), ".Rda", sep=""))'
+load(paste("pvalues", paste(clades, collapse="_"), ".Rda", sep=""))
 ```
 
 Combine the p-values calculated using the Fisher's Exact test with the data frame of filtered comparisons.
@@ -208,9 +214,17 @@ comparison_p_values <- cbind(filtered_comparisons, p_values)
 ## P-Value Correction
 
 ```{r p_value_correction}
-# False Discovery Rate and Bonferroni Corrections
-# NEED TO CORRECT FOR MORE THAN 2 CLADE COMPARISONS
-comparison_p_values$p_values_corrected <- comparison_p_values$p_value/nrow(comparison_p_values)
+# Identify clades from the two columns in the comparison matrix and combine into one column.
+comparison_p_values$clades <- data.frame(clades=paste(str_split(comparison_p_values$clade1, "_", simplify=TRUE)[,3], str_split(comparison_p_values$clade2, "_", simplify=TRUE)[,3], sep="."))
+
+# Count the number of rows for each clade (i.e., number of hypothesis tests).
+clade.table <- table(comparison_p_values$clades)
+
+# Add a column for the number of hypothesis tests conducted for each pair of clades.
+comparison_p_values$num_tests <- apply(comparison_p_values$clades, 1, FUN=function(c){clade.table[[c[1]]]})
+
+# Using Bonferroni Correction, adjust the p-values by the number of hypothesis tests.
+comparison_p_values$p_values_corrected <- comparison_p_values$p_value/comparison_p_values$num_tests
 ```
 
 ## Volcano Plot
@@ -225,7 +239,9 @@ comparison_p_values$fold_change <- foldchange(comparison_p_values$clade1_obs_exp
 Plot the volcano plot with -log10 p-values on the Y-axis and log fold-change on the X-axis.
 
 ```{r volcano_plot}
-ggplot(comparison_p_values, aes(x=fold_change, y=-log10(p_value)))+
+# Only plot data for the two clades being compared.
+plot_data <- comparison_p_values[which(comparison_p_values$clades=="20B.20C"),]
+ggplot(plot_data, aes(x=fold_change, y=-log10(p_value)))+
   geom_point()
 ```
 
