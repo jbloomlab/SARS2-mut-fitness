@@ -15,7 +15,6 @@ knitr::opts_chunk$set(warning=FALSE, message=FALSE)
 library(data.table)
 library(ggplot2)
 library(stringr)
-library(gtools)
 ```
 
 [INSERT] Discuss purpose of notebook and steps to achieve that goal.
@@ -43,7 +42,7 @@ country <- "all"
 unique(SARS_mutation$clade)
 
 # Create a list of the clades to include in comparisons.
-clades <- c("20A","20B","20C")
+clades <- c("22A","22B")
 
 # Define a minimum threshold for the number of expected counts. Mutations below this threshold will be removed.
 min_expected <- 0
@@ -61,7 +60,7 @@ For the analyses conducted in this notebook, subset the data by the country(coun
 filtered_SARS_mutation <- subset(SARS_mutation, subset==country & exclude=="FALSE" & expected_count>=min_expected)
 
 # Add column with the mutation type (clade founder.mutation).
-filtered_SARS_mutation$mutation_type <- paste(str_sub(filtered_SARS_mutation$nt_mutation,1,1), ".", str_sub(filtered_SARS_mutation$nt_mutation,-1,-1), sep="")
+#filtered_SARS_mutation$mutation_type <- paste(str_sub(filtered_SARS_mutation$nt_mutation,1,1), ".", str_sub(filtered_SARS_mutation$nt_mutation,-1,-1), sep="")
 ```
 
 To compare mutations between phylogenetic clades, this notebook will plot volcano plots with p-value on the Y-axis and fold-change on the X-axis. Prior to filtering the data for contingency table analyses, calculate the ratio of observed to expected counts and add a pseudocount to prevent infinities when fold-change is calculated. Mutations with a small count (i.e., 1) are going to be affected by the pseudocount more than mutations with a large count (i.e., 100).
@@ -71,25 +70,30 @@ To compare mutations between phylogenetic clades, this notebook will plot volcan
 filtered_SARS_mutation$observed_expected <- (filtered_SARS_mutation$actual_count + pseudo)/(filtered_SARS_mutation$expected_count + pseudo)
 ```
 
+```{r round_expected}
+# Round expected counts because contingency table analyses (i.e., Fisher's Exact test) can only analyze integers
+filtered_SARS_mutation$rounded_expected <- round(filtered_SARS_mutation$expected_count)
+```
+
 ## Characterize the Filtered Data
 
 Take a look at the first 5 rows of the data.
 
 ```{r head_data}
-head(filtered_SARS_mutation, n=5)
+#head(filtered_SARS_mutation, n=5)
 ```
 
 Describe the filtered data set.
 
 ```{r describe_data}
 # How many rows? How many columns?
-dim(filtered_SARS_mutation)
+#dim(filtered_SARS_mutation)
 
 # How many phylogenetic clades?
-length(unique(filtered_SARS_mutation$clade))
+#length(unique(filtered_SARS_mutation$clade))
 
 # How many nucleotide sites?
-length(unique(filtered_SARS_mutation$nt_site))
+#length(unique(filtered_SARS_mutation$nt_site))
 ```
 
 ## Visualize the Filtered Data
@@ -98,19 +102,19 @@ length(unique(filtered_SARS_mutation$nt_site))
 
 ```{r stacked_bar, echo=FALSE}
 # Stacked bar graph for the mutation counts normalized by the expected mutation rate for each clade
-ggplot(filtered_SARS_mutation, aes(fill=mutation_type, y=actual_count/expected_count, x=clade))+
-  geom_bar(position="stack", stat="identity")+
-  theme_bw()+
-  labs(x="Phylogenetic Clade", y="Normalized Mutation Count")
+#ggplot(filtered_SARS_mutation, aes(fill=mutation_type, y=actual_count/expected_count, x=clade))+
+  #geom_bar(position="stack", stat="identity")+
+  #theme_bw()+
+  #labs(x="Phylogenetic Clade", y="Normalized Mutation Count")
 ```
 
 [INSERT] information about the plot. Plot to visualize data.
 
 ```{r nucleotide_site, echo=FALSE}
-ggplot(filtered_SARS_mutation, aes(color=mutation_type, y=log(actual_count/expected_count), x=nt_site))+
-  geom_point()+
-  theme_bw()+
-  labs(x="", y="")
+#ggplot(filtered_SARS_mutation, aes(color=mutation_type, y=log(actual_count/expected_count), x=nt_site))+
+  #geom_point()+
+  #theme_bw()+
+  #labs(x="", y="")
 ```
 
 [INSERT] information about the plot. Plot to visualize data.
@@ -135,7 +139,7 @@ Combine nucleotide site, mutation type and clade to create a reference column in
 
 ```{r filter_contingency_data}
 # Filter mutation data for Fisher's Exact test, and combine nucleotide sites, mutation types and clades to make an iterative reference.
-fisher_data <- data.frame(nt_mutation_clade=paste(clade_SARS_mutation$nt_site, clade_SARS_mutation$mutation_type, clade_SARS_mutation$clade, sep="_"), observed=clade_SARS_mutation$actual_count, expected=clade_SARS_mutation$expected_count, observed_expected=clade_SARS_mutation$observed_expected)
+fisher_data <- data.frame(nt_mutation_clade=paste(clade_SARS_mutation$nt_mutation, clade_SARS_mutation$clade, sep="_"), observed=clade_SARS_mutation$actual_count, expected=clade_SARS_mutation$rounded_expected, observed_expected=clade_SARS_mutation$observed_expected)
 ```
 
 Create a two-column matrix of all possible clade comparisons, each column listing one clade in the comparison. This matrix should have [n x (n-1)]/2 rows where n is the number of clades.
@@ -145,21 +149,14 @@ Create a two-column matrix of all possible clade comparisons, each column listin
 clade_comparisons <- combinations(n=length(clades), r=2, v=clades, repeats.allowed=FALSE)
 ```
 
-For each mutation type (e.g., A -> T) at each nucleotide site, this notebook will generate contingency table analyses for each comparison in the set of clade comparisons. To expand the clade comparison matrix to include mutation types at nucleotide sites, generate a unique list of each mutation type (i.e., three mutations for one clade founder) at each nucleotide site.
-
-```{r unique_mutations}
-# Combine nucleotide sites and mutation types, and filter list to only include unique nucleotide mutations.
-nt_mutation_list <- unique(paste(clade_SARS_mutation$nt_site, clade_SARS_mutation$mutation_type, sep="_"))
-```
-
 Expand both the clade comparison matrix and the mutation list to create a combined matrix of all possible clade comparisons for each mutation type at each nucleotide site. To do this, repeat the clade comparison matrix by the number of unique mutations, and repeat each mutation in the mutation list by the number of clade comparisons.
 
 ```{r combined_clade_comparisons}
 # In preparation for combining clade comparisons with unique nucleotide mutations, repeat the nucleotide mutation list by the number of clade comparisons.
-rep_nt_mutation <- data.frame(nt_mutation=rep(nt_mutation_list, each=nrow(clade_comparisons)))
+rep_nt_mutation <- data.frame(nt_mutation=rep(unique(filtered_SARS_mutation$nt_mutation), each=nrow(clade_comparisons)))
 
 # In preparation for combining clade comparisons with unique nucleotide mutations, repeat the clade comparison matrix by the number of unique nucleotide mutations.
-rep_clades <- do.call("rbind", replicate(length(nt_mutation_list), clade_comparisons, simplify=FALSE))
+rep_clades <- do.call("rbind", replicate(length(unique(filtered_SARS_mutation$nt_mutation)), clade_comparisons, simplify=FALSE))
 
 # Combine the nucleotide mutations to each column in the clade comparison matrix to create a reference for the fisher data.
 comparisons <- data.frame(clade1=paste(rep_nt_mutation$nt_mutation, rep_clades[,1], sep="_"), clade2=paste(rep_nt_mutation$nt_mutation, rep_clades[,2], sep="_"))
@@ -169,8 +166,7 @@ Not every mutation will exist in each clade. Therefore, remove comparisons where
 
 ```{r filter_for_comparisons}
 # Drop comparisons where the nucleotide site, mutation type, clade reference does not exist in the observed-expected data frame.
-# DOUBLE CHECK THIS: NOT CONVINCED IT IS WORKING
-filtered_comparisons <- comparisons[comparisons$clade1 %in% fisher_data$nt_mutation_clade & comparisons$clade2 %in% fisher_data$nt_mutation_clade,]
+filtered_comparisons <- comparisons[(comparisons$clade1 %in% fisher_data$nt_mutation_clade & comparisons$clade2 %in% fisher_data$nt_mutation_clade),]
 ```
 
 To decrease the amount of time it takes to run the contingency tests, add columns to the filtered comparisons data frame with the observed counts, expected counts and observed/expected ratios for clade 1 and clade 2.
@@ -197,7 +193,7 @@ For each comparison, calculate the probability of obtaining the observed and exp
 ```{r contingency_table}
 # Iterate through rows and compare clade 1 observed and expected values to clade 2 observed and expected values.
 # NOTE: Expected counts are not integers and are therefore rounded for the Fisher's Exact test. 
-'p_values <- data.frame(p_value=apply(filtered_comparisons, 1, FUN=function(c) {fisher.test(rbind(c(as.numeric(c[3]),as.numeric(c[4])),c(as.numeric(c[5]),as.numeric(c[6]))))$p.value}))'
+p_values <- data.frame(p_value=apply(filtered_comparisons, 1, FUN=function(c) {fisher.test(rbind(c(as.numeric(c[3]),as.numeric(c[4])),c(as.numeric(c[5]),as.numeric(c[6]))))$p.value}))
 
 # Save and load variable because calculating p-values takes a long time.
 'save(p_values, file=paste("pvalues", paste(clades, collapse="_"), ".Rda", sep=""))'
@@ -215,7 +211,7 @@ comparison_p_values <- cbind(filtered_comparisons, p_values)
 
 ```{r p_value_correction}
 # Identify clades from the two columns in the comparison matrix and combine into one column.
-comparison_p_values$clades <- data.frame(clades=paste(str_split(comparison_p_values$clade1, "_", simplify=TRUE)[,3], str_split(comparison_p_values$clade2, "_", simplify=TRUE)[,3], sep="."))
+comparison_p_values$clades <- data.frame(clades=paste(str_split(comparison_p_values$clade1, "_", simplify=TRUE)[,2], str_split(comparison_p_values$clade2, "_", simplify=TRUE)[,2], sep="."))
 
 # Count the number of rows for each clade (i.e., number of hypothesis tests).
 clade.table <- table(comparison_p_values$clades)
@@ -233,15 +229,16 @@ Use a function to calculate fold-change using the observed-expected ratios calcu
 
 ```{r fold-change}
 # Calculate fold change for plotting volcano plots [clade 1 observed/clade 1 expected]/[clade 2 observed/clade 2 expected].
-comparison_p_values$fold_change <- foldchange(comparison_p_values$clade1_obs_exp, comparison_p_values$clade2_obs_exp)
+# Double check calculation with Jesse's paper
+comparison_p_values$fold_change <- log2(ifelse(comparison_p_values$clade1_obs_exp >= comparison_p_values$clade2_obs_exp, comparison_p_values$clade1_obs_exp/comparison_p_values$clade2_obs_exp, -comparison_p_values$clade2_obs_exp/comparison_p_values$clade1_obs_exp))
 ```
 
 Plot the volcano plot with -log10 p-values on the Y-axis and log fold-change on the X-axis.
 
 ```{r volcano_plot}
 # Only plot data for the two clades being compared.
-plot_data <- comparison_p_values[which(comparison_p_values$clades=="20B.20C"),]
-ggplot(plot_data, aes(x=fold_change, y=-log10(p_value)))+
+#plot_data <- comparison_p_values[which(comparison_p_values$clades=="20A.22A"),]
+ggplot(comparison_p_values, aes(x=other_fold, y=-log10(p_values_corrected)))+
   geom_point()
 ```
 
@@ -250,4 +247,26 @@ ggplot(plot_data, aes(x=fold_change, y=-log10(p_value)))+
 ```{r verify_analyses}
 # sanity check analyses (distribution of synonymous p-values)
 
+```
+
+## Shorted Script That Can Handle 2 Clades
+```{r two_clades}
+# Script that can handle 2+ clades: 1.380048, 1.151285, 1.034135 minutes
+# Script that can only handle 2 clades: 50.01184, 58.11915, 58.6249 seconds
+{start_two <- Sys.time()
+SARS_mutation <- fread("../results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv", sep=",", header=TRUE)
+country <- "all"
+clades <- c("20A","20B")
+min_expected <- 0
+pseudo <- 0.5
+filtered_SARS_mutation <- subset(SARS_mutation, subset==country & exclude=="FALSE" & expected_count>=min_expected)
+filtered_SARS_mutation$observed_expected <- (filtered_SARS_mutation$actual_count + pseudo)/(filtered_SARS_mutation$expected_count + pseudo)
+clade_SARS_mutation <- filtered_SARS_mutation[filtered_SARS_mutation$clade %in% clades,]
+clade1 <- clade_SARS_mutation[which(clade_SARS_mutation$clade==clades[1]),c("nt_mutation","clade","actual_count","expected_count","observed_expected")]
+clade2 <- clade_SARS_mutation[which(clade_SARS_mutation$clade==clades[2]),c("nt_mutation","clade","actual_count","expected_count","observed_expected")]
+m <- merge(clade1, clade2, by="nt_mutation")
+filtered_comparisons <- data.frame(clade1=paste(m$nt_mutation, m$clade.x, sep="_"), clade2=paste(m$nt_mutation, m$clade.y, sep="_"), clade1_observed=m$actual_count.x, clade1_expected=m$expected_count.x, clade2_observed=m$actual_count.y, clade2_expected=m$expected_count.y, clade1_obs_exp=m$observed_expected.x, clade2_obs_exp=m$observed_expected.y)
+end_two <- Sys.time()}
+end_two - start_two
+two <- filtered_comparisons
 ```
