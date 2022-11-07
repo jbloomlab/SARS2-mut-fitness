@@ -9,16 +9,18 @@ knitr::opts_chunk$set(warning=FALSE, message=FALSE)
 
 #install.packages("data.table")
 #install.packages("ggplot2")
+#install.packages("ggforce")
 #install.packages("stringr")
 #install.packages("gtools")
 
 library(data.table)
 library(ggplot2)
+library(ggforce)
 library(stringr)
 library(gtools)
 ```
 
-The purpose of this notebook is to generate volcano plots comparing any two SARS-CoV-2 phylogenetic clades. Using the volcano plots, mutations at certain nucleotide sites that are undergoing very different directions or degrees of selection between the two clades can be identified. Once this notebook has been finalized, sections of the code will be saved as scripts and run through a Snakemake pipeline, allowing the 78 clade comparisons to be computed in parallel.
+The purpose of this notebook is to generate a volcano plot comparing any two SARS-CoV-2 phylogenetic clades. Using the volcano plot, mutations at certain nucleotide sites that are undergoing very different directions or degrees of selection between the two clades can be identified. Once this notebook has been finalized, sections of the code will be saved as scripts and run through a Snakemake pipeline, allowing all clade comparisons to be computed in parallel.
 
 Listed below are the general steps the notebook uses to generate a volcano plot:\
 1. Read in the SARS-CoV-2 data containing observed and expected mutation counts.\
@@ -54,7 +56,7 @@ country <- "all"
 unique(SARS_mutation$clade)
 
 # Identify the two clades that will be included in comparisons.
-clades <- c("21J","22B")
+clades <- c("20A","22B")
 
 # Define a minimum threshold for the number of expected counts. Mutations below this threshold will be removed.
 min_expected <- 0
@@ -136,23 +138,34 @@ With such a large data set, it could take hours to calculate the p-values for al
 ```{r subset_by_clade}
 # Create a subset of the data using only the clades that are going to be compared.
 filtered_clades <- filtered_SARS_mutation[filtered_SARS_mutation$clade %in% clades,]
+
+# Remove columns that were already used to filter the data or than contain redundant information.
+filtered_clades$subset <- NULL
+filtered_clades$exclude <- NULL
+filtered_clades$nt_site <- NULL
 ```
 
 To quickly calculate the p-value for each contingency table analysis and ensure the user can easily understand what is being compared in each hypothesis test, restructure the data such that all of the variables necessary to run the statistical test are in one row. That includes observed and expected counts for clade 1 and observed and expected counts for clade 2.
 
 ```{r restructure_data}
 # Create two data frames with data for clade 1 and clade 2.
-clade1 <- filtered_clades[which(filtered_clades$clade==clades[1]),c("nt_mutation","clade","actual_count","rounded_expected","observed_expected","synonymous","four_fold_degenerate")]
-clade2 <- filtered_clades[which(filtered_clades$clade==clades[2]),c("nt_mutation","clade","actual_count","rounded_expected","observed_expected","synonymous","four_fold_degenerate")]
+clade1 <- filtered_clades[which(filtered_clades$clade==clades[1]),]
+clade2 <- filtered_clades[which(filtered_clades$clade==clades[2]),]
 
 # Append 'clade1' or 'clade2' to the column names so that the two data frames can be combined with easy to interpret columns.
-colnames(clade1)[2:ncol(clade1)] <- paste("clade1", colnames(clade1)[2:ncol(clade1)], sep="_")
-colnames(clade2)[2:ncol(clade2)] <- paste("clade2", colnames(clade2)[2:ncol(clade2)], sep="_")
-colnames(clade1)[which(colnames(clade1)=="clade1_clade")] <- "clade1"
-colnames(clade2)[which(colnames(clade2)=="clade2_clade")] <- "clade2"
+colnames(clade1) <- paste("c1", colnames(clade1), sep="_")
+colnames(clade2) <- paste("c2", colnames(clade2), sep="_")
+
+# Modify nt_mutation, clade_founder_nt and clade to make merging easier and make the data frame more readable.
+{colnames(clade1)[which(colnames(clade1)=="c1_nt_mutation")] <- "nt_mutation"
+colnames(clade2)[which(colnames(clade2)=="c2_nt_mutation")] <- "nt_mutation"
+colnames(clade1)[which(colnames(clade1)=="c1_clade_founder_nt")] <- "clade_founder_nt"
+colnames(clade2)[which(colnames(clade2)=="c2_clade_founder_nt")] <- "clade_founder_nt"
+colnames(clade1)[which(colnames(clade1)=="c1_clade")] <- "clade1"
+colnames(clade2)[which(colnames(clade2)=="c2_clade")] <- "clade2"}
 
 # Merge the two data frames by mutation so that each row represents one comparison.
-comparisons <- merge(clade1, clade2, by="nt_mutation")
+comparisons <- merge(clade1, clade2, by=c("nt_mutation","clade_founder_nt"))
 ```
 
 ## Contingency Table Analyses
@@ -161,7 +174,7 @@ For each comparison, calculate the probability of obtaining the observed and exp
 
 ```{r contingency_table}
 # Iterate through rows and compare clade 1 observed and expected values to clade 2 observed and expected values.
-p_values <- data.frame(p_value=apply(comparisons, 1, FUN=function(c) {fisher.test(rbind(c(as.numeric(c["clade1_actual_count"]),as.numeric(c["clade1_rounded_expected"])),c(as.numeric(c["clade2_actual_count"]),as.numeric(c["clade2_rounded_expected"]))))$p.value}))
+p_values <- data.frame(p_value=apply(comparisons, 1, FUN=function(c) {fisher.test(rbind(c(as.numeric(c["c1_actual_count"]),as.numeric(c["c1_rounded_expected"])),c(as.numeric(c["c2_actual_count"]),as.numeric(c["c2_rounded_expected"]))))$p.value}))
 
 # Save and load variable because calculating p-values may take a long time.
 #save(p_values, file=paste("pvalues", paste(clades, collapse="_"), ".Rda", sep=""))
@@ -178,8 +191,8 @@ comparison_p_values <- cbind(comparisons, p_values)
 ## P-Value Correction
 
 ```{r p_value_correction}
-# Using Bonferroni Correction, adjust the p-values by the number of hypothesis tests.
-comparison_p_values$p_value_corrected <- comparison_p_values$p_value*nrow(comparison_p_values)
+# Using False Discovery Rate Correction, adjust the p-values by the number of hypothesis tests.
+comparison_p_values$p_value_corrected <- p.adjust(comparison_p_values$p_value, method="fdr", n=nrow(comparison_p_values))
 ```
 
 ## Volcano Plot
@@ -188,28 +201,45 @@ Calculate fold-change using the observed-expected ratios calculated with a pseud
 
 ```{r fold-change}
 # Calculate fold change for plotting volcano plots.
-comparison_p_values$fold_change <- log2(comparison_p_values$clade1_observed_expected/comparison_p_values$clade2_observed_expected)
+comparison_p_values$fold_change <- log2(comparison_p_values$c1_observed_expected/comparison_p_values$c2_observed_expected)
 ```
 
 Generate a volcano plot with -log10 p-values on the Y-axis and log2 fold-change on the X-axis.
 
 ```{r volcano_plot, echo=FALSE}
-ggplot(comparison_p_values, aes(x=fold_change, y=-log10(p_value_corrected)))+
-  geom_point()+
+# Plot the uncorrected p-values.
+ggplot(comparison_p_values, aes(x=fold_change, y=-log10(p_value)))+
+  geom_point(alpha=0.5)+
   geom_hline(yintercept=-log10(0.05), col="red", linetype=2)+
+  theme_bw()
+
+# After dropping p = 1, plot FDR corrected p-values (color by nucleotide clade founder and label by mutation).
+volcano <- comparison_p_values[which(comparison_p_values$p_value_corrected!=1),]
+ggplot(volcano, aes(x=fold_change, y=-log10(p_value_corrected), label=nt_mutation, color=clade_founder_nt))+
+  geom_point()+
+  geom_text(color="black", size=2, nudge_y=0.2)+
+  geom_hline(yintercept=-log10(0.05), col="red", linetype=2)+
+  scale_color_brewer(palette="Set2")+
   theme_bw()
 ```
 
 ## Verify Analyses
 
-To verify the analyses are generating expected results, compare the p-values for synonymous mutations to non-synonymous mutations. Unlike non-synonymous mutations, synonymous mutations should not be experiencing selective pressures. Therefore, while there might be differences in the direction and degree of selection on non-synonymous (i.e., p-value close to 0), there should be insignificant differences between clades on synonymous mutations (i.e., p-values close to 1).
+To verify the analyses are generating expected results, compare the corrected p-values for synonymous mutations to non-synonymous mutations. Unlike non-synonymous mutations, synonymous mutations should not be experiencing selective pressures. Therefore, while there might be differences in the direction and degree of selection on non-synonymous (i.e., p-values close to 0), there should be insignificant differences between clades for synonymous mutations (i.e., p-values close to 1).
 
 ```{r verify_analyses}
-# sanity check analyses (distribution of synonymous p-values)
+# Plot the corrected p-values for synonymous and non-synonymous mutations and compare to a significance value of 0.05.
 verify_analyses <- comparison_p_values
-verify_analyses$synonymous <- paste(comparison_p_values$clade1_synonymous, comparison_p_values$clade2_synonymous, sep=".")
+verify_analyses$synonymous <- ifelse(verify_analyses$c1_synonymous=="TRUE" & verify_analyses$c2_synonymous=="TRUE", "TRUE", "FALSE")
+verify_analyses$p_one <- ifelse(verify_analyses$p_value_corrected==1, "P=1", "P<1")
 
-ggplot(verify_analyses, aes(x=synonymous, y=-log10(p_value_corrected)))+
-  geom_jitter(alpha=0.5)+
-  geom_hline(yintercept=-log10(0.05), col="red", linetype=2)
+p <- ggplot(verify_analyses, aes(x=p_value_corrected, fill=synonymous, label=..count..))+
+  geom_histogram()+
+  geom_text(size=2, vjust=-0.5, stat="bin", position="stack")+
+  geom_vline(data=data.frame(xint=0.05, p_one="P<1"), aes(xintercept=xint), linetype=2)+
+  scale_x_continuous(breaks=c(0,0.25,0.5,0.75,1))+
+  labs(x="FDR corrected p-values")+
+  theme_bw()
+  
+p + ggforce::facet_row(vars(p_one), scales="free", space="free")
 ```
