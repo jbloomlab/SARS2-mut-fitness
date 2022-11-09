@@ -18,6 +18,8 @@ library(ggplot2)
 library(ggforce)
 library(stringr)
 library(gtools)
+
+`%notin%` <- Negate(`%in%`)
 ```
 
 The purpose of this notebook is to generate a volcano plot comparing any two SARS-CoV-2 phylogenetic clades. Using the volcano plot, mutations at certain nucleotide sites that are undergoing very different directions or degrees of selection between the two clades can be identified. Once this notebook has been finalized, sections of the code will be saved as scripts and run through a Snakemake pipeline, allowing all clade comparisons to be computed in parallel.
@@ -63,9 +65,23 @@ min_expected <- 0
 
 # To avoid infinities when calculating fold-change, add a pseudocount to the observed and expected counts.
 pseudo <- 0.5
+
+option <- "aa" # nt or aa
+merge_columns <- c("nt_mutation","nt_site","clade_founder_nt","gene","codon_position")
+merge_columns <- c("aa_mutation","gene")
 ```
 
 ## Filter and Prepare the SARS-CoV-2 Mutation Data
+
+With the data set, both nucleotide and amino acid mutations can be compared between clades. However, there is no column identifying the amino acid mutation (i.e., starting amino acid, codon position along the genome and mutated amino acid). Create a column with this information using the nucleotide site, codon position (i.e., 1, 2, or 3), clade founder amino acid and mutant amino acid columns.
+
+```{r aa_mutation}
+# Create a list with the starting nucleotide site for an amino acid for all rows in the data set.
+starting_nt <- SARS_mutation$nt_site-as.numeric(str_sub(SARS_mutation$codon_position,1,1))+1
+
+# Create column with amino acid mutation (e.g., M.266.268.L)
+SARS_mutation$aa_mutation <- paste(str_sub(SARS_mutation$clade_founder_aa,1,1), starting_nt, starting_nt+2, str_sub(SARS_mutation$mutant_aa,1,1), sep=".")
+```
 
 For the analyses conducted in this notebook, subset the data by the country (countries) the sequence data came from. Additionally, remove low-quality mutations or branches with abnormally high mutation rates.
 
@@ -88,6 +104,12 @@ Contingency table analyses can only accept integers, so round the expected count
 filtered_SARS_mutation$rounded_expected <- round(filtered_SARS_mutation$expected_count)
 ```
 
+```{r clean_columns}
+# Remove columns that were already used to filter the data.
+filtered_SARS_mutation$subset <- NULL
+filtered_SARS_mutation$exclude <- NULL
+```
+
 ## Describe and Characterize the Data
 
 Take a look at the first 5 rows of the data.
@@ -96,39 +118,53 @@ Take a look at the first 5 rows of the data.
 head(filtered_SARS_mutation, n=5)
 ```
 
-Describe the filtered data set.
+Look at a summary of the data.\
+-What are the data types for each column?\
+-Is there a similar number of TRUEs and FALSEs for logical variables?\
+-Describe the numeric variables (e.g., minimum value).\
+
+```{r summary_data}
+summary(filtered_SARS_mutation)
+```
+
+Take a closer look at how many nucleotide sites and the proportion of mutations in the data set.
 
 ```{r describe_data}
-# How many rows? How many columns?
-dim(filtered_SARS_mutation)
-
 # How many nucleotide sites?
 length(unique(filtered_SARS_mutation$nt_site))
+
+# What percentage of the data set is each type of mutation? (e.g., A -> T)
+mutation_type <- paste(str_sub(filtered_SARS_mutation$nt_mutation,1,1), ".", str_sub(filtered_SARS_mutation$nt_mutation,-1,-1), sep="")
+(table(mutation_type)/length(mutation_type))*100
 ```
 
 ## Visualize the Data
 
-[INSERT] information about the plot. Plot to visualize data.
+The four nucleotides (e.g., A) and their possible mutations (e.g., A -> T) may be under different directions and degrees of selection between clades leading to an unequal distribution of nucleotides in the genome. Look at how many mutations (normalized by the expected count) there are for each clade.
 
-```{r stacked_bar, echo=FALSE}
-# Add column with the mutation type (clade founder.mutation).
-add_mutation <- filtered_SARS_mutation
-add_mutation$mutation_type <- paste(str_sub(add_mutation$nt_mutation,1,1), ".", str_sub(add_mutation$nt_mutation,-1,-1), sep="")
+```{r stacked_nucleotide, echo=FALSE}
+stacked_nt <- filtered_SARS_mutation
+stacked_nt$mutation_type <- paste(str_sub(filtered_SARS_mutation$nt_mutation,1,1), ".", str_sub(filtered_SARS_mutation$nt_mutation,-1,-1), sep="")
 
-# Stacked bar graph for the mutation counts normalized by the expected mutation rate for each clade
-ggplot(add_mutation, aes(fill=mutation_type, y=actual_count/expected_count, x=clade))+
+ggplot(stacked_nt, aes(x=clade, y=actual_count/expected_count, fill=mutation_type))+
   geom_bar(position="stack", stat="identity")+
+  scale_fill_brewer(palette="Paired")+
   theme_bw()+
   labs(x="Phylogenetic Clade", y="Normalized Mutation Count")
 ```
 
-[INSERT] information about the plot. Plot to visualize data.
+Amino acids occur at different proportions throughout the SARS-CoV-2 genome and between phylogenetic clades. [INSERT]
 
-```{r nucleotide_site, echo=FALSE}
-ggplot(add_mutation, aes(color=mutation_type, y=log(actual_count/expected_count), x=nt_site))+
-  geom_point()+
+```{r stacked_amino_acid, echo=FALSE}
+stacked_aa <- filtered_SARS_mutation
+stacked_aa$clade_founder <- str_sub(filtered_SARS_mutation$clade_founder_aa,1,1)
+stacked_aa$mutant <- str_sub(filtered_SARS_mutation$mutant_aa,1,1)
+
+ggplot(stacked_aa, aes(x=clade, y=actual_count/expected_count, fill=mutant))+
+  geom_bar(position="stack", stat="identity")+
+  facet_wrap(~clade_founder, ncol=7)+
   theme_bw()+
-  labs(x="", y="")
+  labs(x="Phylogenetic Clade", y="Normalized Mutation Count")
 ```
 
 ## Restructure Data for Analyses
@@ -138,11 +174,6 @@ With such a large data set, it could take hours to calculate the p-values for al
 ```{r subset_by_clade}
 # Create a subset of the data using only the clades that are going to be compared.
 filtered_clades <- filtered_SARS_mutation[filtered_SARS_mutation$clade %in% clades,]
-
-# Remove columns that were already used to filter the data or than contain redundant information.
-filtered_clades$subset <- NULL
-filtered_clades$exclude <- NULL
-filtered_clades$nt_site <- NULL
 ```
 
 To quickly calculate the p-value for each contingency table analysis and ensure the user can easily understand what is being compared in each hypothesis test, restructure the data such that all of the variables necessary to run the statistical test are in one row. That includes observed and expected counts for clade 1 and observed and expected counts for clade 2.
@@ -153,19 +184,11 @@ clade1 <- filtered_clades[which(filtered_clades$clade==clades[1]),]
 clade2 <- filtered_clades[which(filtered_clades$clade==clades[2]),]
 
 # Append 'clade1' or 'clade2' to the column names so that the two data frames can be combined with easy to interpret columns.
-colnames(clade1) <- paste("c1", colnames(clade1), sep="_")
-colnames(clade2) <- paste("c2", colnames(clade2), sep="_")
-
-# Modify nt_mutation, clade_founder_nt and clade to make merging easier and make the data frame more readable.
-{colnames(clade1)[which(colnames(clade1)=="c1_nt_mutation")] <- "nt_mutation"
-colnames(clade2)[which(colnames(clade2)=="c2_nt_mutation")] <- "nt_mutation"
-colnames(clade1)[which(colnames(clade1)=="c1_clade_founder_nt")] <- "clade_founder_nt"
-colnames(clade2)[which(colnames(clade2)=="c2_clade_founder_nt")] <- "clade_founder_nt"
-colnames(clade1)[which(colnames(clade1)=="c1_clade")] <- "clade1"
-colnames(clade2)[which(colnames(clade2)=="c2_clade")] <- "clade2"}
+colnames(clade1)[colnames(clade1) %notin% merge_columns] <- paste(colnames(clade1)[colnames(clade1) %notin% merge_columns], "1", sep="_")
+colnames(clade2)[colnames(clade2) %notin% merge_columns] <- paste(colnames(clade2)[colnames(clade2) %notin% merge_columns], "2", sep="_")
 
 # Merge the two data frames by mutation so that each row represents one comparison.
-comparisons <- merge(clade1, clade2, by=c("nt_mutation","clade_founder_nt"))
+comparisons <- merge(clade1, clade2, by=merge_columns)
 ```
 
 ## Contingency Table Analyses
@@ -174,11 +197,11 @@ For each comparison, calculate the probability of obtaining the observed and exp
 
 ```{r contingency_table}
 # Iterate through rows and compare clade 1 observed and expected values to clade 2 observed and expected values.
-p_values <- data.frame(p_value=apply(comparisons, 1, FUN=function(c) {fisher.test(rbind(c(as.numeric(c["c1_actual_count"]),as.numeric(c["c1_rounded_expected"])),c(as.numeric(c["c2_actual_count"]),as.numeric(c["c2_rounded_expected"]))))$p.value}))
+#p_values <- data.frame(p_value=apply(comparisons, 1, FUN=function(c) {fisher.test(rbind(c(as.numeric(c["actual_count_1"]),as.numeric(c["rounded_expected_1"])),c(as.numeric(c["actual_count_2"]),as.numeric(c["rounded_expected_2"]))))$p.value}))
 
 # Save and load variable because calculating p-values may take a long time.
-#save(p_values, file=paste("pvalues", paste(clades, collapse="_"), ".Rda", sep=""))
-load(paste("pvalues", paste(clades, collapse="_"), ".Rda", sep=""))
+#save(p_values, file=paste("pvalues", paste(clades, collapse="_"), option, ".Rda", sep=""))
+load(paste("pvalues", paste(clades, collapse="_"), option, ".Rda", sep=""))
 ```
 
 Combine the p-values calculated using the contingency table analyses with the data frame of comparisons.
@@ -201,25 +224,27 @@ Calculate fold-change using the observed-expected ratios calculated with a pseud
 
 ```{r fold-change}
 # Calculate fold change for plotting volcano plots.
-comparison_p_values$fold_change <- log2(comparison_p_values$c1_observed_expected/comparison_p_values$c2_observed_expected)
+comparison_p_values$fold_change <- log2(comparison_p_values$observed_expected_1/comparison_p_values$observed_expected_2)
 ```
 
 Generate a volcano plot with -log10 p-values on the Y-axis and log2 fold-change on the X-axis.
 
-```{r volcano_plot, echo=FALSE}
+```{r volcano_all, echo=FALSE}
 # Plot the uncorrected p-values.
 ggplot(comparison_p_values, aes(x=fold_change, y=-log10(p_value)))+
   geom_point(alpha=0.5)+
   geom_hline(yintercept=-log10(0.05), col="red", linetype=2)+
   theme_bw()
+```
 
+```{r volcano_corrected, echo=FALSE}
 # After dropping p = 1, plot FDR corrected p-values (color by nucleotide clade founder and label by mutation).
 volcano <- comparison_p_values[which(comparison_p_values$p_value_corrected!=1),]
-ggplot(volcano, aes(x=fold_change, y=-log10(p_value_corrected), label=nt_mutation, color=clade_founder_nt))+
+ggplot(volcano, aes(x=fold_change, y=-log10(p_value_corrected), label=get(paste(option, "mutation", sep="_")), color=str_sub(get(paste(option, "mutation", sep="_")),1,1)))+
   geom_point()+
   geom_text(color="black", size=2, nudge_y=0.2)+
   geom_hline(yintercept=-log10(0.05), col="red", linetype=2)+
-  scale_color_brewer(palette="Set2")+
+  #scale_color_brewer(palette="Set2", name="mutation")+
   theme_bw()
 ```
 
@@ -230,7 +255,7 @@ To verify the analyses are generating expected results, compare the corrected p-
 ```{r verify_analyses}
 # Plot the corrected p-values for synonymous and non-synonymous mutations and compare to a significance value of 0.05.
 verify_analyses <- comparison_p_values
-verify_analyses$synonymous <- ifelse(verify_analyses$c1_synonymous=="TRUE" & verify_analyses$c2_synonymous=="TRUE", "TRUE", "FALSE")
+verify_analyses$synonymous <- ifelse(verify_analyses$synonymous_1=="TRUE" & verify_analyses$synonymous_2=="TRUE", "TRUE", "FALSE")
 verify_analyses$p_one <- ifelse(verify_analyses$p_value_corrected==1, "P=1", "P<1")
 
 p <- ggplot(verify_analyses, aes(x=p_value_corrected, fill=synonymous, label=..count..))+
