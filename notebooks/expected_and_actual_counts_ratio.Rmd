@@ -7,14 +7,14 @@ date: "`r format(Sys.Date(), '%Y-%m-%d')`"
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(warning=FALSE, message=FALSE)
 
-#install.packages("data.table")
+#install.packages("dplyr")
 #install.packages("ggplot2")
 #install.packages("ggforce")
 #install.packages("RColorBrewer")
 #install.packages("stringr")
 #install.packages("gtools")
 
-library(data.table)
+library(dplyr)
 library(ggplot2)
 library(ggforce)
 library(RColorBrewer)
@@ -41,10 +41,10 @@ First, read in the comma-delimited data from the 'kfeldmann' computational noteb
 
 ```{r read_data}
 # Read data using access to the Fred Hutch server.
-SARS_mutation <- fread("../results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv", sep=",", header=TRUE)
+SARS_mutation <- read.csv("../results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv", sep=",", header=TRUE)
 
 # Read data from github.com.
-#SARS_mutation <- fread("https://media.githubusercontent.com/media/jbloomlab/SARS2-mut-rates/main/results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv", sep=",", header=TRUE)
+#SARS_mutation <- read.csv("https://media.githubusercontent.com/media/jbloomlab/SARS2-mut-rates/main/results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv", sep=",", header=TRUE)
 ```
 
 ## Define Filtering and Analysis Parameters
@@ -75,31 +75,24 @@ merge_column <- paste(option, "mutation", sep="_")
 
 ## Filter and Prepare the SARS-CoV-2 Mutation Data
 
-With the data set, both nucleotide and amino acid mutations can be compared between clades. However, there is no column identifying the amino acid mutation (i.e., starting amino acid, codon position along the genome and mutated amino acid). Create a column with this information using the nucleotide site, codon position (i.e., 1, 2, or 3), clade founder amino acid and mutant amino acid columns.
-
-```{r aa_mutation}
-if(option=='aa'){
-  # Create a list with the starting nucleotide site for an amino acid for all rows in the data set.
-  starting_nt <- SARS_mutation$nt_site-as.numeric(str_sub(SARS_mutation$codon_position,1,1))+1
-
-  # Create a column with amino acid mutation (e.g., M.266.268.L).
-  SARS_mutation$aa_mutation <- paste(str_sub(SARS_mutation$clade_founder_aa,1,1), starting_nt, starting_nt+2, str_sub(SARS_mutation$mutant_aa,1,1), sep=".")
-}
-
-# NEED TO SUM TOGETHER DUPLICATE AMINO ACIDS
-# consider entire gene column
-# Should I compare mutations with different wild types? (A200T vs C200T) Plot?
-```
-
 For the analyses conducted in this notebook, subset the data by the country (countries) the sequence data came from. Additionally, remove low-quality mutations or branches with abnormally high mutation rates.
 
 ```{r filter_all_data}
 # Include data from certain countries AND exclude branches with very high mutation rates and questionable mutations.
-filtered_SARS_mutation <- subset(SARS_mutation, subset==country & exclude=="FALSE" & expected_count>=min_expected)
+filtered_SARS_mutation <- subset(SARS_mutation, subset==country & exclude=="False" & expected_count>=min_expected)
+```
 
-# Remove columns that were used to filter the data.
-filtered_SARS_mutation$subset <- NULL
-filtered_SARS_mutation$exclude <- NULL
+```{r aa_mutation}
+if(option=='aa'){
+  aa_group <- filtered_SARS_mutation
+  filtered_SARS_mutation <- as.data.frame(aa_group %>% group_by(clade, aa_mutation, clade_founder_aa, codon_site, mutant_aa, synonymous) %>% summarise(actual_count=sum(actual_count), expected_count=sum(expected_count)))
+}else{
+  nt_group <- filtered_SARS_mutation
+  filtered_SARS_mutation <- nt_group[,c("clade","nt_mutation","clade_founder_nt","nt_site","synonymous","four_fold_degenerate","actual_count","expected_count")]
+}
+
+# consider entire gene column
+# Should I compare mutations with different wild types? (A200T vs C200T) Plot?
 ```
 
 To compare mutations between phylogenetic clades, this notebook will plot volcano plots with -log10 p-value on the y-axis and log2 fold-change on the x-axis. Prior to filtering the data for contingency table analyses, calculate the ratio of observed to expected counts and add a pseudocount to prevent infinities when fold-change is calculated. Mutations with a small count (e.g., 1) are going to be affected by the pseudocount more than mutations with a large count (e.g., 100).
@@ -145,7 +138,8 @@ nt_type <- paste(str_sub(filtered_SARS_mutation$nt_mutation,1,1), ".", str_sub(f
 (table(nt_type)/length(nt_type))*100
 
 # What percentage of the data set is each type of amino acid mutation? (e.g., K -> M)
-aa_type <- paste(str_sub(filtered_SARS_mutation$clade_founder_aa,1,1), ".", str_sub(filtered_SARS_mutation$mutant_aa,-1,-1), sep="")
+aa_type <- paste(str_sub(filtered_SARS_mutation$clade_founder_aa,1,1), ".", str_sub(filtered_SARS_mutation$mutant_aa,1,1), sep="")
+aa_type <- paste(filtered_SARS_mutation$clade_founder_aa, ".", filtered_SARS_mutation$mutant_aa, sep="")
 (table(aa_type)/length(aa_type))*100
 ```
 
@@ -167,15 +161,15 @@ ggplot(stacked_nt, aes(x=clade, y=actual_count/expected_count, fill=mutation_typ
 In the following amino acid mutation plot, individual plots indicate the starting amino acid (i.e., clade founder) and stacked bars within each plot indicate what that amino acid mutated to.
 
 ```{r stacked_amino_acid, echo=FALSE}
-stacked_col <- colorRampPalette(brewer.pal(8,"Set1"))(21)
+stacked_col <- colorRampPalette(brewer.pal(8,"Set1"))(79)
 
 stacked_aa <- filtered_SARS_mutation
-stacked_aa$clade_founder <- str_sub(filtered_SARS_mutation$clade_founder_aa,1,1)
-stacked_aa$mutant <- str_sub(filtered_SARS_mutation$mutant_aa,1,1)
+#stacked_aa$clade_founder <- str_sub(filtered_SARS_mutation$clade_founder_aa,1,1)
+#stacked_aa$mutant <- str_sub(filtered_SARS_mutation$mutant_aa,1,1)
 
-ggplot(stacked_aa, aes(x=clade, y=actual_count/expected_count, fill=mutant))+
+ggplot(stacked_aa, aes(x=clade, y=actual_count/expected_count, fill=mutant_aa))+
   geom_bar(position="stack", stat="identity")+
-  facet_wrap(~clade_founder, ncol=7)+
+  facet_wrap(~clade_founder_aa, ncol=7)+
   scale_fill_manual(values=stacked_col, name="Amino Acid Mutation")+
   scale_x_discrete(guide=guide_axis(n.dodge=5))+
   theme_bw()+
@@ -184,19 +178,12 @@ ggplot(stacked_aa, aes(x=clade, y=actual_count/expected_count, fill=mutant))+
 
 ## Restructure Data for Analyses
 
-With such a large data set, it could take hours to calculate the p-values for all clade comparisons. To decrease the amount of time it takes to conduct analyses, this notebook will only compare two clades at a time and the script can be run in parallel to generate all comparisons at once. Therefore, filter the data to only include mutation data from the two clades being compared.
-
-```{r subset_by_clade}
-# Create a subset of the data using only the clades that are going to be compared.
-filtered_clades <- filtered_SARS_mutation[filtered_SARS_mutation$clade %in% clades,]
-```
-
 To quickly calculate the p-value for each contingency table analysis and ensure the user can easily understand what is being compared in each hypothesis test, restructure the data such that all of the variables necessary to run the statistical test are in one row. That includes observed and expected counts for clade 1 and observed and expected counts for clade 2.
 
 ```{r restructure_data}
 # Create two data frames with data for clade 1 and clade 2.
-clade1 <- filtered_clades[which(filtered_clades$clade==clades[1]),]
-clade2 <- filtered_clades[which(filtered_clades$clade==clades[2]),]
+clade1 <- filtered_SARS_mutation[which(filtered_SARS_mutation$clade==clades[1]),]
+clade2 <- filtered_SARS_mutation[which(filtered_SARS_mutation$clade==clades[2]),]
 
 # Append '1' or '2' to the column names so that the two data frames can be easily combined.
 colnames(clade1)[colnames(clade1) %notin% merge_column] <- paste(colnames(clade1)[colnames(clade1) %notin% merge_column], "1", sep="_")
@@ -206,8 +193,8 @@ colnames(clade2)[colnames(clade2) %notin% merge_column] <- paste(colnames(clade2
 comparisons <- merge(clade1, clade2, by=merge_column)
 
 # Determine if any of the columns from 'clade1' and 'clade2' are the same.
-col_names <- colnames(filtered_clades)[colnames(filtered_clades) %notin% merge_column]
-is_equal <- data.frame(sapply(col_names, FUN=function(c){identical(comparisons[, get(paste(c[1], 1, sep="_"))], comparisons[, get(paste(c[1], 2, sep="_"))])}))
+col_names <- colnames(filtered_SARS_mutation)[colnames(filtered_SARS_mutation) %notin% merge_column]
+is_equal <- data.frame(sapply(col_names, FUN=function(c){identical(comparisons[,paste(c[1], 1, sep="_")], comparisons[,paste(c[1], 2, sep="_")])}))
 col_equal <- row.names(is_equal)[which(is_equal[1]=="TRUE")]
 
 # Rename one of the duplicate columns and remove the other.
@@ -269,10 +256,10 @@ After correcting the p-values, a large portion of the p-values equal one. The se
 
 ```{r volcano_corrected, echo=FALSE}
 # After dropping P = 1, plot the corrected p-values.
-color <- colorRampPalette(brewer.pal(8,"Set1"))(length(unique(comparison_p_values[,str_sub(get(paste(option, "mutation", sep="_")),1,1)])))
+color <- colorRampPalette(brewer.pal(8,"Set1"))(comparison_p_values[,paste("clade_founder", option, sep="_")] %>% unique() %>% length())
 
 volcano <- comparison_p_values[which(comparison_p_values$p_value_corrected!=1),]
-ggplot(volcano, aes(x=fold_change, y=-log10(p_value_corrected), label=get(paste(option, "mutation", sep="_")), color=str_sub(get(paste(option, "mutation", sep="_")),1,1)))+
+ggplot(volcano, aes(x=fold_change, y=-log10(p_value_corrected), label=get(merge_column), color=get(paste("clade_founder", option, sep="_"))))+
   geom_point()+
   geom_text(color="black", size=2, nudge_y=0.2)+
   geom_hline(yintercept=-log10(0.05), col="red", linetype=2)+
@@ -288,7 +275,7 @@ To verify the analyses are generating expected results, compare the corrected p-
 # Plot the corrected p-values for synonymous and non-synonymous mutations.
 verify_analyses <- comparison_p_values
 if("synonymous" %notin% colnames(verify_analyses)){
-  verify_analyses$synonymous <- ifelse(verify_analyses$synonymous_1=="TRUE" & verify_analyses$synonymous_2=="TRUE", "TRUE", "FALSE")
+  verify_analyses$synonymous <- ifelse(verify_analyses$synonymous_1=="True" & verify_analyses$synonymous_2=="True", "True", "False")
 }
 verify_analyses$p_one <- ifelse(verify_analyses$p_value_corrected==1, "P=1", "P<1")
 
