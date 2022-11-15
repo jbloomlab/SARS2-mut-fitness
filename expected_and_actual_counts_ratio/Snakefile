@@ -1,0 +1,36 @@
+CLADES = ["20A","20B"...]
+
+rule all:
+	input:
+		"file with all volcano plots?"
+
+rule filter_data:
+	input:
+		"results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv", "all", 0 
+	output:
+		temp("results/expected_and_actual_counts_ratio/{clade}{mutation_type}.csv")
+	script:
+		"filter by subset, min expected and save individual clades"
+	
+rule calculate_p_values:
+	input:
+		"results/expected_and_actual_counts_ratio/{clade}{mutation_type}.csv", 0.5
+	output:
+		temp("results/expected_and_actual_counts_ratio/pvalues{clade}_{clade}{mutation_type}.Rda")
+	script:
+		"insert function inputs here  (pseudo)"
+
+rule combine_p_values:
+	input:
+		"results/expected_and_actual_counts_ratio/pvalues{clade}_{clade}{mutation_type}.Rda"
+	output:
+		protected("results/expected_and_actual_counts_ratio/pvalues_{mutation_type}.Rda")
+	shell:
+		"awk 'FNR==1 && NR!=1 {while(/^<header>/) getline;} 1 {print}' {input} > {output}"
+		
+rule plot_volcano:
+	input:
+
+	output:
+
+	script:
