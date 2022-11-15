@@ -60,7 +60,7 @@ country <- "all"
 unique(SARS_mutation$clade)
 
 # Identify the two clades that will be included in comparisons.
-clades <- c("20A","22B")
+clades <- c("22A","22B")
 
 # Define a minimum threshold for the number of expected counts. Mutations below this threshold will be removed.
 min_expected <- 0
@@ -69,11 +69,11 @@ min_expected <- 0
 pseudo <- 0.5
 
 # Analyze nucleotide mutations or amino acid mutations ('nt' or 'aa')?
-option <- "nt"
+option <- "aa"
 merge_column <- paste(option, "mutation", sep="_")
 ```
 
-## Filter and Prepare the SARS-CoV-2 Mutation Data
+## Filter the SARS-CoV-2 Mutation Data
 
 For the analyses conducted in this notebook, subset the data by the country (countries) the sequence data came from. Additionally, remove low-quality mutations or branches with abnormally high mutation rates.
 
@@ -82,17 +82,94 @@ For the analyses conducted in this notebook, subset the data by the country (cou
 filtered_SARS_mutation <- subset(SARS_mutation, subset==country & exclude=="False" & expected_count>=min_expected)
 ```
 
-```{r aa_mutation}
-if(option=='aa'){
-  aa_group <- filtered_SARS_mutation
-  filtered_SARS_mutation <- as.data.frame(aa_group %>% group_by(clade, aa_mutation, clade_founder_aa, codon_site, mutant_aa, synonymous) %>% summarise(actual_count=sum(actual_count), expected_count=sum(expected_count)))
-}else{
-  nt_group <- filtered_SARS_mutation
-  filtered_SARS_mutation <- nt_group[,c("clade","nt_mutation","clade_founder_nt","nt_site","synonymous","four_fold_degenerate","actual_count","expected_count")]
-}
+Create nucleotide mutation and amino acid mutation data sets. Actual and expected counts for rows with identical amino acid mutations are added together. Both data sets only include columns relevant for that mutation to make understanding restructuring the data and analyses easier.
+
+```{r group_mutation}
+# Group by amino acid mutation and add counts for identical amino acid mutations.
+# NOTE: Grouping with and without 'gene' creates a different number of rows because some equivalent aa mutations belong to different genes. There are 2,160 aa mutations that have duplicates.
+aa_group <- as.data.frame(filtered_SARS_mutation %>% group_by(clade, aa_mutation, clade_founder_aa, codon_site, mutant_aa, synonymous, gene) %>% summarise(actual_count=sum(actual_count), expected_count=sum(expected_count)))
+  
+# Reduce columns for nucleotide mutation analyses to make workflow easier to follow.
+nt_group <- filtered_SARS_mutation[,c("clade","nt_mutation","clade_founder_nt","nt_site","synonymous","four_fold_degenerate","gene","actual_count","expected_count")]
 
 # consider entire gene column
 # Should I compare mutations with different wild types? (A200T vs C200T) Plot?
+```
+
+## Describe and Characterize the Data
+
+Take a look at the first 5 rows of the data.
+
+```{r head_data}
+head(get(paste(option, "group", sep="_")), n=5)
+```
+
+Look at a summary of the data:
+
+-What are the data types for each column?\
+-Is there a similar number of TRUEs and FALSEs for logical variables?\
+-Describe the numeric variables (e.g., minimum value).\
+
+```{r summary_data}
+summary(get(paste(option, "group", sep="_")))
+```
+
+Take a closer look at how many nucleotide sites, amino acid sites and the proportion of mutations in the data set.
+
+```{r describe_data}
+# How many nucleotide sites?
+length(unique(nt_group$nt_site))
+
+# How many amino acid sites?
+length(unique(aa_group$codon_site))
+
+# What percentage of the data set is each type of nucleotide mutation? (e.g., A -> T)
+nt_type <- paste(str_sub(nt_group$nt_mutation,1,1), ".", str_sub(nt_group$nt_mutation,-1,-1), sep="")
+(table(nt_type)/length(nt_type))*100
+
+# What percentage of the data set is each type of amino acid mutation? (e.g., K -> M)
+aa_type <- paste(aa_group$clade_founder_aa, ".", aa_group$mutant_aa, sep="")
+(table(aa_type)/length(aa_type))*100
+```
+
+## Visualize the Data
+
+After numerically describing the nucleotide and amino acid mutation data, use stacked bar plots to visual the proportion of each mutation for each clade. The number of mutations is normalized by the expected count.
+
+```{r stacked_nucleotide, echo=FALSE}
+stacked_nt <- nt_group
+stacked_nt$mutation_type <- paste(str_sub(nt_group$nt_mutation,1,1), ".", str_sub(nt_group$nt_mutation,-1,-1), sep="")
+
+ggplot(stacked_nt, aes(x=clade, y=actual_count/expected_count, fill=mutation_type))+
+  geom_bar(position="stack", stat="identity")+
+  scale_fill_brewer(palette="Paired", name="Nucleotide Mutation")+
+  theme_bw()+
+  labs(x="Phylogenetic Clade", y="Normalized Mutation Count")
+```
+
+In the following amino acid mutation plot, individual plots indicate the starting amino acid (i.e., clade founder) and stacked bars within each plot indicate what that amino acid mutated to.
+
+```{r stacked_amino_acid, echo=FALSE}
+stacked_col <- colorRampPalette(brewer.pal(8,"Set1"))(21)
+
+stacked_aa <- aa_group
+stacked_aa$clade_founder <- str_sub(aa_group$clade_founder_aa,1,1)
+stacked_aa$mutant <- str_sub(aa_group$mutant_aa,1,1)
+
+ggplot(stacked_aa, aes(x=clade, y=actual_count/expected_count, fill=mutant))+
+  geom_bar(position="stack", stat="identity")+
+  facet_wrap(~clade_founder, ncol=7)+
+  scale_fill_manual(values=stacked_col, name="Amino Acid Mutation")+
+  scale_x_discrete(guide=guide_axis(n.dodge=5))+
+  theme_bw()+
+  labs(x="Phylogenetic Clade", y="Normalized Mutation Count")
+```
+
+## Prepare and Restructure Data for Analyses
+
+```{r rename_variable}
+# Rename variable for analyses to make code more readable.
+filtered_SARS_mutation <- get(paste(option, "group", sep="_"))
 ```
 
 To compare mutations between phylogenetic clades, this notebook will plot volcano plots with -log10 p-value on the y-axis and log2 fold-change on the x-axis. Prior to filtering the data for contingency table analyses, calculate the ratio of observed to expected counts and add a pseudocount to prevent infinities when fold-change is calculated. Mutations with a small count (e.g., 1) are going to be affected by the pseudocount more than mutations with a large count (e.g., 100).
@@ -108,75 +185,6 @@ Contingency table analyses can only accept integers, so round the expected count
 # Round expected counts because contingency table analyses (e.g., Fisher's Exact test) can only analyze integers.
 filtered_SARS_mutation$rounded_expected <- round(filtered_SARS_mutation$expected_count)
 ```
-
-## Describe and Characterize the Data
-
-Take a look at the first 5 rows of the data.
-
-```{r head_data}
-head(filtered_SARS_mutation, n=5)
-```
-
-Look at a summary of the data:
-
--What are the data types for each column?\
--Is there a similar number of TRUEs and FALSEs for logical variables?\
--Describe the numeric variables (e.g., minimum value).\
-
-```{r summary_data}
-summary(filtered_SARS_mutation)
-```
-
-Take a closer look at how many nucleotide sites and the proportion of mutations in the data set.
-
-```{r describe_data}
-# How many nucleotide sites?
-length(unique(filtered_SARS_mutation$nt_site))
-
-# What percentage of the data set is each type of nucleotide mutation? (e.g., A -> T)
-nt_type <- paste(str_sub(filtered_SARS_mutation$nt_mutation,1,1), ".", str_sub(filtered_SARS_mutation$nt_mutation,-1,-1), sep="")
-(table(nt_type)/length(nt_type))*100
-
-# What percentage of the data set is each type of amino acid mutation? (e.g., K -> M)
-aa_type <- paste(str_sub(filtered_SARS_mutation$clade_founder_aa,1,1), ".", str_sub(filtered_SARS_mutation$mutant_aa,1,1), sep="")
-aa_type <- paste(filtered_SARS_mutation$clade_founder_aa, ".", filtered_SARS_mutation$mutant_aa, sep="")
-(table(aa_type)/length(aa_type))*100
-```
-
-## Visualize the Data
-
-After numerically describing the nucleotide and amino acid mutation data, use stacked bar plots to visual the proportion of each mutation for each clade. The number of mutations is normalized by the expected count.
-
-```{r stacked_nucleotide, echo=FALSE}
-stacked_nt <- filtered_SARS_mutation
-stacked_nt$mutation_type <- paste(str_sub(filtered_SARS_mutation$nt_mutation,1,1), ".", str_sub(filtered_SARS_mutation$nt_mutation,-1,-1), sep="")
-
-ggplot(stacked_nt, aes(x=clade, y=actual_count/expected_count, fill=mutation_type))+
-  geom_bar(position="stack", stat="identity")+
-  scale_fill_brewer(palette="Paired", name="Nucleotide Mutation")+
-  theme_bw()+
-  labs(x="Phylogenetic Clade", y="Normalized Mutation Count")
-```
-
-In the following amino acid mutation plot, individual plots indicate the starting amino acid (i.e., clade founder) and stacked bars within each plot indicate what that amino acid mutated to.
-
-```{r stacked_amino_acid, echo=FALSE}
-stacked_col <- colorRampPalette(brewer.pal(8,"Set1"))(79)
-
-stacked_aa <- filtered_SARS_mutation
-#stacked_aa$clade_founder <- str_sub(filtered_SARS_mutation$clade_founder_aa,1,1)
-#stacked_aa$mutant <- str_sub(filtered_SARS_mutation$mutant_aa,1,1)
-
-ggplot(stacked_aa, aes(x=clade, y=actual_count/expected_count, fill=mutant_aa))+
-  geom_bar(position="stack", stat="identity")+
-  facet_wrap(~clade_founder_aa, ncol=7)+
-  scale_fill_manual(values=stacked_col, name="Amino Acid Mutation")+
-  scale_x_discrete(guide=guide_axis(n.dodge=5))+
-  theme_bw()+
-  labs(x="Phylogenetic Clade", y="Normalized Mutation Count")
-```
-
-## Restructure Data for Analyses
 
 To quickly calculate the p-value for each contingency table analysis and ensure the user can easily understand what is being compared in each hypothesis test, restructure the data such that all of the variables necessary to run the statistical test are in one row. That includes observed and expected counts for clade 1 and observed and expected counts for clade 2.
 
@@ -208,11 +216,11 @@ For each comparison, calculate the probability of obtaining the observed and exp
 
 ```{r contingency_table}
 # Iterate through rows and compare clade 1 observed and expected values to clade 2 observed and expected values.
-#p_values <- data.frame(p_value=apply(comparisons, 1, FUN=function(c) {fisher.test(rbind(c(as.numeric(c["actual_count_1"]),as.numeric(c["rounded_expected_1"])),c(as.numeric(c["actual_count_2"]),as.numeric(c["rounded_expected_2"]))))$p.value}))
+p_values <- data.frame(p_value=apply(comparisons, 1, FUN=function(c) {fisher.test(rbind(c(as.numeric(c["actual_count_1"]),as.numeric(c["rounded_expected_1"])),c(as.numeric(c["actual_count_2"]),as.numeric(c["rounded_expected_2"]))))$p.value}))
 
 # Save and load the variable because calculating p-values may take a long time.
-#save(p_values, file=paste("pvalues", paste(clades, collapse="_"), option, ".Rda", sep=""))
-load(paste("pvalues", paste(clades, collapse="_"), option, ".Rda", sep=""))
+#save(p_values, file=paste("../results/expected_and_actual_counts_ratio/pvalues", paste(clades, collapse="_"), option, ".Rda", sep=""))
+load(paste("../results/expected_and_actual_counts_ratio/pvalues", paste(clades, collapse="_"), option, ".Rda", sep=""))
 ```
 
 Combine the p-values calculated using the contingency table analyses with the data frame of comparisons.
@@ -256,15 +264,24 @@ After correcting the p-values, a large portion of the p-values equal one. The se
 
 ```{r volcano_corrected, echo=FALSE}
 # After dropping P = 1, plot the corrected p-values.
-color <- colorRampPalette(brewer.pal(8,"Set1"))(comparison_p_values[,paste("clade_founder", option, sep="_")] %>% unique() %>% length())
-
 volcano <- comparison_p_values[which(comparison_p_values$p_value_corrected!=1),]
-ggplot(volcano, aes(x=fold_change, y=-log10(p_value_corrected), label=get(merge_column), color=get(paste("clade_founder", option, sep="_"))))+
+if("gene" %notin% colnames(volcano)){
+  volcano$gene <- ifelse(volcano$gene_1==volcano$gene_2, volcano$gene_1, paste(volcano$gene_1, volcano$gene_2, sep=";"))
+}
+color <- colorRampPalette(brewer.pal(8,"Set1"))(length(unique(volcano$gene)))
+
+p <- ggplot(volcano, aes(x=fold_change, y=-log10(p_value_corrected), label=get(merge_column), color=gene))+
   geom_point()+
   geom_text(color="black", size=2, nudge_y=0.2)+
   geom_hline(yintercept=-log10(0.05), col="red", linetype=2)+
   scale_color_manual(values=color, name="mutation")+
   theme_bw()
+
+p + theme(legend.position="none")
+```
+
+```{r volcano_corrected_legend}
+p + theme(legend.position="bottom")
 ```
 
 ## Verify Analyses
