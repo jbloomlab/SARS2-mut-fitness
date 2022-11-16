@@ -1,36 +1,38 @@
-CLADES = ["20A","20B"...]
+import pandas as pd
+import itertools 
+
+# Read in the SARS-CoV-2 mutation data.
+SARS_mutation_data = pd.read_csv("../results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv")
+
+# Create a list of the unique clades in the data set.
+CLADES = {clade for clade in SARS_mutation_data.clade.to_list()}
+
+# Generate clade comparisons and save as strings. 
+COMPARISONS = [f"{clade1}_{clade2}" for clade1, clade2  in itertools.combinations(CLADES, 2)]
+
+# Compare both nucleotide mutations and amino acid mutations.
+MUTATION_TYPE = ["nt","aa"]
 
 rule all:
 	input:
-		"file with all volcano plots?"
-
-rule filter_data:
-	input:
-		"results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv", "all", 0 
-	output:
-		temp("results/expected_and_actual_counts_ratio/{clade}{mutation_type}.csv")
-	script:
-		"filter by subset, min expected and save individual clades"
+		expand("results/pvalues_{mutation_type}.csv", mutation_type=MUTATION_TYPE)
 	
 rule calculate_p_values:
 	input:
-		"results/expected_and_actual_counts_ratio/{clade}{mutation_type}.csv", 0.5
+		 "../results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv"
 	output:
-		temp("results/expected_and_actual_counts_ratio/pvalues{clade}_{clade}{mutation_type}.Rda")
+		temp("results/pvalues{comparisons}_{mutation_type}.csv")
+	params:
+		subset="all",
+		min_expected=0,
+		pseudo=0.5
 	script:
-		"insert function inputs here  (pseudo)"
+		"scripts/calculate_p_values.R"
 
-rule combine_p_values:
+rule aggregate:
 	input:
-		"results/expected_and_actual_counts_ratio/pvalues{clade}_{clade}{mutation_type}.Rda"
+		expand("results/pvalues{comparisons}_{mutation_type}.csv", comparisons=COMPARISONS)
 	output:
-		protected("results/expected_and_actual_counts_ratio/pvalues_{mutation_type}.Rda")
+		protected("results/pvalues_{mutation_type}.csv")
 	shell:
 		"awk 'FNR==1 && NR!=1 {while(/^<header>/) getline;} 1 {print}' {input} > {output}"
-		
-rule plot_volcano:
-	input:
-
-	output:
-
-	script:
