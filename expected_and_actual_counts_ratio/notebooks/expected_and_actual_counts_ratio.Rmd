@@ -41,7 +41,7 @@ First, read in the comma-delimited data from the 'kfeldmann' computational noteb
 
 ```{r read_data}
 # Read data using access to the Fred Hutch server.
-SARS_mutation <- read.csv("../results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv", sep=",", header=TRUE)
+SARS_mutation <- read.csv("../../results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv", sep=",", header=TRUE)
 
 # Read data from github.com.
 #SARS_mutation <- read.csv("https://media.githubusercontent.com/media/jbloomlab/SARS2-mut-rates/main/results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv", sep=",", header=TRUE)
@@ -60,7 +60,7 @@ country <- "all"
 unique(SARS_mutation$clade)
 
 # Identify the two clades that will be included in comparisons.
-clades <- c("22A","22B")
+clades <- c("20A","22B")
 
 # Define a minimum threshold for the number of expected counts. Mutations below this threshold will be removed.
 min_expected <- 0
@@ -92,7 +92,6 @@ aa_group <- as.data.frame(filtered_SARS_mutation %>% group_by(clade, aa_mutation
 # Reduce columns for nucleotide mutation analyses to make workflow easier to follow.
 nt_group <- filtered_SARS_mutation[,c("clade","nt_mutation","clade_founder_nt","nt_site","synonymous","four_fold_degenerate","gene","actual_count","expected_count")]
 
-# consider entire gene column
 # Should I compare mutations with different wild types? (A200T vs C200T) Plot?
 ```
 
@@ -134,11 +133,11 @@ aa_type <- paste(aa_group$clade_founder_aa, ".", aa_group$mutant_aa, sep="")
 
 ## Visualize the Data
 
-After numerically describing the nucleotide and amino acid mutation data, use stacked bar plots to visual the proportion of each mutation for each clade. The number of mutations is normalized by the expected count.
+After numerically describing the nucleotide and amino acid mutation data, use stacked bar plots to visual the proportion of each mutation for each clade. The number of mutations is normalized by the expected count. To simplify the plot, only the nucleotide mutations in the spike protein are plotted. Previous studies have shown that this protein is important for SARS-CoV-2 evolution.
 
 ```{r stacked_nucleotide, echo=FALSE}
-stacked_nt <- nt_group
-stacked_nt$mutation_type <- paste(str_sub(nt_group$nt_mutation,1,1), ".", str_sub(nt_group$nt_mutation,-1,-1), sep="")
+stacked_nt <- nt_group[which(nt_group$gene=="S"),]
+stacked_nt$mutation_type <- paste(str_sub(stacked_nt$nt_mutation,1,1), ".", str_sub(stacked_nt$nt_mutation,-1,-1), sep="")
 
 ggplot(stacked_nt, aes(x=clade, y=actual_count/expected_count, fill=mutation_type))+
   geom_bar(position="stack", stat="identity")+
@@ -147,18 +146,15 @@ ggplot(stacked_nt, aes(x=clade, y=actual_count/expected_count, fill=mutation_typ
   labs(x="Phylogenetic Clade", y="Normalized Mutation Count")
 ```
 
-In the following amino acid mutation plot, individual plots indicate the starting amino acid (i.e., clade founder) and stacked bars within each plot indicate what that amino acid mutated to.
+In the following amino acid mutation plot, individual plots indicate the starting amino acid (i.e., clade founder) and stacked bars within each plot indicate what that amino acid mutated to. Again, only the amino acid mutations in the spike protein are plotted.
 
 ```{r stacked_amino_acid, echo=FALSE}
 stacked_col <- colorRampPalette(brewer.pal(8,"Set1"))(21)
+stacked_aa <- aa_group[which(aa_group$gene=="S"),]
 
-stacked_aa <- aa_group
-stacked_aa$clade_founder <- str_sub(aa_group$clade_founder_aa,1,1)
-stacked_aa$mutant <- str_sub(aa_group$mutant_aa,1,1)
-
-ggplot(stacked_aa, aes(x=clade, y=actual_count/expected_count, fill=mutant))+
+ggplot(stacked_aa, aes(x=clade, y=actual_count/expected_count, fill=mutant_aa))+
   geom_bar(position="stack", stat="identity")+
-  facet_wrap(~clade_founder, ncol=7)+
+  facet_wrap(~clade_founder_aa, ncol=5)+
   scale_fill_manual(values=stacked_col, name="Amino Acid Mutation")+
   scale_x_discrete(guide=guide_axis(n.dodge=5))+
   theme_bw()+
@@ -216,11 +212,11 @@ For each comparison, calculate the probability of obtaining the observed and exp
 
 ```{r contingency_table}
 # Iterate through rows and compare clade 1 observed and expected values to clade 2 observed and expected values.
-p_values <- data.frame(p_value=apply(comparisons, 1, FUN=function(c) {fisher.test(rbind(c(as.numeric(c["actual_count_1"]),as.numeric(c["rounded_expected_1"])),c(as.numeric(c["actual_count_2"]),as.numeric(c["rounded_expected_2"]))))$p.value}))
+#p_values <- data.frame(p_value=apply(comparisons, 1, FUN=function(c) {fisher.test(rbind(c(as.numeric(c["actual_count_1"]),as.numeric(c["rounded_expected_1"])),c(as.numeric(c["actual_count_2"]),as.numeric(c["rounded_expected_2"]))))$p.value}))
 
 # Save and load the variable because calculating p-values may take a long time.
-#save(p_values, file=paste("../results/expected_and_actual_counts_ratio/pvalues", paste(clades, collapse="_"), option, ".Rda", sep=""))
-load(paste("../results/expected_and_actual_counts_ratio/pvalues", paste(clades, collapse="_"), option, ".Rda", sep=""))
+#save(p_values, file=paste("../results/pvalues", paste(clades, collapse="_"), option, ".Rda", sep=""))
+load(paste("../results/pvalues", paste(clades, collapse="_"), option, ".Rda", sep=""))
 ```
 
 Combine the p-values calculated using the contingency table analyses with the data frame of comparisons.
@@ -262,26 +258,38 @@ ggplot(comparison_p_values, aes(x=fold_change, y=-log10(p_value)))+
 
 After correcting the p-values, a large portion of the p-values equal one. The second volcano plot drops P = 1 and uses the remaining corrected p-values. Points are colored by the starting nucleotide or amino acid mutation (i.e., clade founder) and labels indicate the mutation. The red line indicates a significance value of P = 0.05.
 
-```{r volcano_corrected, echo=FALSE}
+```{r volcano_corrected, echo=FALSE, fig.height=10}
 # After dropping P = 1, plot the corrected p-values.
 volcano <- comparison_p_values[which(comparison_p_values$p_value_corrected!=1),]
 if("gene" %notin% colnames(volcano)){
-  volcano$gene <- ifelse(volcano$gene_1==volcano$gene_2, volcano$gene_1, paste(volcano$gene_1, volcano$gene_2, sep=";"))
+  volcano$gene <- ifelse(volcano$gene_1==volcano$gene_2, volcano$gene_1, paste(volcano$gene_1, volcano$gene_2, sep="_"))
 }
 color <- colorRampPalette(brewer.pal(8,"Set1"))(length(unique(volcano$gene)))
 
-p <- ggplot(volcano, aes(x=fold_change, y=-log10(p_value_corrected), label=get(merge_column), color=gene))+
+ggplot(volcano, aes(x=fold_change, y=-log10(p_value_corrected), label=get(merge_column), color=gene))+
+  geom_point()+
+  geom_text(color="black", size=2, nudge_y=0.2)+
+  geom_hline(yintercept=-log10(0.05), col="red", linetype=2)+
+  scale_color_manual(values=color, name="mutation")+
+  theme_bw()+
+  theme(legend.position="bottom")
+```
+
+Plot the same volcano plot but color only the points where the mutation is in the spike protein for one or both clades.
+
+```{r volcano_corrected_spike, echo=FALSE}
+spike <- volcano$gene[grep("S", volcano$gene)]
+volcano$spike <- ifelse(volcano$gene %in% spike, volcano$gene, "non-spike")
+non_spike <- which(levels(as.factor(volcano$spike))=="non-spike")
+color <- colorRampPalette(brewer.pal(8,"Set1"))(length(unique(volcano$spike)))
+color[non_spike] <- "grey"
+
+ggplot(volcano, aes(x=fold_change, y=-log10(p_value_corrected), label=get(merge_column), color=spike))+
   geom_point()+
   geom_text(color="black", size=2, nudge_y=0.2)+
   geom_hline(yintercept=-log10(0.05), col="red", linetype=2)+
   scale_color_manual(values=color, name="mutation")+
   theme_bw()
-
-p + theme(legend.position="none")
-```
-
-```{r volcano_corrected_legend}
-p + theme(legend.position="bottom")
 ```
 
 ## Verify Analyses
