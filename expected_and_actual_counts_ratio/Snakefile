@@ -29,10 +29,10 @@ rule calculate_p_values:
 	script:
 		"scripts/calculate_p_values.R"
 
-rule aggregate:
+rule combine_data:
 	input:
-		expand("results/pvalues{comparisons}_{mutation_type}.csv", comparisons=COMPARISONS)
+		expand("results/pvalues{comparisons}_{mutation_type}.csv", comparisons=COMPARISONS, mutation_type=MUTATION_TYPE)
 	output:
 		protected("results/pvalues_{mutation_type}.csv")
 	shell:
-		"awk 'FNR==1 && NR!=1 {while(/^<header>/) getline;} 1 {print}' {input} > {output}"
+		"awk '(NR == 1) || (FNR > 1)' {input} > {output}"
