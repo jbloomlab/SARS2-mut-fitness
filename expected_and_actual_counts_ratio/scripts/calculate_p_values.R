@@ -1,36 +1,35 @@
 library(dplyr)
+library(stringr)
+
+`%notin%` <- Negate(`%in%`)
+
+# Create the name of the column with the mutations.
+merge_column <- paste(snakemake@wildcards[["mutation_type"]], "mutation", sep="_")
+
+# Identify the clades that are going to be compared.
+clades <- str_split(snakemake@wildcards[["comparisons"]], "_", 2)[[1]]
 
 # Read data using access to the Fred Hutch server.
 SARS_mutation <- read.csv(snakemake@input[[1]], sep=",", header=TRUE)
 
 # Include data from certain countries AND exclude branches with very high mutation rates and questionable mutations.
-filtered_SARS_mutation <- subset(SARS_mutation, subset==snakemake@params@subset & exclude=="False" & expected_count>=snakemake@params@min_expected)
-
-# Make a list of the unique clades in the dataset.
-clades <- unique(filtered_SARS_mutation$clade)
+filtered_SARS_mutation <- subset(SARS_mutation, subset==snakemake@params[["subset"]] & exclude=="False" & expected_count>=snakemake@params[["min_expected"]] & clade %in% clades)
 
 # Filter columns to make workflow easier to interpret.
-if(snakemake@wildcards[["nt"]]=="nt"){
-   nt_group <- filtered_SARS_mutation[,c("clade","nt_mutation","clade_founder_nt","nt_site","synonymous","four_fold_degenerate","gene","actual_count","expected_count")]
+if(snakemake@wildcards[["mutation_type"]]=="nt"){
+   temp <- filtered_SARS_mutation[,c("clade","nt_mutation","clade_founder_nt","nt_site","synonymous","four_fold_degenerate","gene","actual_count","expected_count")]
 }
 
 # Group by amino acid mutation and add counts for identical amino acid mutations.
-if(snakemake@wildcards[["aa"]]=="aa"){
-   aa_group <- as.data.frame(filtered_SARS_mutation %>% group_by(clade, aa_mutation, clade_founder_aa, codon_site, mutant_aa, synonymous, gene) %>% summarise(actual_count=sum(actual_count), expected_count=sum(expected_count)))
+if(snakemake@wildcards[["mutation_type"]]=="aa"){
+   temp <- as.data.frame(filtered_SARS_mutation %>% group_by(clade, aa_mutation, clade_founder_aa, codon_site, mutant_aa, synonymous, gene) %>% summarise(actual_count=sum(actual_count), expected_count=sum(expected_count)))
 }
 
-#
-filtered_SARS_mutation <-  
-
-
-
-
-
-
-
+# Rename variable to make code more readable.
+filtered_SARS_mutation <- temp  
 
 # Calculate the ratio of actual counts (i.e., observed) to expected counts (i.e., expected) with a pseudocount.
-filtered_SARS_mutation$observed_expected <- (filtered_SARS_mutation$actual_count + snakemake@input[[2]])/(filtered_SARS_mutation$expected_count + snakemake@input[[2]])
+filtered_SARS_mutation$observed_expected <- (filtered_SARS_mutation$actual_count + snakemake@params[["pseudo"]])/(filtered_SARS_mutation$expected_count + snakemake@params[["pseudo"]])
 
 # Round expected counts because contingency table analyses (e.g., Fisher's Exact test) can only analyze integers.
 filtered_SARS_mutation$rounded_expected <- round(filtered_SARS_mutation$expected_count)
@@ -66,3 +65,6 @@ comparison_p_values$p_value_corrected <- p.adjust(comparison_p_values$p_value, m
 
 # Calculate fold-change for plotting volcano plots.
 comparison_p_values$fold_change <- log2(comparison_p_values$observed_expected_1/comparison_p_values$observed_expected_2)
+
+# Create CSV file with the data for one comparison.
+write.csv(comparison_p_values, snakemake@output[[1]])
