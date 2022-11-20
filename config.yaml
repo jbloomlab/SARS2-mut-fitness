@@ -75,5 +75,8 @@ orf1ab_to_nsps:
   nsp12 (RdRp): [4393, 5324]
   nsp13: [5325, 5925]
   nsp14: [5926, 6452]
-  nsp15: [6453, 6798],
+  nsp15: [6453, 6798]
   nsp16: [6799, 7096]
+  
+# Pseudocount for calculating amino-acid fitnesses
+fitness_pseudocount: 0.5

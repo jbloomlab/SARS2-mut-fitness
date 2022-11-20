@@ -11,6 +11,9 @@ rule all:
     """Target rule with desired output files."""
     input:
         "results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv",
+        "results/aa_fitness/fitness_all.csv",
+        "results/aa_fitness/fitness_by_clade.csv",
+        "results/aa_fitness/fitness_by_subset.csv",
 
 
 rule get_mat_tree:
@@ -277,3 +280,18 @@ rule merge_expected_and_actual_counts:
         notebook="results/expected_vs_actual_mut_counts/merged_expected_and_actual_counts.ipynb",
     notebook:
         "notebooks/merge_expected_and_actual_counts.py.ipynb"
+
+
+rule aa_fitness:
+    """Fitnesses from expected vs actual counts for amino-acid mutations."""
+    input:
+        csv=rules.merge_expected_and_actual_counts.output.csv,
+    output:
+        aa_all="results/aa_fitness/fitness_all.csv",
+        aa_by_clade="results/aa_fitness/fitness_by_clade.csv",
+        aa_by_subset="results/aa_fitness/fitness_by_subset.csv",
+    params:
+        orf1ab_to_nsps=config["orf1ab_to_nsps"],
+        fitness_pseudocount=config["fitness_pseudocount"],
+    notebook:
+        "notebooks/aa_fitness.py.ipynb"

@@ -95,6 +95,25 @@ We compute these expected numbers of mutations versus the actual numbers of muta
 
 The expected and actual number of nucleotide mutation counts at each site are in [results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv](results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv).
 
+### Computation of amino-acid fitness effects
+We then collapse the expected and actual counts for each amino-acid mutation, excluding the small number of sites that are in overlapping reading frames.
+
+We estimate the fitness $f$ of each mutation as
+$$ f = \log \left(\frac{n_{actual} + P}{n_{expected} + P}\right)$$
+where $P$ is a pseudocount specified in [config.yaml](config.yaml) as `fitness_pseudocount`, and we are using the natural log.
+So mutations with more counts than expected will have positive fitness values, and those with less negativefitness values.
+
+Note that these fitness values will only be accurate of the number of expected counts is reasonably high.
+
+The resulting fitness estimates are written to the following files:
+
+ - [results/aa_fitness/fitness_all.csv](results/aa_fitness/fitness_all.csv): estimates aggregating across all clades.
+ - [results/aa_fitness/fitness_by_clade.csv](results/aa_fitness/fitness_by_clade.csv): estimates for each individual clade.
+ - [results/aa_fitness/fitness_by_subset.csv](results/aa_fitness/fitness_by_subset.csv): estimates splitting out by sequence subset.
+
+Note also that the above files contain mutations in both numbering of the ORF1ab polypeptide and the nsp proteins contained within it.
+The nsp protein mutations are a subset of the ORF1ab mutations, so if you examine both you would be double counting mutations.
+
 ### Caveats of analysis
 None of these are expected to seriously affect the accuracy of the current analysis, but they could become problematic if the same analysis is applied to substantially more diverged clades:
 
@@ -108,7 +127,7 @@ None of these are expected to seriously affect the accuracy of the current analy
 
  - Four-fold synonymous sites are identified in the clade founder, which could lead to mis-identification if seuqences in a clade become highly diverged from the founder.
 
- - Multiple mutations in the same codon in a clade can violate the assumptions about how sites are defined as synonymous, etc.
+ - Multiple mutations in the same codon in a clade can violate the assumptions about how sites are defined as synonymous, etc. For this reason they are excluded, and so we only include mutations that are from the clade founder amino acid identity.
  
  - We don't consider non-uniformity in mutation rate across the primary sequence.
  
