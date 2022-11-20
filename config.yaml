@@ -58,3 +58,22 @@ sites_to_exclude:
 # for analysis of 4-fold synonymous mutation spectra/rates, only keep clade subsets with
 # at least this many non-excluded mutation counts
 synonymous_spectra_min_counts: 5000
+
+# Orf1ab to Nsp numbering (nucleotide start in Orf1ab) from
+# https://github.com/theosanderson/Codon2Nucleotide/blob/main/src/App.js
+orf1ab_to_nsps:
+  nsp1: [1, 180]
+  nsp2: [181, 818]
+  nsp3: [819, 2763]
+  nsp4: [2764, 3263]
+  nsp5 (Mpro): [3264, 3569]
+  nsp6: [3570, 3859]
+  nsp7: [3860, 3942]
+  nsp8: [3943, 4140]
+  nsp9: [4141, 4253]
+  nsp10: [4254, 4392]
+  nsp12 (RdRp): [4393, 5324]
+  nsp13: [5325, 5925]
+  nsp14: [5926, 6452]
+  nsp15: [6453, 6798],
+  nsp16: [6799, 7096]

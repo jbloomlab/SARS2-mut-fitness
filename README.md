@@ -1,4 +1,4 @@
-# SARS-CoV-2 observed versus expected mutation counts
+# Estimate fitness effects of SARS-CoV-2 mutations from observed versus expected mutation counts
 
 ## Overview
 This repository analyzes mutations in human SARS-CoV-2, and looks at how many counts of each mutation are observed versus those expected from mutation rate.
@@ -13,9 +13,9 @@ This requires you to install [conda](https://docs.conda.io/), and then run:
 
     conda env create -f environment.yml
 
-That command will create a `conda` environment named `SARS2-mut-rates` which you can activate with:
+That command will create a `conda` environment named `SARS2-mut-fitness` which you can activate with:
 
-    conda activate SARS2-mut-rates
+    conda activate SARS2-mut-fitness
 
 Then run the [snakemake](https://snakemake.readthedocs.io/) pipeline in [Snakefile](Snakefile), which reads its configuration from [config.yaml](config.yaml) by running:
 
@@ -93,7 +93,7 @@ The expected number of mutations at each site (under neutrality) from the parent
 
 We compute these expected numbers of mutations versus the actual numbers of mutations at each site, only considering actual mutations that are single nucleotide changes from the clade founder codon.
 
-The expected and actual number of counts at each site are in [results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv](results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv).
+The expected and actual number of nucleotide mutation counts at each site are in [results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv](results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv).
 
 ### Caveats of analysis
 None of these are expected to seriously affect the accuracy of the current analysis, but they could become problematic if the same analysis is applied to substantially more diverged clades:

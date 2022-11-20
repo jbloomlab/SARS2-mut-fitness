@@ -1,4 +1,4 @@
-name: SARS2-mut-rates
+name: SARS2-mut-fitness
 channels:
   - conda-forge
   - defaults
@@ -22,5 +22,5 @@ dependencies:
   - papermill=2.3.4
   - python=3.9
   - scikit-learn=1.1.1
-  - snakemake=7.14
+  - snakemake=7.18.2
   - usher=0.5.6
