@@ -295,3 +295,12 @@ rule aa_fitness:
         fitness_pseudocount=config["fitness_pseudocount"],
     notebook:
         "notebooks/aa_fitness.py.ipynb"
+
+
+rule analyze_aa_fitness:
+    """Analyze and plot amino-acid mutation fitnesses."""
+    input:
+        aa_all="results/aa_fitness/fitness_all.csv",
+        aa_by_subset="results/aa_fitness/fitness_by_subset.csv",
+    params:
+        min_expected_count=config["min_expected_count"],

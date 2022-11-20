@@ -80,3 +80,6 @@ orf1ab_to_nsps:
   
 # Pseudocount for calculating amino-acid fitnesses
 fitness_pseudocount: 0.5
+
+# initial cutoff for minimum expected count to show fitness values
+min_expected_count: 20
