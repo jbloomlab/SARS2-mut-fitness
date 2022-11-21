@@ -95,21 +95,21 @@ We compute these expected numbers of mutations versus the actual numbers of muta
 
 The expected and actual number of nucleotide mutation counts at each site are in [results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv](results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv).
 
-### Computation of amino-acid fitness effects
+### Computation of amino-acid mutation fitness effects
 We then collapse the expected and actual counts for each amino-acid mutation, excluding the small number of sites that are in overlapping reading frames.
 
-We estimate the fitness $f$ of each mutation as
-$$ f = \log \left(\frac{n_{actual} + P}{n_{expected} + P}\right)$$
+We estimate the fitness effect $\Delta f$ of each mutation as
+$$ \Delta f = \log \left(\frac{n_{actual} + P}{n_{expected} + P}\right)$$
 where $P$ is a pseudocount specified in [config.yaml](config.yaml) as `fitness_pseudocount`, and we are using the natural log.
-So mutations with more counts than expected will have positive fitness values, and those with less negativefitness values.
+So mutations with more counts than expected will have positive fitness effects, and those with less counts than expected will have negative fitness effects.
 
-Note that these fitness values will only be accurate of the number of expected counts is reasonably high.
+Note that these fitness effects will only be accurate of the number of expected counts is reasonably high.
 
-The resulting fitness estimates are written to the following files:
+The resulting fitness effect estimates are written to the following files:
 
- - [results/aa_fitness/fitness_all.csv](results/aa_fitness/fitness_all.csv): estimates aggregating across all clades.
- - [results/aa_fitness/fitness_by_clade.csv](results/aa_fitness/fitness_by_clade.csv): estimates for each individual clade.
- - [results/aa_fitness/fitness_by_subset.csv](results/aa_fitness/fitness_by_subset.csv): estimates splitting out by sequence subset.
+ - [results/aa_fitness/aamut_fitness_all.csv](results/aa_fitness/aamut_fitness_all.csv): estimates aggregating across all clades.
+ - [results/aa_fitness/aamut_fitness_by_clade.csv](results/aa_fitness/aamut_fitness_by_clade.csv): estimates for each individual clade.
+ - [results/aa_fitness/aamut_fitness_by_subset.csv](results/aa_fitness/aamut_fitness_by_subset.csv): estimates splitting out by sequence subset.
 
 Note also that the above files contain mutations in both numbering of the ORF1ab polypeptide and the nsp proteins contained within it.
 The nsp protein mutations are a subset of the ORF1ab mutations, so if you examine both you would be double counting mutations.
