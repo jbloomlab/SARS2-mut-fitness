@@ -15,7 +15,8 @@ COMPARISONS = [f"{clade1}_{clade2}" for clade1, clade2  in itertools.combination
 MUTATION_TYPE = ["nt","aa"]
 
 rule all:
-	input:
+	input: 
+		expand("plots_{mutation_type}/{comparisons}.pdf", comparisons=COMPARISONS, mutation_type=MUTATION_TYPE),
 		expand("results/pvalues_{mutation_type}.csv", mutation_type=MUTATION_TYPE)
 	
 rule calculate_p_values:
@@ -27,6 +28,14 @@ rule calculate_p_values:
 		subset="all", min_expected=0, pseudo=0.5
 	script: 
 		"scripts/calculate_p_values.R"
+
+rule volcano_plot:
+	input:
+		expand("results/pvalues{comparisons}_{mutation_type}.csv", comparisons=COMPARISONS, mutation_type=MUTATION_TYPE)
+	output:
+		"plots_{mutation_type}/{comparisons}.pdf"
+	script:
+		"scripts/volcano_plot.R"
 
 rule combine_data:
 	input:
