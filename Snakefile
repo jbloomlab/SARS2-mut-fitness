@@ -14,6 +14,7 @@ rule all:
         "results/aa_fitness/fitness_all.csv",
         "results/aa_fitness/fitness_by_clade.csv",
         "results/aa_fitness/fitness_by_subset.csv",
+        directory("results/aa_fitness/plots"),
 
 
 rule get_mat_tree:
@@ -304,3 +305,9 @@ rule analyze_aa_fitness:
         aa_by_subset="results/aa_fitness/fitness_by_subset.csv",
     params:
         min_expected_count=config["min_expected_count"],
+    output:
+        outdir=directory("results/aa_fitness/plots"),
+    log:
+        notebook="results/aa_fitness/analyze_aa_fitness.ipynb",
+    notebook:
+        "notebooks/analyze_aa_fitness.py.ipynb"
