@@ -1,4 +1,4 @@
-# SARS-CoV-2 observed versus expected mutation counts
+# Estimate fitness effects of SARS-CoV-2 mutations from observed versus expected mutation counts
 
 ## Overview
 This repository analyzes mutations in human SARS-CoV-2, and looks at how many counts of each mutation are observed versus those expected from mutation rate.
@@ -13,9 +13,9 @@ This requires you to install [conda](https://docs.conda.io/), and then run:
 
     conda env create -f environment.yml
 
-That command will create a `conda` environment named `SARS2-mut-rates` which you can activate with:
+That command will create a `conda` environment named `SARS2-mut-fitness` which you can activate with:
 
-    conda activate SARS2-mut-rates
+    conda activate SARS2-mut-fitness
 
 Then run the [snakemake](https://snakemake.readthedocs.io/) pipeline in [Snakefile](Snakefile), which reads its configuration from [config.yaml](config.yaml) by running:
 
@@ -93,7 +93,26 @@ The expected number of mutations at each site (under neutrality) from the parent
 
 We compute these expected numbers of mutations versus the actual numbers of mutations at each site, only considering actual mutations that are single nucleotide changes from the clade founder codon.
 
-The expected and actual number of counts at each site are in [results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv](results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv).
+The expected and actual number of nucleotide mutation counts at each site are in [results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv](results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv).
+
+### Computation of amino-acid mutation fitness effects
+We then collapse the expected and actual counts for each amino-acid mutation, excluding the small number of sites that are in overlapping reading frames.
+
+We estimate the fitness effect $\Delta f$ of each mutation as
+$$ \Delta f = \log \left(\frac{n_{actual} + P}{n_{expected} + P}\right)$$
+where $P$ is a pseudocount specified in [config.yaml](config.yaml) as `fitness_pseudocount`, and we are using the natural log.
+So mutations with more counts than expected will have positive fitness effects, and those with less counts than expected will have negative fitness effects.
+
+Note that these fitness effects will only be accurate of the number of expected counts is reasonably high.
+
+The resulting fitness effect estimates are written to the following files:
+
+ - [results/aa_fitness/aamut_fitness_all.csv](results/aa_fitness/aamut_fitness_all.csv): estimates aggregating across all clades.
+ - [results/aa_fitness/aamut_fitness_by_clade.csv](results/aa_fitness/aamut_fitness_by_clade.csv): estimates for each individual clade.
+ - [results/aa_fitness/aamut_fitness_by_subset.csv](results/aa_fitness/aamut_fitness_by_subset.csv): estimates splitting out by sequence subset.
+
+Note also that the above files contain mutations in both numbering of the ORF1ab polypeptide and the nsp proteins contained within it.
+The nsp protein mutations are a subset of the ORF1ab mutations, so if you examine both you would be double counting mutations.
 
 ### Caveats of analysis
 None of these are expected to seriously affect the accuracy of the current analysis, but they could become problematic if the same analysis is applied to substantially more diverged clades:
@@ -108,7 +127,7 @@ None of these are expected to seriously affect the accuracy of the current analy
 
  - Four-fold synonymous sites are identified in the clade founder, which could lead to mis-identification if seuqences in a clade become highly diverged from the founder.
 
- - Multiple mutations in the same codon in a clade can violate the assumptions about how sites are defined as synonymous, etc.
+ - Multiple mutations in the same codon in a clade can violate the assumptions about how sites are defined as synonymous, etc. For this reason they are excluded, and so we only include mutations that are from the clade founder amino acid identity.
  
  - We don't consider non-uniformity in mutation rate across the primary sequence.
  

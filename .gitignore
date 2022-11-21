@@ -24,3 +24,7 @@ results/expected_vs_actual_mut_counts/*
 
 dag.pdf
 notebooks/*.html
+
+!results/aa_fitness
+results/aa_fitness/*
+!results/aa_fitness/*.csv

@@ -11,6 +11,10 @@ rule all:
     """Target rule with desired output files."""
     input:
         "results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv",
+        "results/aa_fitness/aamut_fitness_all.csv",
+        "results/aa_fitness/aamut_fitness_by_clade.csv",
+        "results/aa_fitness/aamut_fitness_by_subset.csv",
+        "docs",
 
 
 rule get_mat_tree:
@@ -277,3 +281,46 @@ rule merge_expected_and_actual_counts:
         notebook="results/expected_vs_actual_mut_counts/merged_expected_and_actual_counts.ipynb",
     notebook:
         "notebooks/merge_expected_and_actual_counts.py.ipynb"
+
+
+rule aamut_fitness:
+    """Fitness effects from expected vs actual counts for amino-acid mutations."""
+    input:
+        csv=rules.merge_expected_and_actual_counts.output.csv,
+    output:
+        aa_all="results/aa_fitness/aamut_fitness_all.csv",
+        aa_by_clade="results/aa_fitness/aamut_fitness_by_clade.csv",
+        aa_by_subset="results/aa_fitness/aamut_fitness_by_subset.csv",
+    params:
+        orf1ab_to_nsps=config["orf1ab_to_nsps"],
+        fitness_pseudocount=config["fitness_pseudocount"],
+    notebook:
+        "notebooks/aamut_fitness.py.ipynb"
+
+
+rule analyze_aa_fitness:
+    """Analyze and plot amino-acid mutation fitnesses."""
+    input:
+        aamut_all=rules.aamut_fitness.output.aa_all,
+        aamut_by_subset=rules.aamut_fitness.output.aa_by_subset,
+    params:
+        min_expected_count=config["min_expected_count"],
+    output:
+        outdir=directory("results/aa_fitness/plots"),
+    log:
+        notebook="results/aa_fitness/analyze_aa_fitness.ipynb",
+    notebook:
+        "notebooks/analyze_aa_fitness.py.ipynb"
+
+
+rule plots_to_docs:
+    """Copy plots to docs for GitHub pages."""
+    input:
+        aa_fitness_plots_dir=rules.analyze_aa_fitness.output.outdir,
+    output:
+        docs=directory("docs"),
+    shell:
+        """
+        mkdir -p {output.docs}
+        cp {input.aa_fitness_plots_dir}/*.html {output.docs}
+        """
