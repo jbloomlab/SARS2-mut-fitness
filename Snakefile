@@ -14,7 +14,7 @@ rule all:
         "results/aa_fitness/fitness_all.csv",
         "results/aa_fitness/fitness_by_clade.csv",
         "results/aa_fitness/fitness_by_subset.csv",
-        directory("results/aa_fitness/plots"),
+        "docs",
 
 
 rule get_mat_tree:
@@ -311,3 +311,16 @@ rule analyze_aa_fitness:
         notebook="results/aa_fitness/analyze_aa_fitness.ipynb",
     notebook:
         "notebooks/analyze_aa_fitness.py.ipynb"
+
+
+rule plots_to_docs:
+    """Copy plots to docs for GitHub pages."""
+    input:
+        aa_fitness_plots_dir=rules.analyze_aa_fitness.output.outdir,
+    output:
+        docs=directory("docs"),
+    shell:
+        """
+        mkdir -p {output.docs}
+        cp {input.aa_fitness_plots_dir}/*.html {output.docs}
+        """
