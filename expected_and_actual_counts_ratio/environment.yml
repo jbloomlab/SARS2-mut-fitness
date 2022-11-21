@@ -1,0 +1,12 @@
+name: expected_v_actual
+channels: 
+        - conda-forge
+        - bioconda
+        - r
+dependencies: 
+        - snakemake>=7.0
+        - python>=3.9
+        - pandas
+        - r-tidyverse
+        - r-gtools
+
