@@ -212,11 +212,11 @@ For each comparison, calculate the probability of obtaining the observed and exp
 
 ```{r contingency_table}
 # Iterate through rows and compare clade 1 observed and expected values to clade 2 observed and expected values.
-#p_values <- data.frame(p_value=apply(comparisons, 1, FUN=function(c) {fisher.test(rbind(c(as.numeric(c["actual_count_1"]),as.numeric(c["rounded_expected_1"])),c(as.numeric(c["actual_count_2"]),as.numeric(c["rounded_expected_2"]))))$p.value}))
+p_values <- data.frame(p_value=apply(comparisons, 1, FUN=function(c) {fisher.test(rbind(c(as.numeric(c["actual_count_1"]),as.numeric(c["rounded_expected_1"])),c(as.numeric(c["actual_count_2"]),as.numeric(c["rounded_expected_2"]))))$p.value}))
 
 # Save and load the variable because calculating p-values may take a long time.
 #save(p_values, file=paste("../results/pvalues", paste(clades, collapse="_"), option, ".Rda", sep=""))
-load(paste("../results/pvalues", paste(clades, collapse="_"), option, ".Rda", sep=""))
+#load(paste("../results/pvalues", paste(clades, collapse="_"), option, ".Rda", sep=""))
 ```
 
 Combine the p-values calculated using the contingency table analyses with the data frame of comparisons.
@@ -250,7 +250,7 @@ The first volcano plot uses the uncorrected p-values, and the red line indicates
 
 ```{r volcano_all, echo=FALSE}
 # Plot the uncorrected p-values.
-ggplot(comparison_p_values, aes(x=fold_change, y=-log10(p_value)))+
+p <- ggplot(comparison_p_values, aes(x=fold_change, y=-log10(p_value)))+
   geom_point(alpha=0.5)+
   geom_hline(yintercept=-log10(0.05), col="red", linetype=2)+
   theme_bw()
@@ -258,7 +258,8 @@ ggplot(comparison_p_values, aes(x=fold_change, y=-log10(p_value)))+
 
 After correcting the p-values, a large portion of the p-values equal one. The second volcano plot drops P = 1 and uses the remaining corrected p-values. Points are colored by the starting nucleotide or amino acid mutation (i.e., clade founder) and labels indicate the mutation. The red line indicates a significance value of P = 0.05.
 
-```{r volcano_corrected, echo=FALSE, fig.height=10}
+```{r volcano_corrected, echo=FALSE}
+#fig.height=10?
 # After dropping P = 1, plot the corrected p-values.
 volcano <- comparison_p_values[which(comparison_p_values$p_value_corrected!=1),]
 if("gene" %notin% colnames(volcano)){
