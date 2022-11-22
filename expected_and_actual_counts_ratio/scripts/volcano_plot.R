@@ -1,5 +1,6 @@
 library(ggplot2)
 library(RColorBrewer)
+library(grid)
 
 `%notin%` <- Negate(`%in%`)
 
@@ -14,40 +15,32 @@ comparison_p_values <- read.csv(input_name, sep=",", header=TRUE)
 
 ## After dropping P = 1, plot the corrected p-values. ##
 volcano <- comparison_p_values[which(comparison_p_values$p_value_corrected!=1),]
-if("gene" %notin% colnames(volcano)){
-  volcano$gene <- ifelse(volcano$gene_1==volcano$gene_2, volcano$gene_1, paste(volcano$gene_1, volcano$gene_2, sep="_"))
-}
+color <- colorRampPalette(brewer.pal(8,"Set1"))(length(unique(volcano$gene)))
 
-if(merge_column == "nt_mutation"){
-	color <- colorRampPalette(brewer.pal(8,"Set1"))(length(unique(volcano$gene)))
+neg_clade <- textGrob(unique(volcano$clade_2), gp=gpar(fontsize=13, fontface="bold"))
+pos_clade <- textGrob(unique(volcano$clade_1), gp=gpar(fontsize=13, fontface="bold"))
 
-	plot <- ggplot(volcano, aes(x=fold_change, y=-log10(p_value_corrected), label=get(merge_column), color=gene))+
-  	  geom_point()+
-  	  geom_text(color="black", size=2, nudge_y=0.2)+
-  	  geom_hline(yintercept=-log10(0.05), col="red", linetype=2)+
-  	  scale_color_manual(values=color, name="mutation")+
-  	  theme_bw()+
-  	  theme(legend.position="bottom")
-}
+na <- ggplot(volcano, aes(x=fold_change, y=-log10(p_value_corrected), label=get(merge_column), color=gene))+
+  geom_point()+
+  geom_text(color="black", size=2, nudge_y=0.2)+
+  geom_hline(yintercept=-log10(0.05), col="red", linetype=2)+
+  scale_color_manual(values=color, name="Mutation")+
+  theme_bw()+
+  labs(x="Log2 Fold Change", y="-log10 FDR Corrected P-Value")
 
-## Aggregate all mutations that do not include the spike protein to 'non-spike'.
-if(merge_column == "aa_mutation"){
-	spike <- volcano$gene[grep("S", volcano$gene)]
-	volcano$spike <- ifelse(volcano$gene %in% spike, volcano$gene, "non-spike")
-	non_spike <- which(levels(as.factor(volcano$spike))=="non-spike")
-	color <- colorRampPalette(brewer.pal(8,"Set1"))(length(unique(volcano$spike)))
-	color[non_spike] <- "grey"
-
-	plot <- ggplot(volcano, aes(x=fold_change, y=-log10(p_value_corrected), label=get(merge_column), color=spike))+
-	  geom_point()+
-	  geom_text(color="black", size=2, nudge_y=0.2)+
-	  geom_hline(yintercept=-log10(0.05), col="red", linetype=2)+
-	  scale_color_manual(values=color, name="mutation")+
-	  theme_bw()
-}
+x <- layer_scales(na)$x$range$range
+y <- layer_scales(na)$y$range$range
 
 pdf(file=snakemake@output[[1]])
 
-plot
+if(is.null(x)){
+  na
+} else {
+  p <- na + coord_cartesian(xlim=c(-max(abs(x)), max(abs(x))))
+  x_mod <- p$coordinates$limits[[1]]
+  
+  p + annotation_custom(neg_clade,xmin=x_mod[1]*0.7,xmax=x_mod[1]*0.7,ymin=y[2]*0.95,ymax=y[2]*0.95)+ 
+      annotation_custom(pos_clade,xmin=x_mod[2]*0.7,xmax=x_mod[2]*0.7,ymin=y[2]*0.95,ymax=y[2]*0.95)
+}
 
 dev.off()
