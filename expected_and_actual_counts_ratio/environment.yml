@@ -9,4 +9,4 @@ dependencies:
         - pandas
         - r-tidyverse
         - r-gtools
-
+        - r-ggforce
