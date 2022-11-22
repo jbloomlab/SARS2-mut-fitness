@@ -39,14 +39,14 @@ clade1 <- filtered_SARS_mutation[which(filtered_SARS_mutation$clade==clades[1]),
 clade2 <- filtered_SARS_mutation[which(filtered_SARS_mutation$clade==clades[2]),]
 
 # Append '1' or '2' to the column names so that the two data frames can be easily combined.
-colnames(clade1)[colnames(clade1) %notin% merge_column] <- paste(colnames(clade1)[colnames(clade1) %notin% merge_column], "1", sep="_")
-colnames(clade2)[colnames(clade2) %notin% merge_column] <- paste(colnames(clade2)[colnames(clade2) %notin% merge_column], "2", sep="_")
+colnames(clade1)[colnames(clade1) %notin% c(merge_column, "gene")] <- paste(colnames(clade1)[colnames(clade1) %notin% c(merge_column, "gene")], "1", sep="_")
+colnames(clade2)[colnames(clade2) %notin% c(merge_column, "gene")] <- paste(colnames(clade2)[colnames(clade2) %notin% c(merge_column, "gene")], "2", sep="_")
 
 # Merge the two data frames by mutation so that each row represents one comparison.
-comparisons <- merge(clade1, clade2, by=merge_column)
+comparisons <- merge(clade1, clade2, by=c(merge_column, "gene"))
 
 # Determine if any of the columns from 'clade1' and 'clade2' are the same.
-col_names <- colnames(filtered_SARS_mutation)[colnames(filtered_SARS_mutation) %notin% merge_column]
+col_names <- colnames(filtered_SARS_mutation)[colnames(filtered_SARS_mutation) %notin% c(merge_column, "gene")]
 is_equal <- data.frame(sapply(col_names, FUN=function(c){identical(comparisons[,paste(c[1], 1, sep="_")], comparisons[,paste(c[1], 2, sep="_")])}))
 col_equal <- row.names(is_equal)[which(is_equal[1]=="TRUE")]
 
