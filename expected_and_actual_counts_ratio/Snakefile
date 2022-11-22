@@ -5,8 +5,9 @@ import itertools
 SARS_mutation_data = pd.read_csv("../results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv", dtype={'codon_position':'str', 'codon_site':'str'})
 
 # Create a list of the unique clades in the data set.
-CLADES = {clade for clade in SARS_mutation_data.clade.to_list()}
+#CLADES = {clade for clade in SARS_mutation_data.clade.to_list()}
 #CLADES = ["20A","20B","22A","22B"]
+CLADES = ["20A","20B","20C","20E","20G","20I","21C","21I","21J","21K","21M","22A","22B"]
 
 # Generate clade comparisons and save as strings. 
 COMPARISONS = [f"{clade1}_{clade2}" for clade1, clade2  in itertools.combinations(CLADES, 2)]
@@ -16,7 +17,7 @@ MUTATION_TYPE = ["nt","aa"]
 
 rule all:
 	input: 
-		#expand("plots_{mutation_type}/{comparisons}.pdf", comparisons=COMPARISONS, mutation_type=MUTATION_TYPE),
+		expand("plots_{mutation_type}/{comparisons}.pdf", comparisons=COMPARISONS, mutation_type=MUTATION_TYPE),
 		expand("results/pvalues_{mutation_type}.csv", mutation_type=MUTATION_TYPE)
 	
 rule calculate_p_values:
