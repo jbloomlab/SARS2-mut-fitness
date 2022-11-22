@@ -7,19 +7,13 @@ date: "`r format(Sys.Date(), '%Y-%m-%d')`"
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(warning=FALSE, message=FALSE)
 
-#install.packages("dplyr")
-#install.packages("ggplot2")
-#install.packages("ggforce")
-#install.packages("RColorBrewer")
-#install.packages("stringr")
-#install.packages("gtools")
-
 library(dplyr)
 library(ggplot2)
 library(ggforce)
 library(RColorBrewer)
 library(stringr)
 library(gtools)
+library(grid)
 
 `%notin%` <- Negate(`%in%`)
 ```
@@ -60,7 +54,7 @@ country <- "all"
 unique(SARS_mutation$clade)
 
 # Identify the two clades that will be included in comparisons.
-clades <- c("20A","22B")
+clades <- c("20A","22A")
 
 # Define a minimum threshold for the number of expected counts. Mutations below this threshold will be removed.
 min_expected <- 0
@@ -69,7 +63,7 @@ min_expected <- 0
 pseudo <- 0.5
 
 # Analyze nucleotide mutations or amino acid mutations ('nt' or 'aa')?
-option <- "aa"
+option <- "nt"
 merge_column <- paste(option, "mutation", sep="_")
 ```
 
@@ -190,14 +184,14 @@ clade1 <- filtered_SARS_mutation[which(filtered_SARS_mutation$clade==clades[1]),
 clade2 <- filtered_SARS_mutation[which(filtered_SARS_mutation$clade==clades[2]),]
 
 # Append '1' or '2' to the column names so that the two data frames can be easily combined.
-colnames(clade1)[colnames(clade1) %notin% merge_column] <- paste(colnames(clade1)[colnames(clade1) %notin% merge_column], "1", sep="_")
-colnames(clade2)[colnames(clade2) %notin% merge_column] <- paste(colnames(clade2)[colnames(clade2) %notin% merge_column], "2", sep="_")
+colnames(clade1)[colnames(clade1) %notin% c(merge_column, "gene")] <- paste(colnames(clade1)[colnames(clade1) %notin% c(merge_column, "gene")], "1", sep="_")
+colnames(clade2)[colnames(clade2) %notin% c(merge_column, "gene")] <- paste(colnames(clade2)[colnames(clade2) %notin% c(merge_column, "gene")], "2", sep="_")
 
 # Merge the two data frames by mutation so that each row represents one comparison.
-comparisons <- merge(clade1, clade2, by=merge_column)
+comparisons <- merge(clade1, clade2, by=c(merge_column, "gene"))
 
 # Determine if any of the columns from 'clade1' and 'clade2' are the same.
-col_names <- colnames(filtered_SARS_mutation)[colnames(filtered_SARS_mutation) %notin% merge_column]
+col_names <- colnames(filtered_SARS_mutation)[colnames(filtered_SARS_mutation) %notin% c(merge_column, "gene")]
 is_equal <- data.frame(sapply(col_names, FUN=function(c){identical(comparisons[,paste(c[1], 1, sep="_")], comparisons[,paste(c[1], 2, sep="_")])}))
 col_equal <- row.names(is_equal)[which(is_equal[1]=="TRUE")]
 
@@ -250,7 +244,7 @@ The first volcano plot uses the uncorrected p-values, and the red line indicates
 
 ```{r volcano_all, echo=FALSE}
 # Plot the uncorrected p-values.
-p <- ggplot(comparison_p_values, aes(x=fold_change, y=-log10(p_value)))+
+ggplot(comparison_p_values, aes(x=fold_change, y=-log10(p_value)))+
   geom_point(alpha=0.5)+
   geom_hline(yintercept=-log10(0.05), col="red", linetype=2)+
   theme_bw()
@@ -262,35 +256,31 @@ After correcting the p-values, a large portion of the p-values equal one. The se
 #fig.height=10?
 # After dropping P = 1, plot the corrected p-values.
 volcano <- comparison_p_values[which(comparison_p_values$p_value_corrected!=1),]
-if("gene" %notin% colnames(volcano)){
-  volcano$gene <- ifelse(volcano$gene_1==volcano$gene_2, volcano$gene_1, paste(volcano$gene_1, volcano$gene_2, sep="_"))
-}
 color <- colorRampPalette(brewer.pal(8,"Set1"))(length(unique(volcano$gene)))
 
-ggplot(volcano, aes(x=fold_change, y=-log10(p_value_corrected), label=get(merge_column), color=gene))+
+neg_clade <- textGrob(clades[2], gp=gpar(fontsize=13, fontface="bold"))
+pos_clade <- textGrob(clades[1], gp=gpar(fontsize=13, fontface="bold"))
+
+na <- ggplot(volcano, aes(x=fold_change, y=-log10(p_value_corrected), label=get(merge_column), color=gene))+
   geom_point()+
   geom_text(color="black", size=2, nudge_y=0.2)+
   geom_hline(yintercept=-log10(0.05), col="red", linetype=2)+
-  scale_color_manual(values=color, name="mutation")+
+  scale_color_manual(values=color, name="Mutation")+
   theme_bw()+
-  theme(legend.position="bottom")
-```
+  labs(x="Log2 Fold Change", y="-log10 FDR Corrected P-Value")
 
-Plot the same volcano plot but color only the points where the mutation is in the spike protein for one or both clades.
+x <- layer_scales(na)$x$range$range
+y <- layer_scales(na)$y$range$range
 
-```{r volcano_corrected_spike, echo=FALSE}
-spike <- volcano$gene[grep("S", volcano$gene)]
-volcano$spike <- ifelse(volcano$gene %in% spike, volcano$gene, "non-spike")
-non_spike <- which(levels(as.factor(volcano$spike))=="non-spike")
-color <- colorRampPalette(brewer.pal(8,"Set1"))(length(unique(volcano$spike)))
-color[non_spike] <- "grey"
-
-ggplot(volcano, aes(x=fold_change, y=-log10(p_value_corrected), label=get(merge_column), color=spike))+
-  geom_point()+
-  geom_text(color="black", size=2, nudge_y=0.2)+
-  geom_hline(yintercept=-log10(0.05), col="red", linetype=2)+
-  scale_color_manual(values=color, name="mutation")+
-  theme_bw()
+if(is.null(x)){
+  na
+} else {
+  p <- na + coord_cartesian(xlim=c(-max(abs(x)), max(abs(x))))
+  x_mod <- p$coordinates$limits[[1]]
+  
+  p + annotation_custom(neg_clade,xmin=x_mod[1]*0.7,xmax=x_mod[1]*0.7,ymin=y[2]*0.95,ymax=y[2]*0.95)+ 
+      annotation_custom(pos_clade,xmin=x_mod[2]*0.7,xmax=x_mod[2]*0.7,ymin=y[2]*0.95,ymax=y[2]*0.95)
+}
 ```
 
 ## Verify Analyses
@@ -299,6 +289,7 @@ To verify the analyses are generating expected results, compare the corrected p-
 
 ```{r verify_analyses, echo=FALSE}
 # Plot the corrected p-values for synonymous and non-synonymous mutations.
+# PLOT UNCORRECTED P-VALUES
 verify_analyses <- comparison_p_values
 if("synonymous" %notin% colnames(verify_analyses)){
   verify_analyses$synonymous <- ifelse(verify_analyses$synonymous_1=="True" & verify_analyses$synonymous_2=="True", "True", "False")
