@@ -14,6 +14,7 @@ rule all:
         "results/aa_fitness/aamut_fitness_all.csv",
         "results/aa_fitness/aamut_fitness_by_clade.csv",
         "results/aa_fitness/aamut_fitness_by_subset.csv",
+        "results/aa_fitness/aa_fitness.csv",
         "docs",
 
 
