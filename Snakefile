@@ -288,14 +288,24 @@ rule aamut_fitness:
     input:
         csv=rules.merge_expected_and_actual_counts.output.csv,
     output:
-        aa_all="results/aa_fitness/aamut_fitness_all.csv",
-        aa_by_clade="results/aa_fitness/aamut_fitness_by_clade.csv",
-        aa_by_subset="results/aa_fitness/aamut_fitness_by_subset.csv",
+        aamut_all="results/aa_fitness/aamut_fitness_all.csv",
+        aamut_by_clade="results/aa_fitness/aamut_fitness_by_clade.csv",
+        aamut_by_subset="results/aa_fitness/aamut_fitness_by_subset.csv",
     params:
         orf1ab_to_nsps=config["orf1ab_to_nsps"],
         fitness_pseudocount=config["fitness_pseudocount"],
     notebook:
         "notebooks/aamut_fitness.py.ipynb"
+
+
+rule aa_fitness:
+    """Fitnesses of different amino acids across clades."""
+    input:
+        aamut_fitness=rules.aamut_fitness.output.aamut_all,
+    output:
+        aa_fitness="results/aa_fitness/aa_fitness.csv",
+    notebook:
+        "notebooks/aa_fitness.py.ipynb"
 
 
 rule analyze_aa_fitness:
