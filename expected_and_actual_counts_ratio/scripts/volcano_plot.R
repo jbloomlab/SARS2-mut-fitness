@@ -31,7 +31,7 @@ na <- ggplot(volcano, aes(x=fold_change, y=-log10(p_value_corrected), label=get(
   geom_hline(yintercept=-log10(0.05), col="red", linetype=2)+
   scale_color_manual(values=color, name="Mutation")+
   theme_bw()+
-  labs(x="Log2 Fold Change", y="-log10 FDR Corrected P-Value")
+  labs(x="Log2 Fold-Change", y="-log10 FDR Corrected P-Value")
 
 x <- layer_scales(na)$x$range$range
 y <- layer_scales(na)$y$range$range
