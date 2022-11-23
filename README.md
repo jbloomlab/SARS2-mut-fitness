@@ -114,6 +114,42 @@ The resulting fitness effect estimates are written to the following files:
 Note also that the above files contain mutations in both numbering of the ORF1ab polypeptide and the nsp proteins contained within it.
 The nsp protein mutations are a subset of the ORF1ab mutations, so if you examine both you would be double counting mutations.
 
+### Computation of amino-acid fitnesses
+For each clade have estimated the change in fitness $\Delta f_{xy}$ caused by mutating a site from amino-acid $x$ to $y$, where $x$ is the amino acid in the clade founder sequence.
+For each such mutation, we also have $n_{xy}$ which is the number of **expected** mutations from the clade founder amino acid $x$ to $y$.
+These $n_{xy}$ values are important because they give some estimate of our "confidence" in the $\Delta f_{xy}$ values: if a mutation has high expected counts (large $n_{xy}$) then we can estimate the change in fitness caused by the mutation more accurately, and if $n_{xy}$ is small then the estimate will be much noisier.
+
+However, we would like to aggregate the data across multiple clades to estimate amino-acid fitness values at a site under the assumption that these are constant across clades.
+Now things get more complicated.
+For instance, let's say at our site of interest, the clade founder amino acid is $x$ in one clade and $z$ in another clade.
+For each clade we then have a set of $\Delta f_{xy}$ and $n_{xy}$ values for the first clade (where $y$ ranges over the 19 amino acids that aren't $x$), and another set of up to 19 $\Delta f_{zy}$ and $n_{zy}$ values for the second clade (where $y$ ranges over the 19 amino acids that aren't $z$).
+
+From these sets of mutation fitness changes, we'd like to estimate the fitness $f_x$ of each amino acid $x$, where the $f_x$ values satisfy $\Delta f_{xy} = f_y - f_x$ (in other words, a higher $f_x$ means higher fitness of that amino acid).
+When there are multiple clades with different founder amino acids at the site, there is no guarantee that we can find $f_x$ values that precisely satisfy the above equation since there are more $\Delta f_{xy}$ values than $f_x$ values and the $\Delta f_{xy}$ values may have noise (and is some cases even real shifts among clades due to epistasis).
+Nonetheless, we can try to find the $f_x$ values that come closest to satisfying the above equation.
+
+First, we choose one amino acid to have a fitness value of zero, since the scale of the $f_x$ values is arbitrary and there are really only 19 unique parameters among the 20 $f_x$ values (since we only measure differences among them, not absolute values).
+Typically if there was just one clade, we would set the wildtype value of $f_x = 0$ and then for mutations to all other amino acids $y$ we would simply have $f_y = \Delta f_{xy}$.
+However, when there are multple clades with different founder amino acids, there is no longer a well defined "wildtype".
+So we choose the most common parental amino-acid for the observed mutations and set that to zero.
+In other words, we find $x$ that maximizes $\sum_y n_{xy}$ and set that $f_x$ value to zero.
+
+Next, we choose the $f_x$ values that most closely match the measured mutation effects, weighting more strongly mutation effects with higher expected counts (since these should be more accurate).
+Specifically, we define a loss function as
+$$
+L = \sum_x \sum_{y \ne x} n_{xy} \left(\Delta f_{xy} - \left[f_y - f_x\right]\right)^2
+$$
+where we ignore effects of synonymous mutations (the $x \ne y$ term in second summand) because we are only examining protein-level effects.
+We then use numerical optimization to find the $f_x$ values that minimize that loss $L$.
+
+Finally, we would still like to report an equivalent of the $n_{xy}$ values for the $\Delta f_{xy}$ values that give us some sense of how accurately we have estimated the fitness $f_x$ of each amino acid.
+To do that, we tabulate $N_x = \sum_y \left(n_{xy} + n_{yx} \right)$ as the total number of mutations either from or to amino-acid $x$ as the "count" for the amino acid.
+Amino acids with larger values of $N_x$ should have more accurate estimates of $f_x$.
+
+The resulting amino-acid fitness values (aggregated across all clades) are in the following file:
+
+- [results/aa_fitness/aa_fitness.csv](results/aa_fitness/aa_fitness.csv)
+
 ### Caveats of analysis
 None of these are expected to seriously affect the accuracy of the current analysis, but they could become problematic if the same analysis is applied to substantially more diverged clades:
 
