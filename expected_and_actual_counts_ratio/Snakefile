@@ -17,7 +17,7 @@ rule all:
 	input: 
 		expand("volcano_{mutation_type}/{comparisons}.pdf", comparisons=COMPARISONS, mutation_type=MUTATION_TYPE),
 		expand("distribution_{mutation_type}/{comparisons}.pdf", comparisons=COMPARISONS, mutation_type=MUTATION_TYPE),
-		expand("results/pvalues_{mutation_type}.csv", mutation_type=MUTATION_TYPE)
+		expand("clades_{mutation_type}/{clades}.pdf", clades=CLADES, mutation_type=MUTATION_TYPE)
 	
 rule calculate_p_values:
 	input:
@@ -28,6 +28,14 @@ rule calculate_p_values:
 		subset="all", min_expected=0, pseudo=0.5
 	script: 
 		"scripts/calculate_p_values.R"
+
+rule combine_data:
+        input:
+                expand("results/pvalues{comparisons}_{mutation_type}.csv", comparisons=COMPARISONS, mutation_type=MUTATION_TYPE)
+        output:
+                "results/pvalues_{mutation_type}.csv"
+        shell:
+                "awk '(NR == 1) || (FNR > 1)' results/pvalues*_*_{wildcards.mutation_type}.csv > {output}"
 
 rule volcano_plot:
 	input:
@@ -45,10 +53,11 @@ rule p_distribution:
 	script:
 		"scripts/p_distribution.R"
 
-rule combine_data:
+rule enriched_per_clade:
 	input:
-		expand("results/pvalues{comparisons}_{mutation_type}.csv", comparisons=COMPARISONS, mutation_type=MUTATION_TYPE)
+		expand("results/pvalues_{mutation_type}.csv", mutation_type=MUTATION_TYPE)
 	output:
-		"results/pvalues_{mutation_type}.csv"
-	shell:
-		"awk '(NR == 1) || (FNR > 1)' results/pvalues*_*_{wildcards.mutation_type}.csv > {output}"
+		"clades_{mutation_type}/{clades}.pdf"
+	script:
+		"scripts/enriched_per_clade.R"
+		
