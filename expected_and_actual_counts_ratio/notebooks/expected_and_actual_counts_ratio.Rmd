@@ -63,7 +63,7 @@ min_expected <- 0
 pseudo <- 0.5
 
 # Analyze nucleotide mutations or amino acid mutations ('nt' or 'aa')?
-option <- "nt"
+option <- "aa"
 merge_column <- paste(option, "mutation", sep="_")
 ```
 
@@ -76,17 +76,14 @@ For the analyses conducted in this notebook, subset the data by the country (cou
 filtered_SARS_mutation <- subset(SARS_mutation, subset==country & exclude=="False" & expected_count>=min_expected)
 ```
 
-Create nucleotide mutation and amino acid mutation data sets. Actual and expected counts for rows with identical amino acid mutations are added together. Both data sets only include columns relevant for that mutation to make understanding restructuring the data and analyses easier.
+Create nucleotide mutation and amino acid mutation data sets. Actual and expected counts for rows with identical amino acid mutations and genes are added together. Both data sets only include columns relevant for that mutation to make understanding restructuring the data and analyses easier.
 
 ```{r group_mutation}
-# Group by amino acid mutation and add counts for identical amino acid mutations.
-# NOTE: Grouping with and without 'gene' creates a different number of rows because some equivalent aa mutations belong to different genes. There are 2,160 aa mutations that have duplicates.
+# Group by amino acid mutation and gene, and add counts for identical mutations.
 aa_group <- as.data.frame(filtered_SARS_mutation %>% group_by(clade, aa_mutation, clade_founder_aa, codon_site, mutant_aa, synonymous, gene) %>% summarise(actual_count=sum(actual_count), expected_count=sum(expected_count)))
   
 # Reduce columns for nucleotide mutation analyses to make workflow easier to follow.
 nt_group <- filtered_SARS_mutation[,c("clade","nt_mutation","clade_founder_nt","nt_site","synonymous","four_fold_degenerate","gene","actual_count","expected_count")]
-
-# Should I compare mutations with different wild types? (A200T vs C200T) Plot?
 ```
 
 ## Describe and Characterize the Data
@@ -127,7 +124,7 @@ aa_type <- paste(aa_group$clade_founder_aa, ".", aa_group$mutant_aa, sep="")
 
 ## Visualize the Data
 
-After numerically describing the nucleotide and amino acid mutation data, use stacked bar plots to visual the proportion of each mutation for each clade. The number of mutations is normalized by the expected count. To simplify the plot, only the nucleotide mutations in the spike protein are plotted. Previous studies have shown that this protein is important for SARS-CoV-2 evolution.
+After numerically describing the nucleotide and amino acid mutation data, use stacked bar plots to visualize the proportion of each mutation for each clade. The number of mutations is normalized by the expected count. To simplify the plot, only the nucleotide mutations in the spike protein are plotted. Previous studies have shown that this protein is important for SARS-CoV-2 evolution.
 
 ```{r stacked_nucleotide, echo=FALSE}
 stacked_nt <- nt_group[which(nt_group$gene=="S"),]
@@ -187,7 +184,7 @@ clade2 <- filtered_SARS_mutation[which(filtered_SARS_mutation$clade==clades[2]),
 colnames(clade1)[colnames(clade1) %notin% c(merge_column, "gene")] <- paste(colnames(clade1)[colnames(clade1) %notin% c(merge_column, "gene")], "1", sep="_")
 colnames(clade2)[colnames(clade2) %notin% c(merge_column, "gene")] <- paste(colnames(clade2)[colnames(clade2) %notin% c(merge_column, "gene")], "2", sep="_")
 
-# Merge the two data frames by mutation so that each row represents one comparison.
+# Merge the two data frames by mutation and gene so that each row represents one comparison.
 comparisons <- merge(clade1, clade2, by=c(merge_column, "gene"))
 
 # Determine if any of the columns from 'clade1' and 'clade2' are the same.
@@ -231,7 +228,7 @@ comparison_p_values$p_value_corrected <- p.adjust(comparison_p_values$p_value, m
 
 ## Volcano Plot
 
-Calculate fold-change using the observed-expected ratios calculated with a pseudocount. Fold-change is calculated as log2 of the clade 1 ratio divided by the clade 2 ratio. Therefore, if fold-change is positive then the clade 1 ratio is greater than the clade 2 ratio, and vise versa if fold-change is negative. 
+Calculate fold-change using the observed-expected ratios calculated with a pseudocount. Fold-change is calculated as log2 of the clade 1 ratio divided by the clade 2 ratio. Therefore, if fold-change is positive then mutations are enriched in clade 1, and vise versa if fold-change is negative. 
 
 ```{r fold-change}
 # Calculate fold-change for plotting volcano plots.
@@ -250,20 +247,19 @@ ggplot(comparison_p_values, aes(x=fold_change, y=-log10(p_value)))+
   theme_bw()
 ```
 
-After correcting the p-values, a large portion of the p-values equal one. The second volcano plot drops P = 1 and uses the remaining corrected p-values. Points are colored by the starting nucleotide or amino acid mutation (i.e., clade founder) and labels indicate the mutation. The red line indicates a significance value of P = 0.05.
+After correcting the p-values, a large portion of the p-values equal one. The second volcano plot drops P = 1 and uses the remaining corrected p-values. Points are colored by gene and labels indicate the mutation. The red line indicates a significance value of P = 0.05.
 
 ```{r volcano_corrected, echo=FALSE}
-#fig.height=10?
 # After dropping P = 1, plot the corrected p-values.
+all_colors <- data.frame(color=colorRampPalette(brewer.pal(8,"Set1"))(length(unique(comparison_p_values$gene))), gene=levels(as.factor(comparison_p_values$gene)))
 volcano <- comparison_p_values[which(comparison_p_values$p_value_corrected!=1),]
-color <- colorRampPalette(brewer.pal(8,"Set1"))(length(unique(volcano$gene)))
+color <- all_colors[all_colors$gene %in% unique(volcano$gene),"color"]
 
 neg_clade <- textGrob(clades[2], gp=gpar(fontsize=13, fontface="bold"))
 pos_clade <- textGrob(clades[1], gp=gpar(fontsize=13, fontface="bold"))
 
 na <- ggplot(volcano, aes(x=fold_change, y=-log10(p_value_corrected), label=get(merge_column), color=gene))+
   geom_point()+
-  geom_text(color="black", size=2, nudge_y=0.2)+
   geom_hline(yintercept=-log10(0.05), col="red", linetype=2)+
   scale_color_manual(values=color, name="Mutation")+
   theme_bw()+
@@ -275,7 +271,7 @@ y <- layer_scales(na)$y$range$range
 if(is.null(x)){
   na
 } else {
-  p <- na + coord_cartesian(xlim=c(-max(abs(x)), max(abs(x))))
+  p <- na + coord_cartesian(xlim=c(-max(abs(x)), max(abs(x)))) + geom_text(color="black", size=3, nudge_y=diff(y)/20)
   x_mod <- p$coordinates$limits[[1]]
   
   p + annotation_custom(neg_clade,xmin=x_mod[1]*0.7,xmax=x_mod[1]*0.7,ymin=y[2]*0.95,ymax=y[2]*0.95)+ 
@@ -285,23 +281,22 @@ if(is.null(x)){
 
 ## Verify Analyses
 
-To verify the analyses are generating expected results, compare the corrected p-values for synonymous mutations to non-synonymous mutations. Unlike non-synonymous mutations, synonymous mutations should not be experiencing selective pressures. Therefore, while there might be differences in the direction and degree of selection on non-synonymous (i.e., p-values close to 0), there should be insignificant differences between clades for synonymous mutations (i.e., p-values close to 1). The black line indicates a significance value of P = 0.05.
+To verify the analyses are generating expected results, compare the uncorrected p-values for synonymous mutations to non-synonymous mutations. Synonymous mutations are less likely to be experiencing selective pressures compared to non-synonymous mutations. Therefore, while there might be differences in the direction and degree of selection on non-synonymous (i.e., p-values close to 0), we are less likely to observe significant differences between clades for synonymous mutations (i.e., p-values close to 1). The black line indicates a significance value of P = 0.05.
 
 ```{r verify_analyses, echo=FALSE}
-# Plot the corrected p-values for synonymous and non-synonymous mutations.
-# PLOT UNCORRECTED P-VALUES
+# Plot the uncorrected p-values for synonymous and non-synonymous mutations.
 verify_analyses <- comparison_p_values
 if("synonymous" %notin% colnames(verify_analyses)){
   verify_analyses$synonymous <- ifelse(verify_analyses$synonymous_1=="True" & verify_analyses$synonymous_2=="True", "True", "False")
 }
-verify_analyses$p_one <- ifelse(verify_analyses$p_value_corrected==1, "P=1", "P<1")
+verify_analyses$p_one <- ifelse(verify_analyses$p_value==1, "P=1", "P<1")
 
-p <- ggplot(verify_analyses, aes(x=p_value_corrected, fill=synonymous, label=after_stat(count)))+
+p <- ggplot(verify_analyses, aes(x=p_value, fill=synonymous, label=after_stat(count)))+
   geom_histogram()+
   geom_text(size=2, vjust=-0.5, stat="bin", position="stack")+
   geom_vline(data=data.frame(xint=0.05, p_one="P<1"), aes(xintercept=xint), linetype=2)+
   scale_x_continuous(breaks=c(0,0.25,0.5,0.75,1))+
-  labs(x="corrected p-values")+
+  labs(x="p-values", y="count")+
   theme_bw()
   
 p + ggforce::facet_row(vars(p_one), scales="free", space="free")
