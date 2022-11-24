@@ -314,8 +314,11 @@ rule analyze_aa_fitness:
     input:
         aamut_all=rules.aamut_fitness.output.aamut_all,
         aamut_by_subset=rules.aamut_fitness.output.aamut_by_subset,
+        aamut_by_clade=rules.aamut_fitness.output.aamut_by_clade,
+        aafitness=rules.aa_fitness.output.aa_fitness,
     params:
         min_expected_count=config["min_expected_count"],
+        clade_corr_min_count=config["clade_corr_min_count"],
     output:
         outdir=directory("results/aa_fitness/plots"),
     log:
