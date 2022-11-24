@@ -26,6 +26,9 @@ cds_features = (
     .assign(
         frame=lambda x: x["frame"].astype(int),
         gene=lambda x: x["attribute"].str.extract(r'^gene_id "(\w+)"'),
+        # handle shifts for multiple CDSs for ORF1ab
+        genelength=lambda x: x["end"] - x["start"] + 1,
+        shift=lambda x: x.groupby("gene")["genelength"].shift(fill_value=0),
     )
     .drop(columns=["seqName", "source", "score", "feature", "attribute"])
 )
@@ -45,7 +48,7 @@ sites = (
             axis=1,
         ),
         codon_site=lambda x: x.apply(
-            lambda r: (r["site"] - r["start"]) // 3 + 1,
+            lambda r: (r["site"] - r["start"] + r["shift"]) // 3 + 1,
             axis=1,
         ),
     )
@@ -61,4 +64,4 @@ sites = (
     )
 )
 
-sites.to_csv(snakemake.output.csv, index=False)
+sites.to_csv("results/ref/coding_sites.csv", index=False)

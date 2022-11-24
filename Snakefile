@@ -14,6 +14,7 @@ rule all:
         "results/aa_fitness/aamut_fitness_all.csv",
         "results/aa_fitness/aamut_fitness_by_clade.csv",
         "results/aa_fitness/aamut_fitness_by_subset.csv",
+        "results/aa_fitness/aa_fitness.csv",
         "docs",
 
 
@@ -311,8 +312,8 @@ rule aa_fitness:
 rule analyze_aa_fitness:
     """Analyze and plot amino-acid mutation fitnesses."""
     input:
-        aamut_all=rules.aamut_fitness.output.aa_all,
-        aamut_by_subset=rules.aamut_fitness.output.aa_by_subset,
+        aamut_all=rules.aamut_fitness.output.aamut_all,
+        aamut_by_subset=rules.aamut_fitness.output.aamut_by_subset,
     params:
         min_expected_count=config["min_expected_count"],
     output:

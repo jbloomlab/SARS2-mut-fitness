@@ -1,6 +1,6 @@
 # matutils pre-built mutation-annotated tree from
 # http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/
-mat_tree: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2022/09/26/public-2022-09-26.all.masked.nextclade.pangolin.pb.gz
+mat_tree: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2022/11/21/public-2022-11-21.all.masked.nextclade.pangolin.pb.gz
 
 # Reference GTF and FASTA, and location of spike coding sequence
 ref_fasta: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/bigZips/wuhCor1.fa.gz
@@ -16,7 +16,7 @@ sample_subsets:
   England: England
 
 # Founder genotypes for nextstrain clades from Richard Neher
-clade_founder_json: https://raw.githubusercontent.com/neherlab/SC2_variant_rates/cd6e016a511098123b6ce9ed874f58a7b789b34c/data/clade_gts.json
+clade_founder_json: https://raw.githubusercontent.com/neherlab/SC2_variant_rates/7e738194a8c6592082f1caa9a6ca70cb68289790/data/clade_gts.json
 
 # For counting mutations, exclude any branches with more than this many nucleotide
 # mutations or more than this many reversions to reference or clade founder
@@ -83,3 +83,6 @@ fitness_pseudocount: 0.5
 
 # initial cutoff for minimum expected count to show fitness values
 min_expected_count: 20
+
+# only plot correlation among clades when at least this many expected counts
+clade_corr_min_count: 1e6
