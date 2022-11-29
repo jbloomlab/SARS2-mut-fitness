@@ -17,7 +17,8 @@ rule all:
 	input: 
 		expand("volcano_{mutation_type}/{comparisons}.pdf", comparisons=COMPARISONS, mutation_type=MUTATION_TYPE),
 		expand("distribution_{mutation_type}/{comparisons}.pdf", comparisons=COMPARISONS, mutation_type=MUTATION_TYPE),
-		expand("clades_{mutation_type}/{clades}.pdf", clades=CLADES, mutation_type=MUTATION_TYPE)
+		expand("rbd_aa/{comparisons}.pdf", comparisons=COMPARISONS),
+		expand("results/pvalues_{mutation_type}.csv", mutation_type=MUTATION_TYPE)
 	
 rule calculate_p_values:
 	input:
@@ -53,11 +54,11 @@ rule p_distribution:
 	script:
 		"scripts/p_distribution.R"
 
-rule enriched_per_clade:
+rule rbd_volcano:
 	input:
-		expand("results/pvalues_{mutation_type}.csv", mutation_type=MUTATION_TYPE)
+		expand("results/pvalues{comparisons}_aa.csv", comparisons=COMPARISONS)
 	output:
-		"clades_{mutation_type}/{clades}.pdf"
+		"rbd_aa/{comparisons}.pdf"
 	script:
-		"scripts/enriched_per_clade.R"
+		"scripts/rbd_volcano.R"
 		
