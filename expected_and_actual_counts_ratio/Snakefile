@@ -26,7 +26,7 @@ rule calculate_p_values:
 	output:
 		"results/pvalues{comparisons}_{mutation_type}.csv"
 	params:
-		subset="all", min_expected=0, pseudo=0.5
+		subset="all", min_expected=5, pseudo=0.5
 	script: 
 		"scripts/calculate_p_values.R"
 

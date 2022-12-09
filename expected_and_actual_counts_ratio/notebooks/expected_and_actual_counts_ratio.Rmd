@@ -54,10 +54,10 @@ country <- "all"
 unique(SARS_mutation$clade)
 
 # Identify the two clades that will be included in comparisons.
-clades <- c("20A","22A")
+clades <- c("20A","21K")
 
 # Define a minimum threshold for the number of expected counts. Mutations below this threshold will be removed.
-min_expected <- 0
+min_expected <- 5
 
 # To avoid infinities when calculating fold-change, add a pseudocount to the observed and expected counts.
 pseudo <- 0.5

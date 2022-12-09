@@ -45,26 +45,32 @@ colnames(clade2)[colnames(clade2) %notin% c(merge_column, "gene")] <- paste(coln
 # Merge the two data frames by mutation so that each row represents one comparison.
 comparisons <- merge(clade1, clade2, by=c(merge_column, "gene"))
 
-# Determine if any of the columns from 'clade1' and 'clade2' are the same.
-col_names <- colnames(filtered_SARS_mutation)[colnames(filtered_SARS_mutation) %notin% c(merge_column, "gene")]
-is_equal <- data.frame(sapply(col_names, FUN=function(c){identical(comparisons[,paste(c[1], 1, sep="_")], comparisons[,paste(c[1], 2, sep="_")])}))
-col_equal <- row.names(is_equal)[which(is_equal[1]=="TRUE")]
+if(nrow(comparisons)!=0){
+	# Determine if any of the columns from 'clade1' and 'clade2' are the same.
+	col_names <- colnames(filtered_SARS_mutation)[colnames(filtered_SARS_mutation) %notin% c(merge_column, "gene")]
+	is_equal <- data.frame(sapply(col_names, FUN=function(c){identical(comparisons[,paste(c[1], 1, sep="_")], comparisons[,paste(c[1], 2, sep="_")])}))
+	col_equal <- row.names(is_equal)[which(is_equal[1]=="TRUE")]
 
-# Rename one of the duplicate columns and remove the other.
-colnames(comparisons)[colnames(comparisons) %in% paste(col_equal, "1", sep="_")] <- col_equal
-comparisons[,paste(col_equal, "2", sep="_")] <- NULL
+	# Rename one of the duplicate columns and remove the other.
+	colnames(comparisons)[colnames(comparisons) %in% paste(col_equal, "1", sep="_")] <- col_equal
+	comparisons[,paste(col_equal, "2", sep="_")] <- NULL
 
-# Iterate through rows and compare clade 1 observed and expected values to clade 2 observed and expected values.
-p_values <- data.frame(p_value=apply(comparisons, 1, FUN=function(c) {fisher.test(rbind(c(as.numeric(c["actual_count_1"]),as.numeric(c["rounded_expected_1"])),c(as.numeric(c["actual_count_2"]),as.numeric(c["rounded_expected_2"]))))$p.value}))
+	# Iterate through rows and compare clade 1 observed and expected values to clade 2 observed and expected values.
+	p_values <- data.frame(p_value=apply(comparisons, 1, FUN=function(c) {fisher.test(rbind(c(as.numeric(c["actual_count_1"]),as.numeric(c["rounded_expected_1"])),c(as.numeric(c["actual_count_2"]),as.numeric(c["rounded_expected_2"]))))$p.value}))
 
-# Combine the p-value list with the comparison list.
-comparison_p_values <- cbind(comparisons, p_values)
+	# Combine the p-value list with the comparison list.
+	comparison_p_values <- cbind(comparisons, p_values)
 
-# Using a false discovery rate correction, adjust the p-values by the number of hypothesis tests.
-comparison_p_values$p_value_corrected <- p.adjust(comparison_p_values$p_value, method="fdr", n=nrow(comparison_p_values))
+	# Using a false discovery rate correction, adjust the p-values by the number of hypothesis tests.
+	comparison_p_values$p_value_corrected <- p.adjust(comparison_p_values$p_value, method="fdr", n=nrow(comparison_p_values))
 
-# Calculate fold-change for plotting volcano plots.
-comparison_p_values$fold_change <- log2(comparison_p_values$observed_expected_1/comparison_p_values$observed_expected_2)
+	# Calculate fold-change for plotting volcano plots.
+	comparison_p_values$fold_change <- log2(comparison_p_values$observed_expected_1/comparison_p_values$observed_expected_2)
+} else {
+	col <- c(colnames(comparisons),"p_value","p_value_corrected","fold_change")
+	comparison_p_values <- data.frame(matrix(ncol=length(col), nrow=0))
+	colnames(comparison_p_values) <- col
+}
 
 # Create CSV file with the data for one comparison.
 write.csv(comparison_p_values, snakemake@output[[1]])
