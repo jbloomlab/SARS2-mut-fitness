@@ -92,13 +92,17 @@ aa_fitness_init_ref_clade: 19A
 
 # Define common names of Nexstrain clades
 clade_synonyms:
+  19A: B
   20A: B.1
   20B: B.1.1
   20C: B.1.367
   20E: B.1.177
+  20F: D.2
   20G: B.1.2
   20I: Alpha
+  20J: Gamma
   21C: Epsilon
+  21F: Iota
   21I: Delta
   21J: Delta
   21K: Omicron BA.1
@@ -106,3 +110,5 @@ clade_synonyms:
   22A: Omicron BA.4
   22B: Omicron BA.5
   22C: Omicron BA.2.12.1
+  22D: Omicron BA.2.75
+  22E: Omicron BQ.1
