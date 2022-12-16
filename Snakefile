@@ -321,7 +321,8 @@ rule analyze_aa_fitness:
         min_expected_count=config["min_expected_count"],
         clade_corr_min_count=config["clade_corr_min_count"],
         init_ref_clade=config["aa_fitness_init_ref_clade"],
-        clade_synonyms=config["clade_synonyms"]
+        clade_synonyms=config["clade_synonyms"],
+        heatmap_minimal_domain=config["aa_fitness_heatmap_minimal_domain"],
     output:
         outdir=directory("results/aa_fitness/plots"),
     log:

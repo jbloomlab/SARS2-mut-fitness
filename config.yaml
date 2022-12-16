@@ -90,6 +90,9 @@ clade_corr_min_count: 5e5
 # initial clade founder to use as "wildtype" when plotting aa fitnesses
 aa_fitness_init_ref_clade: 19A
 
+# amino-acid fitness heatmap color spans **at least** much (expanded if needed by data)
+aa_fitness_heatmap_minimal_domain: [-6, 2]
+
 # Define common names of Nexstrain clades
 clade_synonyms:
   19A: B
