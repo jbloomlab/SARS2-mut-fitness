@@ -85,4 +85,24 @@ fitness_pseudocount: 0.5
 min_expected_count: 20
 
 # only plot correlation among clades when at least this many expected counts
-clade_corr_min_count: 1e6
+clade_corr_min_count: 5e5
+
+# initial clade founder to use as "wildtype" when plotting aa fitnesses
+aa_fitness_init_ref_clade: 19A
+
+# Define common names of Nexstrain clades
+clade_synonyms:
+  20A: B.1
+  20B: B.1.1
+  20C: B.1.367
+  20E: B.1.177
+  20G: B.1.2
+  20I: Alpha
+  21C: Epsilon
+  21I: Delta
+  21J: Delta
+  21K: Omicron BA.1
+  21L: Omicron BA.2
+  22A: Omicron BA.4
+  22B: Omicron BA.5
+  22C: Omicron BA.2.12.1
