@@ -122,16 +122,16 @@ These $n_{xy}$ values are important because they give some estimate of our "conf
 However, we would like to aggregate the data across multiple clades to estimate amino-acid fitness values at a site under the assumption that these are constant across clades.
 Now things get more complicated.
 For instance, let's say at our site of interest, the clade founder amino acid is $x$ in one clade and $z$ in another clade.
-For each clade we then have a set of $\Delta f_{xy}$ and $n_{xy}$ values for the first clade (where $y$ ranges over the 19 amino acids that aren't $x$), and another set of up to 19 $\Delta f_{zy}$ and $n_{zy}$ values for the second clade (where $y$ ranges over the 19 amino acids that aren't $z$).
+For each clade we then have a set of $\Delta f_{xy}$ and $n_{xy}$ values for the first clade (where $y$ ranges over the 20 amino acids, including stop codon, that aren't $x$), and another set of up to 20 $\Delta f_{zy}$ and $n_{zy}$ values for the second clade (where $y$ ranges over the 20 amino acids that aren't $z$).
 
 From these sets of mutation fitness changes, we'd like to estimate the fitness $f_x$ of each amino acid $x$, where the $f_x$ values satisfy $\Delta f_{xy} = f_y - f_x$ (in other words, a higher $f_x$ means higher fitness of that amino acid).
 When there are multiple clades with different founder amino acids at the site, there is no guarantee that we can find $f_x$ values that precisely satisfy the above equation since there are more $\Delta f_{xy}$ values than $f_x$ values and the $\Delta f_{xy}$ values may have noise (and is some cases even real shifts among clades due to epistasis).
 Nonetheless, we can try to find the $f_x$ values that come closest to satisfying the above equation.
 
-First, we choose one amino acid to have a fitness value of zero, since the scale of the $f_x$ values is arbitrary and there are really only 19 unique parameters among the 20 $f_x$ values (since we only measure differences among them, not absolute values).
+First, we choose one amino acid to have a fitness value of zero, since the scale of the $f_x$ values is arbitrary and there are really only 20 unique parameters among the 21 $f_x$ values (there are 21 amino acids since we consider stops, but we only measure differences among them, not absolute values).
 Typically if there was just one clade, we would set the wildtype value of $f_x = 0$ and then for mutations to all other amino acids $y$ we would simply have $f_y = \Delta f_{xy}$.
 However, when there are multple clades with different founder amino acids, there is no longer a well defined "wildtype".
-So we choose the most common parental amino-acid for the observed mutations and set that to zero.
+So we choose the most common **non-stop** parental amino-acid for the observed mutations and set that to zero.
 In other words, we find $x$ that maximizes $\sum_y n_{xy}$ and set that $f_x$ value to zero.
 
 Next, we choose the $f_x$ values that most closely match the measured mutation effects, weighting more strongly mutation effects with higher expected counts (since these should be more accurate).
