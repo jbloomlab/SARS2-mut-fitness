@@ -323,6 +323,7 @@ rule analyze_aa_fitness:
         init_ref_clade=config["aa_fitness_init_ref_clade"],
         clade_synonyms=config["clade_synonyms"],
         heatmap_minimal_domain=config["aa_fitness_heatmap_minimal_domain"],
+        orf1ab_to_nsps=config["orf1ab_to_nsps"],
     output:
         outdir=directory("results/aa_fitness/plots"),
     log:

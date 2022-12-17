@@ -85,7 +85,7 @@ fitness_pseudocount: 0.5
 min_expected_count: 20
 
 # only plot correlation among clades when at least this many expected counts
-clade_corr_min_count: 5e5
+clade_corr_min_count: 500000
 
 # initial clade founder to use as "wildtype" when plotting aa fitnesses
 aa_fitness_init_ref_clade: 19A
