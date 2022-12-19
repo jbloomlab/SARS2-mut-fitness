@@ -165,6 +165,7 @@ rule count_mutations:
         ref_fasta=rules.get_ref_fasta.output.ref_fasta,
         clade_founder_fasta=rules.clade_founder_fasta_and_muts.output.fasta,
         ref_to_founder_muts=rules.clade_founder_fasta_and_muts.output.muts,
+        usher_masked_sites=config["usher_masked_sites"],
     output:
         csv="results/mutation_counts/{clade}_{subset}.csv",
     params:
@@ -260,6 +261,7 @@ rule aggregate_mutations_to_exclude:
             f"results/clade_founders_no_indels/{clade}_ref_to_founder_muts.csv"
             for clade in clades_w_adequate_counts(wc)
         ],
+        usher_masked_sites=config["usher_masked_sites"],
     output:
         csv="results/expected_vs_actual_mut_counts/mutations_to_exclude.csv",
     params:
