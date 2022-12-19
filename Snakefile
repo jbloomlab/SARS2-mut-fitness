@@ -110,7 +110,7 @@ rule mat_clade_subset:
         """
         if [ -s {input.samples} ]; then
             echo "Extracting samples from {input.samples}"
-            matUtils extract -i {input.mat} -s {input.samples} -o {output.mat}
+            matUtils extract -i {input.mat} -s {input.samples} -O -o {output.mat}
         else
             echo "No samples in {input.samples}"
             touch {output.mat}
@@ -305,6 +305,8 @@ rule aa_fitness:
         aamut_fitness=rules.aamut_fitness.output.aamut_all,
     output:
         aa_fitness="results/aa_fitness/aa_fitness.csv",
+    log:
+        notebook="results/aa_fitness/aa_fitness.ipynb",
     notebook:
         "notebooks/aa_fitness.py.ipynb"
 
