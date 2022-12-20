@@ -297,6 +297,8 @@ rule aamut_fitness:
     params:
         orf1ab_to_nsps=config["orf1ab_to_nsps"],
         fitness_pseudocount=config["fitness_pseudocount"],
+    log:
+        notebook="results/aa_fitness/aamut_fitness.ipynb",
     notebook:
         "notebooks/aamut_fitness.py.ipynb"
 

@@ -57,7 +57,7 @@ We perform some crucial filtering to remove spurious mutations as can arise from
 
  3. If a switch is set in [config.yaml](config.yaml) (it currently is), we specify to exclude any mutations that are reversions from the clade founder to the reference, and also the reverse complement of these mutations. This is designed to remove missing bases called to reference, and also complements of those mutations induced by spurious nodes with such miscalls on downstream branches in the tree.
 
- 4. We specify to exclude all mutations at error-prone or problematic sites as manually specified in [config.yaml](config.yaml).
+ 4. We specify to exclude all mutations at error-prone or problematic sites as manually specified in [config.yaml](config.yaml). We also ignore any mutations at sites that are masked in the `UShER` pipeline as specified in [usher_masked_sites.yaml](usher_masked_sites.yaml).
 
  5. We ignore any clades with small numbers of sequence samples as indicated in [config.yaml](config.yaml) as these are expected to have too much noise.
 
@@ -97,6 +97,7 @@ The expected and actual number of nucleotide mutation counts at each site are in
 
 ### Computation of amino-acid mutation fitness effects
 We then collapse the expected and actual counts for each amino-acid mutation, excluding the small number of sites that are in overlapping reading frames.
+Note that in this aggregation, we exclude any amino acids with a codon for which at least one constituent nucleotide site is masked in `UShER`.
 
 We estimate the fitness effect $\Delta f$ of each mutation as
 $$ \Delta f = \log \left(\frac{n_{actual} + P}{n_{expected} + P}\right)$$
