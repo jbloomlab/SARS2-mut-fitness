@@ -16,6 +16,10 @@ rule all:
         "results/aa_fitness/aamut_fitness_by_subset.csv",
         "results/aa_fitness/aa_fitness.csv",
         "docs",
+        expand(
+            "results/dms/{dms_dataset}/processed.csv",
+            dms_dataset=["dadonaite_ba1_spike"],
+        ),
 
 
 rule get_mat_tree:
@@ -336,6 +340,27 @@ rule analyze_aa_fitness:
         notebook="results/aa_fitness/analyze_aa_fitness.ipynb",
     notebook:
         "notebooks/analyze_aa_fitness.py.ipynb"
+
+
+rule process_dms_dataset:
+    """Process a deep mutational scanning dataset to fitness estimates."""
+    input:
+        nb="notebooks/process_{dms_dataset}.ipynb",
+    output:
+        raw_data="results/dms/{dms_dataset}/raw.csv",
+        processed="results/dms/{dms_dataset}/processed.csv",
+        nb="results/dms/{dms_dataset}/process_{dms_dataset}.ipynb",
+        html="results/dms/{dms_dataset}/process_{dms_dataset}.html",
+    params:
+        url=lambda wc: config["dms_datasets"][wc.dms_dataset]["url"],
+    shell:
+        """
+        curl {params.url} > {output.raw_data}
+        papermill {input.nb} {output.nb} \
+            -p raw_data_csv {output.raw_data} \
+            -p processed_csv {output.processed}
+        jupyter nbconvert {output.nb} --to html
+        """
 
 
 rule plots_to_docs:
