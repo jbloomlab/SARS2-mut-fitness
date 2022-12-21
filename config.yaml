@@ -135,9 +135,10 @@ dms_datasets:
     url: https://media.githubusercontent.com/media/jbloomlab/SARS-CoV-2-RBD_DMS_Omicron/f76ba2b2bec18ede9fa9da18c9ccc52389b1ba3a/results/final_variant_scores/final_variant_scores.csv
   iketani_mpro:
     study: https://www.sciencedirect.com/science/article/pii/S1931312822004024
-    description: na
+    description: Mpro deep mutational scan (Iketani et al, 2022)
     gene: nsp5 (Mpro)
-    url: na
+    url: https://raw.githubusercontent.com/alejandrochavezlab/3CL_protease_DMS/dc802ee3ea9d43005ca97a28af078767fd66777c/outputs/results/normalized_to_wt_and_stop/activity_scores.csv
+    wt_seq_url: https://raw.githubusercontent.com/alejandrochavezlab/3CL_protease_DMS/dc802ee3ea9d43005ca97a28af078767fd66777c/input_data/Ref_3CL.fasta
   flynn_mpro:
     study: https://www.biorxiv.org/content/10.1101/2022.01.26.477860v2
     description: na

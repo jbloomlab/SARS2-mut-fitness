@@ -18,7 +18,7 @@ rule all:
         "docs",
         expand(
             "results/dms/{dms_dataset}/processed.csv",
-            dms_dataset=["dadonaite_ba1_spike", "starr_rbd"],
+            dms_dataset=["dadonaite_ba1_spike", "starr_rbd", "iketani_mpro"],
         ),
 
 
@@ -351,13 +351,26 @@ rule process_dms_dataset:
         processed="results/dms/{dms_dataset}/processed.csv",
         nb="results/dms/{dms_dataset}/process_{dms_dataset}.ipynb",
         html="results/dms/{dms_dataset}/process_{dms_dataset}.html",
+        wt_seq="results/dms/{dms_dataset}/wt.fa",  # will be empty if not needed
     params:
         url=lambda wc: config["dms_datasets"][wc.dms_dataset]["url"],
+        wt_curl_cmd=lambda wc, output: (
+            (
+                "curl "
+                + config['dms_datasets'][wc.dms_dataset]['wt_seq_url']
+                + " > "
+                + output.wt_seq
+            )
+            if "wt_seq_url" in config["dms_datasets"][wc.dms_dataset]
+            else f"touch {output.wt_seq}"
+        ),
     shell:
         """
         curl {params.url} > {output.raw_data}
+        {params.wt_curl_cmd}
         papermill {input.nb} {output.nb} \
             -p raw_data_csv {output.raw_data} \
+            -p wt_seq_fasta {output.wt_seq} \
             -p processed_csv {output.processed}
         jupyter nbconvert {output.nb} --to html
         """
