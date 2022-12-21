@@ -126,6 +126,8 @@ dms_datasets:
     description: full spike deep mutational scan (Dadonaite et al, 2022)
     gene: S
     url: https://raw.githubusercontent.com/dms-vep/SARS-CoV-2_Omicron_BA.1_spike_DMS_mAbs/main/results/muteffects_functional/muteffects_observed.csv
+    filter_cols:
+      times_seen: 3
   starr_rbd:
     study: https://journals.plos.org/plospathogens/article?id=10.1371/journal.ppat.1010951
     description: RBD deep mutational scan (Starr et al, 2022)
