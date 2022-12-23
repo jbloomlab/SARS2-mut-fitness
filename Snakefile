@@ -18,7 +18,7 @@ rule all:
         "docs",
         expand(
             "results/dms/{dms_dataset}/processed.csv",
-            dms_dataset=["dadonaite_ba1_spike", "starr_rbd", "iketani_mpro", "flynn_mpro"],
+            dms_dataset=config["dms_datasets"],
         ),
 
 

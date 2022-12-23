@@ -57,7 +57,7 @@ We perform some crucial filtering to remove spurious mutations as can arise from
 
  3. If a switch is set in [config.yaml](config.yaml) (it currently is), we specify to exclude any mutations that are reversions from the clade founder to the reference, and also the reverse complement of these mutations. This is designed to remove missing bases called to reference, and also complements of those mutations induced by spurious nodes with such miscalls on downstream branches in the tree.
 
- 4. We specify to exclude all mutations at error-prone or problematic sites as manually specified in [config.yaml](config.yaml). We also ignore any mutations at sites that are masked in the `UShER` pipeline as specified in [usher_masked_sites.yaml](usher_masked_sites.yaml).
+ 4. We specify to exclude all mutations at error-prone or problematic sites as manually specified in [config.yaml](config.yaml). We also ignore for specific clades any mutations at sites that are masked in the `UShER` pipeline for those clades as specified in [data/usher_masked_sites.yaml](data/usher_masked_sites.yaml).
 
  5. We ignore any clades with small numbers of sequence samples as indicated in [config.yaml](config.yaml) as these are expected to have too much noise.
 

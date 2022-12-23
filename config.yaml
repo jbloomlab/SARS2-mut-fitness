@@ -56,7 +56,7 @@ sites_to_exclude:
   - 29362  # ~30% of all mutations in clade 21C
 
 # name of YAML with UShER masked sites
-usher_masked_sites: usher_masked_sites.yaml
+usher_masked_sites: data/usher_masked_sites.yaml
 
 # for analysis of 4-fold synonymous mutation spectra/rates, only keep clade subsets with
 # at least this many non-excluded mutation counts
