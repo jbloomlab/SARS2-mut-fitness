@@ -144,8 +144,3 @@ dms_datasets:
     description: Mpro deep mutational scan (Flynn et al, 2022)
     gene: nsp5 (Mpro)
     url: https://cdn.elifesciences.org/articles/77433/elife-77433-fig2-data1-v2.xlsx
-  frank_nucleocapsid:
-    study: https://www.sciencedirect.com/science/article/pii/S0092867422010443
-    description: na
-    gene: N
-    url: na
