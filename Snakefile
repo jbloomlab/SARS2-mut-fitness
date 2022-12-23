@@ -16,10 +16,7 @@ rule all:
         "results/aa_fitness/aamut_fitness_by_subset.csv",
         "results/aa_fitness/aa_fitness.csv",
         "docs",
-        expand(
-            "results/dms/{dms_dataset}/processed.csv",
-            dms_dataset=config["dms_datasets"],
-        ),
+        "results/fitness_dms_corr/plots",
 
 
 rule get_mat_tree:
@@ -374,6 +371,26 @@ rule process_dms_dataset:
             -p processed_csv {output.processed}
         jupyter nbconvert {output.nb} --to html
         """
+
+
+rule fitness_dms_corr:
+    """Correlate the fitness estimates with those from deep mutational scanning."""
+    input:
+        aafitness=rules.aa_fitness.output.aa_fitness,
+        neher_fitness=config["neher_fitness"],
+        **{
+            dms_dataset: f"results/dms/{dms_dataset}/processed.csv"
+            for dms_dataset in config["dms_datasets"]
+        },
+    output:
+        plotsdir=directory("results/fitness_dms_corr/plots")
+    params:
+        min_expected_count=config["min_expected_count"],
+        dms_datasets=config["dms_datasets"],
+    log:
+        notebook="results/fitness_dms_corr/fitness_dms_corr.ipynb",
+    notebook:
+        "notebooks/fitness_dms_corr.py.ipynb"
 
 
 rule plots_to_docs:

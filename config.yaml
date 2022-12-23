@@ -144,3 +144,8 @@ dms_datasets:
     description: Mpro deep mutational scan (Flynn et al, 2022)
     gene: nsp5 (Mpro)
     url: https://cdn.elifesciences.org/articles/77433/elife-77433-fig2-data1-v2.xlsx
+
+# Fitness estimates from Richard Neher, based on approach in his paper:
+# https://academic.oup.com/ve/advance-article/doi/10.1093/ve/veac113/6887176
+# These are designed as an independent cross check of the fitness estimates here.
+neher_fitness: data/Neher_aa_fitness.tsv
