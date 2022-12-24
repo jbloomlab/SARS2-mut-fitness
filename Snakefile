@@ -342,32 +342,32 @@ rule analyze_aa_fitness:
 rule process_dms_dataset:
     """Process a deep mutational scanning dataset to fitness estimates."""
     input:
+        unpack(
+            lambda wc: ( 
+                {"wt_seq": config["dms_datasets"][wc.dms_dataset]["wt_seq"]}
+                if "wt_seq" in config["dms_datasets"][wc.dms_dataset]
+                else {}
+            )
+        ),
         nb="notebooks/process_{dms_dataset}.ipynb",
     output:
         raw_data="results/dms/{dms_dataset}/raw.csv",
         processed="results/dms/{dms_dataset}/processed.csv",
         nb="results/dms/{dms_dataset}/process_{dms_dataset}.ipynb",
         html="results/dms/{dms_dataset}/process_{dms_dataset}.html",
-        wt_seq="results/dms/{dms_dataset}/wt.fa",  # will be empty if not needed
     params:
         url=lambda wc: config["dms_datasets"][wc.dms_dataset]["url"],
-        wt_curl_cmd=lambda wc, output: (
-            (
-                "curl "
-                + config['dms_datasets'][wc.dms_dataset]['wt_seq_url']
-                + " > "
-                + output.wt_seq
-            )
-            if "wt_seq_url" in config["dms_datasets"][wc.dms_dataset]
-            else f"touch {output.wt_seq}"
+        wt_seq_param=lambda wc, input: (
+            f"-p wt_seq_fasta {input.wt_seq}"
+            if "wt_seq" in config["dms_datasets"][wc.dms_dataset]
+            else ""
         ),
     shell:
         """
         curl {params.url} > {output.raw_data}
-        {params.wt_curl_cmd}
         papermill {input.nb} {output.nb} \
             -p raw_data_csv {output.raw_data} \
-            -p wt_seq_fasta {output.wt_seq} \
+            {params.wt_seq_param} \
             -p processed_csv {output.processed}
         jupyter nbconvert {output.nb} --to html
         """

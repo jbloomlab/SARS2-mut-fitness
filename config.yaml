@@ -138,12 +138,13 @@ dms_datasets:
     description: Mpro deep mutational scan (Iketani et al, 2022)
     gene: nsp5 (Mpro)
     url: https://raw.githubusercontent.com/alejandrochavezlab/3CL_protease_DMS/dc802ee3ea9d43005ca97a28af078767fd66777c/outputs/results/normalized_to_wt_and_stop/activity_scores.csv
-    wt_seq_url: https://raw.githubusercontent.com/alejandrochavezlab/3CL_protease_DMS/dc802ee3ea9d43005ca97a28af078767fd66777c/input_data/Ref_3CL.fasta
+    wt_seq: data/Mpro.fa
   flynn_mpro:
     study: https://elifesciences.org/articles/77433
     description: Mpro deep mutational scan (Flynn et al, 2022)
     gene: nsp5 (Mpro)
     url: https://cdn.elifesciences.org/articles/77433/elife-77433-fig2-data1-v2.xlsx
+    wt_seq: data/Mpro.fa
 
 # Fitness estimates from Richard Neher, based on approach in his paper:
 # https://academic.oup.com/ve/advance-article/doi/10.1093/ve/veac113/6887176
