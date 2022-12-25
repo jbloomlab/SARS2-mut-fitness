@@ -123,25 +123,25 @@ clade_synonyms:
 dms_datasets:
   dadonaite_ba1_spike:
     study: https://www.biorxiv.org/content/10.1101/2022.10.13.512056v1
-    description: full spike deep mutational scan (Dadonaite et al, 2022)
+    description: spike (Dadonaite et al, 2022)
     gene: S
     url: https://raw.githubusercontent.com/dms-vep/SARS-CoV-2_Omicron_BA.1_spike_DMS_mAbs/main/results/muteffects_functional/muteffects_observed.csv
     filter_cols:
       times_seen: 3
   starr_rbd:
     study: https://journals.plos.org/plospathogens/article?id=10.1371/journal.ppat.1010951
-    description: RBD deep mutational scan (Starr et al, 2022)
+    description: RBD (Starr et al, 2022)
     gene: S
     url: https://media.githubusercontent.com/media/jbloomlab/SARS-CoV-2-RBD_DMS_Omicron/f76ba2b2bec18ede9fa9da18c9ccc52389b1ba3a/results/final_variant_scores/final_variant_scores.csv
   iketani_mpro:
     study: https://www.sciencedirect.com/science/article/pii/S1931312822004024
-    description: Mpro deep mutational scan (Iketani et al, 2022)
+    description: Mpro (Iketani et al, 2022)
     gene: nsp5 (Mpro)
     url: https://raw.githubusercontent.com/alejandrochavezlab/3CL_protease_DMS/dc802ee3ea9d43005ca97a28af078767fd66777c/outputs/results/normalized_to_wt_and_stop/activity_scores.csv
     wt_seq: data/Mpro.fa
   flynn_mpro:
     study: https://elifesciences.org/articles/77433
-    description: Mpro deep mutational scan (Flynn et al, 2022)
+    description: Mpro (Flynn et al, 2022)
     gene: nsp5 (Mpro)
     url: https://cdn.elifesciences.org/articles/77433/elife-77433-fig2-data1-v2.xlsx
     wt_seq: data/Mpro.fa
