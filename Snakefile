@@ -220,6 +220,7 @@ rule synonymous_mut_rates:
         rates_by_clade="results/synonymous_mut_rates/rates_by_clade.csv",
         nb="results/synonymous_mut_rates/synonymous_mut_rates.ipynb",
         nb_html="results/synonymous_mut_rates/synonymous_mut_rates.html",
+        rates_plot="results/synonymous_mut_rates/mut_rates.html",
     params:
         synonymous_spectra_min_counts=config["synonymous_spectra_min_counts"],
         subset_order="{subset_order: " + str(list(config['sample_subsets'])) + "}",
@@ -230,7 +231,8 @@ rule synonymous_mut_rates:
             -y "{params.subset_order}" \
             -p mutation_counts_csv {input.mutation_counts_csv} \
             -p clade_founder_nts_csv {input.clade_founder_nts_csv} \
-            -p rates_by_clade_csv {output.rates_by_clade}
+            -p rates_by_clade_csv {output.rates_by_clade} \
+            -p rates_plot {output.rates_plot}
         jupyter nbconvert {output.nb} --to html
         """
 
@@ -397,10 +399,12 @@ rule plots_to_docs:
     """Copy plots to docs for GitHub pages."""
     input:
         aa_fitness_plots_dir=rules.analyze_aa_fitness.output.outdir,
+        rates_plot=rules.synonymous_mut_rates.output.rates_plot,
     output:
         docs=directory("docs"),
     shell:
         """
         mkdir -p {output.docs}
         cp {input.aa_fitness_plots_dir}/*.html {output.docs}
+        cp {input.rates_plot} {output.docs}
         """
