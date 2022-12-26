@@ -18,6 +18,7 @@ dependencies:
   - git-lfs
   - jupyter_contrib_nbextensions
   - jupyterlab
+  - openpyxl
   - pandas=1.4
   - papermill=2.3.4
   - pip

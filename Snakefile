@@ -16,6 +16,7 @@ rule all:
         "results/aa_fitness/aamut_fitness_by_subset.csv",
         "results/aa_fitness/aa_fitness.csv",
         "docs",
+        "results/fitness_dms_corr/plots",
 
 
 rule get_mat_tree:
@@ -219,6 +220,7 @@ rule synonymous_mut_rates:
         rates_by_clade="results/synonymous_mut_rates/rates_by_clade.csv",
         nb="results/synonymous_mut_rates/synonymous_mut_rates.ipynb",
         nb_html="results/synonymous_mut_rates/synonymous_mut_rates.html",
+        rates_plot="results/synonymous_mut_rates/mut_rates.html",
     params:
         synonymous_spectra_min_counts=config["synonymous_spectra_min_counts"],
         subset_order="{subset_order: " + str(list(config['sample_subsets'])) + "}",
@@ -229,7 +231,8 @@ rule synonymous_mut_rates:
             -y "{params.subset_order}" \
             -p mutation_counts_csv {input.mutation_counts_csv} \
             -p clade_founder_nts_csv {input.clade_founder_nts_csv} \
-            -p rates_by_clade_csv {output.rates_by_clade}
+            -p rates_by_clade_csv {output.rates_by_clade} \
+            -p rates_plot {output.rates_plot}
         jupyter nbconvert {output.nb} --to html
         """
 
@@ -338,14 +341,72 @@ rule analyze_aa_fitness:
         "notebooks/analyze_aa_fitness.py.ipynb"
 
 
+rule process_dms_dataset:
+    """Process a deep mutational scanning dataset to fitness estimates."""
+    input:
+        unpack(
+            lambda wc: ( 
+                {"wt_seq": config["dms_datasets"][wc.dms_dataset]["wt_seq"]}
+                if "wt_seq" in config["dms_datasets"][wc.dms_dataset]
+                else {}
+            )
+        ),
+        nb="notebooks/process_{dms_dataset}.ipynb",
+    output:
+        raw_data="results/dms/{dms_dataset}/raw.csv",
+        processed="results/dms/{dms_dataset}/processed.csv",
+        nb="results/dms/{dms_dataset}/process_{dms_dataset}.ipynb",
+        html="results/dms/{dms_dataset}/process_{dms_dataset}.html",
+    params:
+        url=lambda wc: config["dms_datasets"][wc.dms_dataset]["url"],
+        wt_seq_param=lambda wc, input: (
+            f"-p wt_seq_fasta {input.wt_seq}"
+            if "wt_seq" in config["dms_datasets"][wc.dms_dataset]
+            else ""
+        ),
+    shell:
+        """
+        curl {params.url} > {output.raw_data}
+        papermill {input.nb} {output.nb} \
+            -p raw_data_csv {output.raw_data} \
+            {params.wt_seq_param} \
+            -p processed_csv {output.processed}
+        jupyter nbconvert {output.nb} --to html
+        """
+
+
+rule fitness_dms_corr:
+    """Correlate the fitness estimates with those from deep mutational scanning."""
+    input:
+        aafitness=rules.aa_fitness.output.aa_fitness,
+        neher_fitness=config["neher_fitness"],
+        **{
+            dms_dataset: f"results/dms/{dms_dataset}/processed.csv"
+            for dms_dataset in config["dms_datasets"]
+        },
+    output:
+        plotsdir=directory("results/fitness_dms_corr/plots")
+    params:
+        min_expected_count=config["min_expected_count"],
+        dms_datasets=config["dms_datasets"],
+    log:
+        notebook="results/fitness_dms_corr/fitness_dms_corr.ipynb",
+    notebook:
+        "notebooks/fitness_dms_corr.py.ipynb"
+
+
 rule plots_to_docs:
     """Copy plots to docs for GitHub pages."""
     input:
         aa_fitness_plots_dir=rules.analyze_aa_fitness.output.outdir,
+        dms_corr_plotsdir=rules.fitness_dms_corr.output.plotsdir,
+        rates_plot=rules.synonymous_mut_rates.output.rates_plot,
     output:
         docs=directory("docs"),
     shell:
         """
         mkdir -p {output.docs}
         cp {input.aa_fitness_plots_dir}/*.html {output.docs}
+        cp {input.dms_corr_plotsdir}/*.html {output.docs}
+        cp {input.rates_plot} {output.docs}
         """
