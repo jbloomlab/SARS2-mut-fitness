@@ -399,6 +399,7 @@ rule plots_to_docs:
     """Copy plots to docs for GitHub pages."""
     input:
         aa_fitness_plots_dir=rules.analyze_aa_fitness.output.outdir,
+        dms_corr_plotsdir=rules.fitness_dms_corr.output.plotsdir,
         rates_plot=rules.synonymous_mut_rates.output.rates_plot,
     output:
         docs=directory("docs"),
@@ -406,5 +407,6 @@ rule plots_to_docs:
         """
         mkdir -p {output.docs}
         cp {input.aa_fitness_plots_dir}/*.html {output.docs}
+        cp {input.dms_corr_plotsdir}/*.html {output.docs}
         cp {input.rates_plot} {output.docs}
         """
