@@ -151,6 +151,10 @@ The resulting amino-acid fitness values (aggregated across all clades) are in th
 
 - [results/aa_fitness/aa_fitness.csv](results/aa_fitness/aa_fitness.csv)
 
+### Comparison to deep mutational scanning mutation effects
+We compare the estimated fitness values to those extracted from a set of deep mutational scanning studies as specified under `dms_datasets` in [config.yaml](config.yaml).
+The processed deep mutational scanning mutation effects are in `processed.csv` files in subdirectories of [./results/dms/](results/dms).
+
 ### Caveats of analysis
 None of these are expected to seriously affect the accuracy of the current analysis, but they could become problematic if the same analysis is applied to substantially more diverged clades:
 
