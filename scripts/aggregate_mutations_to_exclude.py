@@ -11,13 +11,16 @@ sites_to_exclude = pd.DataFrame(
         (clade, site, f"{nt1}{site}{nt2}", False)
         for nt1, site, nt2, clade in itertools.product(
             nts,
-            snakemake.params.sites_to_exclude,
+            (
+                snakemake.params.sites_to_exclude
+                + pd.read_csv(snakemake.input.site_mask)["site"].tolist()
+            ),
             nts,
             snakemake.params.clades,
         )
     ],
     columns=["clade", "site", "mutation", "masked_in_usher"],
-)
+).drop_duplicates()
 
 if snakemake.params.exclude_ref_to_founder_muts:
     muts_to_exclude = pd.concat(
