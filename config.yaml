@@ -55,7 +55,11 @@ sites_to_exclude:
   - 28095  # ~11% of all mutations in clade 20I
   - 29362  # ~30% of all mutations in clade 21C
 
-# name of YAML with UShER masked sites
+# Name of VCF with sites masked across entire tree
+site_mask_vcf: https://raw.githubusercontent.com/W-L/ProblematicSites_SARS-CoV2/master/subset_vcf/problematic_sites_sarsCov2.mask.vcf
+
+# Name of YAML with UShER masked sites. These are sites masked per clade
+# in the pre-built UShER tree.
 usher_masked_sites: data/usher_masked_sites.yaml
 
 # for analysis of 4-fold synonymous mutation spectra/rates, only keep clade subsets with

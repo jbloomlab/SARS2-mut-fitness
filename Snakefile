@@ -16,7 +16,6 @@ rule all:
         "results/aa_fitness/aamut_fitness_by_subset.csv",
         "results/aa_fitness/aa_fitness.csv",
         "docs",
-        "results/fitness_dms_corr/plots",
 
 
 rule get_mat_tree:
@@ -159,6 +158,26 @@ rule clade_founder_fasta_and_muts:
         "scripts/clade_founder_fasta.py"
 
 
+rule site_mask_vcf:
+    """Get the site mask VCF."""
+    output:
+        vcf="results/site_mask/site_mask.vcf",
+    params:
+        url=config["site_mask_vcf"],
+    shell:
+        "curl {params.url} > {output.vcf}"
+
+
+rule site_mask:
+    """Convert site mask VCF to CSV."""
+    input:
+        vcf=rules.site_mask_vcf.output.vcf,
+    output:
+        csv="results/site_mask/site_mask.csv",
+    script:
+        "scripts/site_mask.py"
+
+
 rule count_mutations:
     """Count mutations, excluding branches with too many mutations or reversions."""
     input:
@@ -167,6 +186,7 @@ rule count_mutations:
         clade_founder_fasta=rules.clade_founder_fasta_and_muts.output.fasta,
         ref_to_founder_muts=rules.clade_founder_fasta_and_muts.output.muts,
         usher_masked_sites=config["usher_masked_sites"],
+        site_mask=rules.site_mask.output.csv,
     output:
         csv="results/mutation_counts/{clade}_{subset}.csv",
     params:
@@ -265,6 +285,7 @@ rule aggregate_mutations_to_exclude:
             for clade in clades_w_adequate_counts(wc)
         ],
         usher_masked_sites=config["usher_masked_sites"],
+        site_mask=rules.site_mask.output.csv,
     output:
         csv="results/expected_vs_actual_mut_counts/mutations_to_exclude.csv",
     params:

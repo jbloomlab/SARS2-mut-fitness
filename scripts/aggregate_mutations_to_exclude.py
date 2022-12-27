@@ -19,6 +19,19 @@ sites_to_exclude = pd.DataFrame(
     columns=["clade", "site", "mutation", "masked_in_usher"],
 )
 
+sites_masked = pd.DataFrame(
+    [
+        (clade, site, f"{nt1}{site}{nt2}", True)
+        for nt1, site, nt2, clade in itertools.product(
+            nts,
+            pd.read_csv(snakemake.input.site_mask)["site"].tolist(),
+            nts,
+            snakemake.params.clades,
+        )
+    ],
+    columns=["clade", "site", "mutation", "masked_in_usher"],
+)
+
 if snakemake.params.exclude_ref_to_founder_muts:
     muts_to_exclude = pd.concat(
         [
@@ -28,9 +41,9 @@ if snakemake.params.exclude_ref_to_founder_muts:
             )
         ]
     ).assign(masked_in_usher=False)
-    to_exclude = pd.concat([sites_to_exclude, muts_to_exclude])
+    to_exclude = pd.concat([sites_to_exclude, sites_masked, muts_to_exclude])
 else:
-    to_exclude = sites_to_exclude
+    to_exclude = pd.concat([sites_to_exclude, sites_masked])
 
 with open(snakemake.input.usher_masked_sites) as f:
     usher_masked_sites = yaml.safe_load(f)
