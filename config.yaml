@@ -154,3 +154,7 @@ dms_datasets:
 # https://academic.oup.com/ve/advance-article/doi/10.1093/ve/veac113/6887176
 # These are designed as an independent cross check of the fitness estimates here.
 neher_fitness: data/Neher_aa_fitness.csv
+
+# For analysis of fixed mutations in each clade, do this relative
+# to this clade founder as "reference"
+clade_fixed_muts_ref: 19A  # this is Wuhan-Hu-1
