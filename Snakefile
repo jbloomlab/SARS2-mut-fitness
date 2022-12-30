@@ -15,6 +15,7 @@ rule all:
         "results/aa_fitness/aamut_fitness_by_clade.csv",
         "results/aa_fitness/aamut_fitness_by_subset.csv",
         "results/aa_fitness/aa_fitness.csv",
+        "results/clade_fixed_muts/clade_fixed_muts.html",
         "docs",
 
 
@@ -422,13 +423,15 @@ rule clade_fixed_muts:
         aafitness=rules.aa_fitness.output.aa_fitness,
         aamut_by_clade=rules.aamut_fitness.output.aamut_by_clade,
         clade_founder_nts_csv=rules.clade_founder_nts.output.csv,
+    output:
+        chart="results/clade_fixed_muts/clade_fixed_muts.html",
     params:
         min_expected_count=config["min_expected_count"],
         ref=config["clade_fixed_muts_ref"],
     log:
         notebook="results/clade_fixed_muts/clade_fixed_muts.ipynb",
     notebook:
-        "notebooks/clade_fixed_muts.py.ipynb",
+        "notebooks/clade_fixed_muts.py.ipynb"
 
 
 rule plots_to_docs:
