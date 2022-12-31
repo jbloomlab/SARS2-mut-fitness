@@ -15,7 +15,6 @@ rule all:
         "results/aa_fitness/aamut_fitness_by_clade.csv",
         "results/aa_fitness/aamut_fitness_by_subset.csv",
         "results/aa_fitness/aa_fitness.csv",
-        "results/clade_fixed_muts/clade_fixed_muts.html",
         "docs",
 
 
@@ -434,12 +433,29 @@ rule clade_fixed_muts:
         "notebooks/clade_fixed_muts.py.ipynb"
 
 
+rule fitness_vs_terminal:
+    """Analyze fitness effects of mutations vs terminal / non-terminal node counts."""
+    input:
+        aamut_all=rules.aamut_fitness.output.aamut_all,
+        mutcounts=rules.aggregate_mutation_counts.output.csv,
+    output:
+        chart="results/fitness_vs_terminal/fitness_vs_terminal.html",    
+    params:
+        min_expected_count=config["min_expected_count"],
+    log:
+        notebook="results/fitness_vs_terminal/fitness_vs_termina.ipynb",
+    notebook:
+        "notebooks/fitness_vs_terminal.py.ipynb"
+
+
 rule plots_to_docs:
     """Copy plots to docs for GitHub pages."""
     input:
         aa_fitness_plots_dir=rules.analyze_aa_fitness.output.outdir,
         dms_corr_plotsdir=rules.fitness_dms_corr.output.plotsdir,
         rates_plot=rules.synonymous_mut_rates.output.rates_plot,
+        clade_fixed_muts=rules.clade_fixed_muts.output.chart,
+        fitness_vs_terminal=rules.fitness_vs_terminal.output.chart,
     output:
         docs=directory("docs"),
     shell:
@@ -448,4 +464,6 @@ rule plots_to_docs:
         cp {input.aa_fitness_plots_dir}/*.html {output.docs}
         cp {input.dms_corr_plotsdir}/*.html {output.docs}
         cp {input.rates_plot} {output.docs}
+        cp {input.clade_fixed_muts} {output.docs}
+        cp {input.fitness_vs_terminal} {output.docs}
         """
