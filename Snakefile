@@ -305,7 +305,7 @@ rule merge_expected_and_actual_counts:
     output:
         csv="results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv",
     log:
-        notebook="results/expected_vs_actual_mut_counts/merged_expected_and_actual_counts.ipynb",
+        notebook="results/expected_vs_actual_mut_counts/merge_expected_and_actual_counts.ipynb",
     notebook:
         "notebooks/merge_expected_and_actual_counts.py.ipynb"
 
