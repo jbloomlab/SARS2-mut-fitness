@@ -163,3 +163,7 @@ clade_fixed_muts_ref: 19A  # this is Wuhan-Hu-1
 # specify pseudocount and initial minimum actual count
 terminal_pseudocount: 0.5
 terminal_min_actual_count: 5
+
+# For GitHub Pages docs of plots
+docs_url: https://jbloomlab.github.io/SARS2-mut-fitness  # base URL for GitHub pages site
+docs_plot_annotations: data/docs_plot_annotations.yaml  # lists plots and their annotations

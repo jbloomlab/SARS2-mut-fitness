@@ -3,8 +3,13 @@
 
 import pandas as pd
 
+import yaml
+
 
 configfile: "config.yaml"
+
+with open(config["docs_plot_annotations"]) as f:
+    docs_plot_annotations = yaml.safe_load(f)
 
 
 rule all:
@@ -15,7 +20,7 @@ rule all:
         "results/aa_fitness/aamut_fitness_by_clade.csv",
         "results/aa_fitness/aamut_fitness_by_subset.csv",
         "results/aa_fitness/aa_fitness.csv",
-        "docs/plots.txt",
+        expand("docs/{plot}.html", plot=docs_plot_annotations["plots"]),
 
 
 rule get_mat_tree:
@@ -449,8 +454,8 @@ rule fitness_vs_terminal:
         "notebooks/fitness_vs_terminal.py.ipynb"
 
 
-checkpoint aggregate_plots_for_docs:
-    """Aggregate the plots to inclue in the GitHub pages docs."""
+rule aggregate_plots_for_docs:
+    """Aggregate plots to include in GitHub pages docs."""
     input:
         aa_fitness_plots_dir=rules.analyze_aa_fitness.output.outdir,
         dms_corr_plotsdir=rules.fitness_dms_corr.output.plotsdir,
@@ -470,12 +475,6 @@ checkpoint aggregate_plots_for_docs:
         """
 
 
-def plots_for_docs(wildcards):
-    """Get list of all the plots for the GitHub pages docs."""
-    plotsdir = checkpoints.aggregate_plots_for_docs.get(**wildcards).output.plotsdir
-    return [plot for plot in glob_wildcards(os.path.join(plotsdir, "{plot}.html")).plot]
-
-
 rule format_plot_for_docs:
     """Format a specific plot for the GitHub pages docs."""
     input:
@@ -484,15 +483,3 @@ rule format_plot_for_docs:
         plot="docs/{plot}.html",
     shell:
         "cp {input.plot} {output.plot}"
-
-
-rule list_docs_plots:
-    """List of plots for GitHub Pages docs."""
-    input:
-        plots=lambda wc: expand(
-            rules.format_plot_for_docs.output.plot, plot=plots_for_docs(wc)
-        ),
-    output:
-        plotslist="docs/plots.txt",
-    shell:
-        "echo {input.plots} > {output.plotslist}"

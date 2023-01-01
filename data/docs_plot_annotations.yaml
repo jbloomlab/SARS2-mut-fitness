@@ -1,0 +1,90 @@
+# Annotations for plots shown via GitHub pages.
+
+# Description template for all heatmaps
+heatmap_template: &heatmap_template
+  description: |
+    Here
+    is
+    the
+    description
+
+# List of all plots along with a *title* and markdown *description*.
+# The keys should be the base name of the plot.
+plots:
+
+  # heatmaps of mutational effects
+  nsp1:
+    <<: *heatmap_template
+    title: nsp1 amino-acid fitnesses
+  nsp2:
+    <<: *heatmap_template
+    title: nsp2 amino-acid fitnesses
+  nsp3:
+    <<: *heatmap_template
+    title: nsp3 amino-acid fitnesses
+  nsp4:
+    <<: *heatmap_template
+    title: nsp4 amino-acid fitnesses
+  nsp5:
+    <<: *heatmap_template
+    title: nsp5 (Mpro) amino-acid fitnesses
+  nsp6:
+    <<: *heatmap_template
+    title: nsp6 amino-acid fitnesses
+  nsp7:
+    <<: *heatmap_template
+    title: nsp7 amino-acid fitnesses
+  nsp8:
+    <<: *heatmap_template
+    title: nsp8 amino-acid fitnesses
+  nsp9:
+    <<: *heatmap_template
+    title: nsp9 amino-acid fitnesses
+  nsp10:
+    <<: *heatmap_template
+    title: nsp10 amino-acid fitnesses
+  nsp12:
+    <<: *heatmap_template
+    title: nsp12 (RdRp) amino-acid fitnesses
+  nsp13:
+    <<: *heatmap_template
+    title: nsp13 (helicase) amino-acid fitnesses
+  nsp14:
+    <<: *heatmap_template
+    title: nsp14 (ExoN) amino-acid fitnesses
+  nsp15:
+    <<: *heatmap_template
+    title: nsp15 amino-acid fitnesses
+  nsp16:
+    <<: *heatmap_template
+    title: nsp16 amino-acid fitnesses
+  S:
+    <<: *heatmap_template
+    title: S (spike) amino-acid fitnesses
+  ORF3a:
+    <<: *heatmap_template
+    title: ORF3a amino-acid fitnesses
+  E:
+    <<: *heatmap_template
+    title: E (envelope) amino-acid fitnesses
+  M:
+    <<: *heatmap_template
+    title: M (membrane) amino-acid fitnesses
+  ORF6:
+    <<: *heatmap_template
+    title: ORF6 amino-acid fitnesses
+  ORF7a:
+    <<: *heatmap_template
+    title: ORF7a amino-acid fitnesses
+  ORF7b:
+    <<: *heatmap_template
+    title: ORF7b amino-acid fitnesses
+  ORF8:
+    <<: *heatmap_template
+    title: ORF8 amino-acid fitnesses
+  N:
+    <<: *heatmap_template
+    title: N (nucleocapsid) amino-acid fitnesses
+  ORF10:
+    <<: *heatmap_template
+    title: ORF10 amino-acid fitnesses
