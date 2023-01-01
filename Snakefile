@@ -437,13 +437,14 @@ rule fitness_vs_terminal:
     """Analyze fitness effects of mutations vs terminal / non-terminal node counts."""
     input:
         aamut_all=rules.aamut_fitness.output.aamut_all,
-        mutcounts=rules.aggregate_mutation_counts.output.csv,
     output:
         chart="results/fitness_vs_terminal/fitness_vs_terminal.html",    
     params:
         min_expected_count=config["min_expected_count"],
+        min_actual_count=config["terminal_min_actual_count"],
+        pseudocount=config["terminal_pseudocount"],
     log:
-        notebook="results/fitness_vs_terminal/fitness_vs_termina.ipynb",
+        notebook="results/fitness_vs_terminal/fitness_vs_terminal.ipynb",
     notebook:
         "notebooks/fitness_vs_terminal.py.ipynb"
 
