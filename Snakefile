@@ -15,7 +15,7 @@ rule all:
         "results/aa_fitness/aamut_fitness_by_clade.csv",
         "results/aa_fitness/aamut_fitness_by_subset.csv",
         "results/aa_fitness/aa_fitness.csv",
-        "docs",
+        "docs/plots.txt",
 
 
 rule get_mat_tree:
@@ -449,8 +449,8 @@ rule fitness_vs_terminal:
         "notebooks/fitness_vs_terminal.py.ipynb"
 
 
-rule plots_to_docs:
-    """Copy plots to docs for GitHub pages."""
+checkpoint aggregate_plots_for_docs:
+    """Aggregate the plots to inclue in the GitHub pages docs."""
     input:
         aa_fitness_plots_dir=rules.analyze_aa_fitness.output.outdir,
         dms_corr_plotsdir=rules.fitness_dms_corr.output.plotsdir,
@@ -458,13 +458,41 @@ rule plots_to_docs:
         clade_fixed_muts=rules.clade_fixed_muts.output.chart,
         fitness_vs_terminal=rules.fitness_vs_terminal.output.chart,
     output:
-        docs=directory("docs"),
+        plotsdir=directory("results/plots_for_docs"),
     shell:
         """
-        mkdir -p {output.docs}
-        cp {input.aa_fitness_plots_dir}/*.html {output.docs}
-        cp {input.dms_corr_plotsdir}/*.html {output.docs}
-        cp {input.rates_plot} {output.docs}
-        cp {input.clade_fixed_muts} {output.docs}
-        cp {input.fitness_vs_terminal} {output.docs}
+        mkdir -p {output.plotsdir}
+        cp {input.aa_fitness_plots_dir}/*.html {output.plotsdir}
+        cp {input.dms_corr_plotsdir}/*.html {output.plotsdir}
+        cp {input.rates_plot} {output.plotsdir}
+        cp {input.clade_fixed_muts} {output.plotsdir}
+        cp {input.fitness_vs_terminal} {output.plotsdir}
         """
+
+
+def plots_for_docs(wildcards):
+    """Get list of all the plots for the GitHub pages docs."""
+    plotsdir = checkpoints.aggregate_plots_for_docs.get(**wildcards).output.plotsdir
+    return [plot for plot in glob_wildcards(os.path.join(plotsdir, "{plot}.html")).plot]
+
+
+rule format_plot_for_docs:
+    """Format a specific plot for the GitHub pages docs."""
+    input:
+        plot=os.path.join(rules.aggregate_plots_for_docs.output.plotsdir, "{plot}.html"),
+    output:
+        plot="docs/{plot}.html",
+    shell:
+        "cp {input.plot} {output.plot}"
+
+
+rule list_docs_plots:
+    """List of plots for GitHub Pages docs."""
+    input:
+        plots=lambda wc: expand(
+            rules.format_plot_for_docs.output.plot, plot=plots_for_docs(wc)
+        ),
+    output:
+        plotslist="docs/plots.txt",
+    shell:
+        "echo {input.plots} > {output.plotslist}"
