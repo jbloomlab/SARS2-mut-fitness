@@ -158,3 +158,8 @@ neher_fitness: data/Neher_aa_fitness.csv
 # For analysis of fixed mutations in each clade, do this relative
 # to this clade founder as "reference"
 clade_fixed_muts_ref: 19A  # this is Wuhan-Hu-1
+
+# For analysis of mutation fitness versus terminal / non-terminal counts,
+# specify pseudocount and initial minimum actual count
+terminal_pseudocount: 0.5
+terminal_min_actual_count: 5
