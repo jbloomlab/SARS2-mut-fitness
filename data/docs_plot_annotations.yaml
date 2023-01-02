@@ -27,11 +27,30 @@ heatmap_template: &heatmap_template
     estimates for fewer amino acids at higher confidence. Values in a range of 10 to 20
     are usually sufficient to yield reasonably accurate estimates.
 
-    See [https://github.com/jbloomlab/SARS2-mut-fitness](https://github.com/jbloomlab/SARS2-mut-fitness) for full computer code and data.
+
+# suffix added to all legends
+legend_suffix: See [https://github.com/jbloomlab/SARS2-mut-fitness](https://github.com/jbloomlab/SARS2-mut-fitness) for full computer code and data.
 
 # List of all plots along with a *title* and markdown *legend*.
 # The keys should be the base name of the plot.
 plots:
+  
+  mut_rates:
+    title: mutation rates for each clade
+    legend: |
+      Interactive plot of neutral mutation rates for each SARS-CoV-2 clade estimated using 
+      four-fold degenerate synonymous sites. 
+
+      The plot at left shows the fraction of all mutations at four-fold degenerate sites
+      that are of each type, and the plot at right shows the relative rates of these
+      mutations obtained after normalized for nucleotide composition.
+
+      You can mouseover points for details, click/shift-click on the bar at bottom to select
+      specific mutation types, and click/shift-click on the legend at right to select
+      specific clades.
+
+      See [Bloom, Beichman, Neher, & Harris (2022)](https://www.biorxiv.org/content/10.1101/2022.11.19.517207v1)
+      for more details on the mutation rates are estimated.
 
   # heatmaps of mutational effects
   nsp1:

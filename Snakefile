@@ -486,10 +486,12 @@ rule format_plot_for_docs:
     params:
         annotations=lambda wc: docs_plot_annotations["plots"][wc.plot],
         url=os.path.join(config["docs_url"], "{plot}.html"),
+        legend_suffix=docs_plot_annotations["legend_suffix"]
     shell:
         """
         echo "## {params.annotations[title]}\n" > {output.markdown}
-        echo "{params.annotations[legend]}\n" >> {output.markdown}
+        echo "{params.annotations[legend]}\n\n" >> {output.markdown}
+        echo "{params.legend_suffix}" >> {output.markdown}
         python {input.script} \
             --chart {input.plot} \
             --markdown {output.markdown} \
