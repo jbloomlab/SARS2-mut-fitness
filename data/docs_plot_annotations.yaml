@@ -3,10 +3,31 @@
 # Legend template for all heatmaps
 heatmap_template: &heatmap_template
   legend: |
-    Here
-    is
-    the
-    description
+    Interactive plot of fitnesses amino acids at each site estimated from the observed versus
+    actual counts of the amino acids among natural sequences.
+
+    The black area plot at top shows the mean fitness for each site, with more negative values
+    indicating mutations at a site tend to be deleterious. The plot is zoomable, and you can
+    click and drag with the mouse to highlight specific regions to show in the heat map. You
+    can use the *site fitness statistic* click box at bottom to change whether the black area
+    plot at top shows the mean, maximum, or minimum fitness of amino acids at that site.
+
+    The heat map shows the estimated fitness values for specific amino acids. Red indicates
+    low fitness (deleterious) amino acids, and blue indicates high fitness amino acids.
+    Gray indicates amino acids with insufficient natural evolutionary data to make estimates
+    (typically only single-nucleotide accessible amino acids will be shown). You can
+    mouse over points in the heat map for details, and zoom using the area plot at top.
+    The **x** at each site indicates the wildtype amino acid in the SARS-CoV-2 clade
+    indicated by the dropdown box below the plot.
+
+    The *minimum expected count* slider below the plot indicates how many expected counts of an
+    an amino acid we require before making a fitness estimate. Larger values yield more
+    accurate estimates but for fewer amino acids. So move the slider to the left to show
+    estimates for more amino acids at lower confidence, and move it to the right to show
+    estimates for fewer amino acids at higher confidence. Values in a range of 10 to 20
+    are usually sufficient to yield reasonably accurate estimates.
+
+    See [https://github.com/jbloomlab/SARS2-mut-fitness](https://github.com/jbloomlab/SARS2-mut-fitness) for full computer code and data.
 
 # List of all plots along with a *title* and markdown *legend*.
 # The keys should be the base name of the plot.
