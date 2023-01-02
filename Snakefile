@@ -247,13 +247,12 @@ rule synonymous_mut_rates:
         nb_html="results/synonymous_mut_rates/synonymous_mut_rates.html",
         rates_plot="results/synonymous_mut_rates/mut_rates.html",
     params:
-        synonymous_spectra_min_counts=config["synonymous_spectra_min_counts"],
-        subset_order="{subset_order: " + str(list(config['sample_subsets'])) + "}",
+        config["synonymous_spectra_min_counts"],
+        config['sample_subsets'],
+        config["clade_synonyms"],
     shell:
         """
         papermill {input.nb} {output.nb} \
-            -p synonymous_spectra_min_counts {params.synonymous_spectra_min_counts} \
-            -y "{params.subset_order}" \
             -p mutation_counts_csv {input.mutation_counts_csv} \
             -p clade_founder_nts_csv {input.clade_founder_nts_csv} \
             -p rates_by_clade_csv {output.rates_by_clade} \
@@ -463,22 +462,28 @@ rule aggregate_plots_for_docs:
         clade_fixed_muts=rules.clade_fixed_muts.output.chart,
         fitness_vs_terminal=rules.fitness_vs_terminal.output.chart,
     output:
-        plotsdir=directory("results/plots_for_docs"),
+        expand(
+            os.path.join("results/plots_for_docs/{plot}.html"),
+            plot=docs_plot_annotations["plots"],
+        ),
+    params:
+        plotsdir="results/plots_for_docs",
     shell:
         """
-        mkdir -p {output.plotsdir}
-        cp {input.aa_fitness_plots_dir}/*.html {output.plotsdir}
-        cp {input.dms_corr_plotsdir}/*.html {output.plotsdir}
-        cp {input.rates_plot} {output.plotsdir}
-        cp {input.clade_fixed_muts} {output.plotsdir}
-        cp {input.fitness_vs_terminal} {output.plotsdir}
+        mkdir -p {params.plotsdir}
+        rm -f {params.plotsdir}/*
+        cp {input.aa_fitness_plots_dir}/*.html {params.plotsdir}
+        cp {input.dms_corr_plotsdir}/*.html {params.plotsdir}
+        cp {input.rates_plot} {params.plotsdir}
+        cp {input.clade_fixed_muts} {params.plotsdir}
+        cp {input.fitness_vs_terminal} {params.plotsdir}
         """
 
 
 rule format_plot_for_docs:
     """Format a specific plot for the GitHub pages docs."""
     input:
-        plot=os.path.join(rules.aggregate_plots_for_docs.output.plotsdir, "{plot}.html"),
+        plot=os.path.join(rules.aggregate_plots_for_docs.params.plotsdir, "{plot}.html"),
         script="scripts/format_altair_html.py",
     output:
         plot="docs/{plot}.html",
