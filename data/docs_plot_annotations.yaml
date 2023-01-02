@@ -1,14 +1,14 @@
 # Annotations for plots shown via GitHub pages.
 
-# Description template for all heatmaps
+# Legend template for all heatmaps
 heatmap_template: &heatmap_template
-  description: |
+  legend: |
     Here
     is
     the
     description
 
-# List of all plots along with a *title* and markdown *description*.
+# List of all plots along with a *title* and markdown *legend*.
 # The keys should be the base name of the plot.
 plots:
 

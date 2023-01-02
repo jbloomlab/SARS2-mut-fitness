@@ -479,7 +479,22 @@ rule format_plot_for_docs:
     """Format a specific plot for the GitHub pages docs."""
     input:
         plot=os.path.join(rules.aggregate_plots_for_docs.output.plotsdir, "{plot}.html"),
+        script="scripts/format_altair_html.py",
     output:
         plot="docs/{plot}.html",
+        markdown=temp("results/plots_for_docs/{plot}.md"),
+    params:
+        annotations=lambda wc: docs_plot_annotations["plots"][wc.plot],
+        url=os.path.join(config["docs_url"], "{plot}.html"),
     shell:
-        "cp {input.plot} {output.plot}"
+        """
+        echo "## {params.annotations[title]}\n" > {output.markdown}
+        echo "{params.annotations[legend]}\n" >> {output.markdown}
+        python {input.script} \
+            --chart {input.plot} \
+            --markdown {output.markdown} \
+            --site {params.url} \
+            --title "{params.annotations[title]}" \
+            --description "{params.annotations[title]}" \
+            --output {output.plot}
+        """

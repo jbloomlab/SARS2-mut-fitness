@@ -7,21 +7,14 @@ channels:
 dependencies:
   - altair=4.2
   - biopython=1.79
-  - black-jupyter
   - entrez-direct=16.2
-  - flake8
-  - flake8-bugbear
-  - flake8-builtins
-  - flake8-comprehensions
-  - flake8-import-order
-  - flake8-nb
   - git-lfs
   - jupyter_contrib_nbextensions
   - jupyterlab
+  - markdown
   - openpyxl
   - pandas=1.4
   - papermill=2.3.4
-  - pip
   - python=3.9
   - scikit-learn=1.1.1
   - snakemake=7.18.2
