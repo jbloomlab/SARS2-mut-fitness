@@ -52,6 +52,23 @@ plots:
       See [Bloom, Beichman, Neher, & Harris (2022)](https://www.biorxiv.org/content/10.1101/2022.11.19.517207v1)
       for more details on the mutation rates are estimated.
 
+  effects_histogram:
+    title: distribution of fitness effects of mutations
+    legend: |
+      Interactive histograms of the estimated fitness effects of different types of mutations.
+      Mutations are stratified by whether they are nonsynonymous, synonymous, or introduce
+      a stop codon. Mutations with negative fitness effects are deleterious.
+
+      The *minimum expected count* slider below the plot indicates how many expected counts
+      of a mutation we require before making a fitness estimate. Larger values yield more
+      accurate estimates but for fewer mutations. Move the slider to the left to show
+      estimates for more mutations at lower confidence, and move it to the right to show
+      estimates for fewer mutations at higher confidence. Values in a range of 10 to 20
+      are usually sufficient to yield reasonably accurate estimates.
+
+      You can click/shift-click on specific genes in the legend below the plot to show
+      only estimates for those genes.
+
   # heatmaps of mutational effects
   nsp1:
     <<: *heatmap_template
