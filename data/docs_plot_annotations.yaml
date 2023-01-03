@@ -85,6 +85,38 @@ plots:
     <<: *corr_template
     title: correlation of fitness estimates for different countries
 
+  dms_S_corr: &dms_S_corr_template
+    title: correlation of fitness estimates with spike deep mutational scanning
+    legend: |
+      Interactive plot correlating the fitness estimates for spike amino-acid mutations
+      with experimental measurements of the effects of these mutations in deep mutational
+      scanning of the full spike ([Dadonaite et al (2022)](https://www.biorxiv.org/content/10.1101/2022.10.13.512056v1))
+      or just the RBD ([Starr et al (2022)](https://journals.plos.org/plospathogens/article?id=10.1371/journal.ppat.1010951)).
+      Each point represents an amino-acid mutation. The Pearson correlation coefficient and
+      the number of mutations being correlated are shown in the upper left of the scatter plot.
+
+      You can mouse over points for details.
+
+      The *minimum expected count* slider below the plot indicates how many expected counts of an
+      an amino acid we require before making a fitness estimate. Larger values yield more
+      accurate estimates but for fewer amino acids. So move the slider to the left to show
+      estimates for more amino acids at lower confidence, and move it to the right to show
+      estimates for fewer amino acids at higher confidence. Values in a range of 10 to 20
+      are usually sufficient to yield reasonably accurate estimates.
+
+      Click *yes* for the *only show mutations measured in all subsets* box to only show
+      the same subset of mutations in each panel; otherwise different panels may show
+      different subsets of mutations depending on which mutations have measurements or
+      fitness estimates for each pair of variables being correlated.
+
+      For the RBD deep mutational scanning, the effects of mutations are averaged across
+      the different homolog backgrounds. The *DMS effect RBD* is quantified as the mean
+      of the effect of the mutation on ACE2 affinity and RBD expression.
+
+  dms_S_all_corr:
+    <<: *dms_S_corr_template
+    title: correlation of fitness estimated with spike deep mutational scanning (all phenotypes)
+
   # heatmaps of mutational effects
   nsp1: &heatmap_template
     legend: |
