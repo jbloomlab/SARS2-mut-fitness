@@ -1,0 +1,283 @@
+# Annotations for plots shown via GitHub pages.
+
+# suffix added to all legends
+legend_suffix: See [https://github.com/jbloomlab/SARS2-mut-fitness](https://github.com/jbloomlab/SARS2-mut-fitness) for full computer code and data.
+
+# List of all plots along with a *title* and markdown *legend*.
+# The keys should be the base name of the plot.
+plots:
+  
+  mut_rates:
+    title: mutation rates for each clade
+    legend: |
+      Interactive plot of neutral mutation rates for each SARS-CoV-2 clade estimated using 
+      four-fold degenerate synonymous sites. 
+
+      The plot at left shows the fraction of all mutations at four-fold degenerate sites
+      that are of each type, and the plot at right shows the relative rates of these
+      mutations obtained after normalized for nucleotide composition.
+
+      You can mouseover points for details, click/shift-click on the bar at bottom to select
+      specific mutation types, and click/shift-click on the legend at right to select
+      specific clades.
+
+      See [Bloom, Beichman, Neher, & Harris (2022)](https://www.biorxiv.org/content/10.1101/2022.11.19.517207v1)
+      for more details on the mutation rates are estimated.
+
+  effects_histogram:
+    title: distribution of fitness effects of mutations
+    legend: |
+      Interactive histograms of the estimated fitness effects of different types of mutations.
+      Mutations are stratified by whether they are nonsynonymous, synonymous, or introduce
+      a stop codon. Mutations with negative fitness effects are deleterious.
+
+      The *minimum expected count* slider below the plot indicates how many expected counts
+      of a mutation we require before making a fitness estimate. Larger values yield more
+      accurate estimates but for fewer mutations. Move the slider to the left to show
+      estimates for more mutations at lower confidence, and move it to the right to show
+      estimates for fewer mutations at higher confidence. Values in a range of 10 to 20
+      are usually sufficient to yield reasonably accurate estimates.
+
+      You can click/shift-click on specific genes in the legend below the plot to show
+      only estimates for those genes.
+
+  effects_dist:
+    title: mutation fitness effects for each gene
+    legend: |
+      Interactive plot of the distribution of fitness effects of different types
+      of mutations for each viral gene. The dark squares show the median effect of
+      mutations of each type (stop, nonsynonymous, or synonymous), and the light
+      rectangles span the interquartile range. Mutations with negative fitness
+      effects are deleterious.
+
+      You can mouseover the bars for details.
+
+      You can click on the *mutation type* legend to just highlight mutations of
+      a specific type.
+
+      The *minimum expected count* slider below the plot indicates how many expected counts
+      of a mutation we require before making a fitness estimate. Larger values yield more
+      accurate estimates but for fewer mutations. Move the slider to the left to show
+      estimates for more mutations at lower confidence, and move it to the right to show
+      estimates for fewer mutations at higher confidence. Values in a range of 10 to 20
+      are usually sufficient to yield reasonably accurate estimates.
+
+  clade_corr_chart: &corr_template
+    title: correlation of fitness estimates for different viral clades
+    legend: |
+      Interactive plot of the correlation between fitness estimates made using different
+      subsets of the sequence data. Each point represents a fitness estimate for a
+      different amino-acid mutation. The Pearson correlation coefficient and the number
+      of mutations being correlated are shown in the upper left of the scatter plot.
+
+      You can mouse over points for details.
+    
+      The *minimum expected count* slider below the plot indicates how many expected counts of an
+      an amino acid we require before making a fitness estimate. Larger values yield more
+      accurate estimates but for fewer amino acids. So move the slider to the left to show
+      estimates for more amino acids at lower confidence, and move it to the right to show
+      estimates for fewer amino acids at higher confidence. Values in a range of 10 to 20
+      are usually sufficient to yield reasonably accurate estimates.
+
+      You can click/shift-click on specific genes in the legend below the plot to only
+      show mutations for that gene.
+  subset_corr_chart:
+    <<: *corr_template
+    title: correlation of fitness estimates for different countries
+
+  dms_S_corr: &dms_S_corr_template
+    title: correlation of fitness estimates with spike deep mutational scanning
+    legend: |
+      Interactive plot correlating the fitness estimates for spike amino-acid mutations
+      with experimental measurements of the effects of these mutations in deep mutational
+      scanning of the full spike ([Dadonaite et al (2022)](https://www.biorxiv.org/content/10.1101/2022.10.13.512056v1))
+      or just the RBD ([Starr et al (2022)](https://journals.plos.org/plospathogens/article?id=10.1371/journal.ppat.1010951)).
+      Each point represents an amino-acid mutation. The Pearson correlation coefficient and
+      the number of mutations being correlated are shown in the upper left of the scatter plot.
+
+      You can mouse over points for details.
+
+      The *minimum expected count* slider below the plot indicates how many expected counts of an
+      an amino acid we require before making a fitness estimate. Larger values yield more
+      accurate estimates but for fewer amino acids. So move the slider to the left to show
+      estimates for more amino acids at lower confidence, and move it to the right to show
+      estimates for fewer amino acids at higher confidence. Values in a range of 10 to 20
+      are usually sufficient to yield reasonably accurate estimates.
+
+      Click *yes* for the *only show mutations measured in all subsets* box to only show
+      the same subset of mutations in each panel; otherwise different panels may show
+      different subsets of mutations depending on which mutations have measurements or
+      fitness estimates for each pair of variables being correlated.
+
+      For the RBD deep mutational scanning, the effects of mutations are averaged across
+      the different homolog backgrounds. The *DMS effect RBD* is quantified as the mean
+      of the effect of the mutation on ACE2 affinity and RBD expression.
+  dms_S_all_corr:
+    <<: *dms_S_corr_template
+    title: correlation of fitness estimated with spike deep mutational scanning (all phenotypes)
+
+  dms_nsp5_corr: &dms_nsp5_corr_template
+    title: correlation of fitness estimates with Mpro (nsp5) deep mutational scanning
+    legend: |
+      Interactive plot correlating the fitness estimates for Mpro (nsp5) amino-acid mutations
+      with experimental measurements of the effects of these mutations in yeast-based deep 
+      mutational scanning by [Flynn et al (2022)](https://elifesciences.org/articles/77433)
+      or [Iketani et al (2022)](https://www.cell.com/cell-host-microbe/fulltext/S1931-3128(22)00402-4).
+      Each point represents an amino-acid mutation. The Pearson correlation coefficient and
+      the number of mutations being correlated are shown in the upper left of the scatter plot.
+
+      You can mouse over points for details.
+
+      The *minimum expected count* slider below the plot indicates how many expected counts of an
+      an amino acid we require before making a fitness estimate. Larger values yield more
+      accurate estimates but for fewer amino acids. So move the slider to the left to show
+      estimates for more amino acids at lower confidence, and move it to the right to show
+      estimates for fewer amino acids at higher confidence. Values in a range of 10 to 20
+      are usually sufficient to yield reasonably accurate estimates.
+
+      Click *yes* for the *only show mutations measured in all subsets* box to only show
+      the same subset of mutations in each panel; otherwise different panels may show
+      different subsets of mutations depending on which mutations have measurements or
+      fitness estimates for each pair of variables being correlated.
+
+      For the [Flynn et al (2022)](https://elifesciences.org/articles/77433) deep mutational
+      scanning, the *DMS effect Mpro* is quantified as the mean of the effect of the mutation
+      in the growth, FRET and TF assays.
+  dms_nsp5_all_corr:
+    <<: *dms_nsp5_corr_template
+    title: correlation of fitness estimates with Mpro (nsp5) deep mutational scanning (all phenotypes)
+
+  # heatmaps of mutational effects
+  nsp1: &heatmap_template
+    legend: |
+      Interactive plot of fitnesses amino acids at each site estimated from the observed versus
+      actual counts of the amino acids among natural sequences.
+
+      The black area plot at top shows the mean fitness for each site, with more negative values
+      indicating mutations at a site tend to be deleterious. The plot is zoomable, and you can
+      click and drag with the mouse to highlight specific regions to show in the heat map. You
+      can use the *site fitness statistic* click box at bottom to change whether the black area
+      plot at top shows the mean, maximum, or minimum fitness of amino acids at that site.
+
+      The heat map shows the estimated fitness values for specific amino acids. Red indicates
+      low fitness (deleterious) amino acids, and blue indicates high fitness amino acids.
+      Gray indicates amino acids with insufficient natural evolutionary data to make estimates
+      (typically only single-nucleotide accessible amino acids will be shown). You can
+      mouse over points in the heat map for details, and zoom using the area plot at top.
+      The **x** at each site indicates the wildtype amino acid in the SARS-CoV-2 clade
+      indicated by the dropdown box below the plot.
+
+      The *minimum expected count* slider below the plot indicates how many expected counts of an
+      an amino acid we require before making a fitness estimate. Larger values yield more
+      accurate estimates but for fewer amino acids. So move the slider to the left to show
+      estimates for more amino acids at lower confidence, and move it to the right to show
+      estimates for fewer amino acids at higher confidence. Values in a range of 10 to 20
+      are usually sufficient to yield reasonably accurate estimates.
+    title: nsp1 amino-acid fitnesses
+  nsp2:
+    <<: *heatmap_template
+    title: nsp2 amino-acid fitnesses
+  nsp3:
+    <<: *heatmap_template
+    title: nsp3 amino-acid fitnesses
+  nsp4:
+    <<: *heatmap_template
+    title: nsp4 amino-acid fitnesses
+  nsp5:
+    <<: *heatmap_template
+    title: nsp5 (Mpro) amino-acid fitnesses
+  nsp6:
+    <<: *heatmap_template
+    title: nsp6 amino-acid fitnesses
+  nsp7:
+    <<: *heatmap_template
+    title: nsp7 amino-acid fitnesses
+  nsp8:
+    <<: *heatmap_template
+    title: nsp8 amino-acid fitnesses
+  nsp9:
+    <<: *heatmap_template
+    title: nsp9 amino-acid fitnesses
+  nsp10:
+    <<: *heatmap_template
+    title: nsp10 amino-acid fitnesses
+  nsp12:
+    <<: *heatmap_template
+    title: nsp12 (RdRp) amino-acid fitnesses
+  nsp13:
+    <<: *heatmap_template
+    title: nsp13 (helicase) amino-acid fitnesses
+  nsp14:
+    <<: *heatmap_template
+    title: nsp14 (ExoN) amino-acid fitnesses
+  nsp15:
+    <<: *heatmap_template
+    title: nsp15 amino-acid fitnesses
+  nsp16:
+    <<: *heatmap_template
+    title: nsp16 amino-acid fitnesses
+  S:
+    <<: *heatmap_template
+    title: S (spike) amino-acid fitnesses
+  ORF3a:
+    <<: *heatmap_template
+    title: ORF3a amino-acid fitnesses
+  E:
+    <<: *heatmap_template
+    title: E (envelope) amino-acid fitnesses
+  M:
+    <<: *heatmap_template
+    title: M (membrane) amino-acid fitnesses
+  ORF6:
+    <<: *heatmap_template
+    title: ORF6 amino-acid fitnesses
+  ORF7a:
+    <<: *heatmap_template
+    title: ORF7a amino-acid fitnesses
+  ORF7b:
+    <<: *heatmap_template
+    title: ORF7b amino-acid fitnesses
+  ORF8:
+    <<: *heatmap_template
+    title: ORF8 amino-acid fitnesses
+  N:
+    <<: *heatmap_template
+    title: N (nucleocapsid) amino-acid fitnesses
+  ORF10:
+    <<: *heatmap_template
+    title: ORF10 amino-acid fitnesses
+
+  fitness_vs_terminal:
+    title: fitness effects versus ratio of mutation counts on non-terminal and terminal branches
+    legend: |
+      Interactive plot of the correlation between fitness estimates and the ratio of
+      the counts for each amino-acid mutation on non-terminal versus terminal branches
+      of the tree. This plot is designed to help assess whether mutations with higher
+      fitness tend to be associated with more descendant sequences (in which case
+      they would have a higher ratio of non-terminal to terminal counts).
+
+      Each point on the plot represents a fitness estimate for a
+      different amino-acid mutation. The Pearson correlation coefficient and the number
+      of mutations being correlated are shown in the upper left of the scatter plot.
+      The mutations are stratified by whether they are nonsynonymous, synonymous, or
+      introduce a stop codon.
+
+      You can mouse over points for details.
+
+      The *minimum actual count* slider below the plot indicates the total number of
+      observed counts we require for a mutation before it is shown on the plot. The
+      non-terminal to terminal ratio may be noisier for smaller values of this threshold,
+      although more deleterious mutations are also expected to have lower actual counts.
+    
+      The *minimum expected count* slider below the plot indicates how many expected counts of an
+      an amino acid we require before making a fitness estimate. Larger values yield more
+      accurate estimates but for fewer amino acids. So move the slider to the left to show
+      estimates for more amino acids at lower confidence, and move it to the right to show
+      estimates for fewer amino acids at higher confidence. Values in a range of 10 to 20
+      are usually sufficient to yield reasonably accurate estimates.
+
+      You can click/shift-click on specific genes in the legend below the plot to only
+      show mutations for that gene.
+
+      The log ratio of the non-terminal to terminal counts is computed after adding a
+      pseudocount of 0.5 to each count.

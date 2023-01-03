@@ -3,8 +3,13 @@
 
 import pandas as pd
 
+import yaml
+
 
 configfile: "config.yaml"
+
+with open(config["docs_plot_annotations"]) as f:
+    docs_plot_annotations = yaml.safe_load(f)
 
 
 rule all:
@@ -15,7 +20,7 @@ rule all:
         "results/aa_fitness/aamut_fitness_by_clade.csv",
         "results/aa_fitness/aamut_fitness_by_subset.csv",
         "results/aa_fitness/aa_fitness.csv",
-        "docs",
+        expand("docs/{plot}.html", plot=docs_plot_annotations["plots"]),
 
 
 rule get_mat_tree:
@@ -242,13 +247,12 @@ rule synonymous_mut_rates:
         nb_html="results/synonymous_mut_rates/synonymous_mut_rates.html",
         rates_plot="results/synonymous_mut_rates/mut_rates.html",
     params:
-        synonymous_spectra_min_counts=config["synonymous_spectra_min_counts"],
-        subset_order="{subset_order: " + str(list(config['sample_subsets'])) + "}",
+        config["synonymous_spectra_min_counts"],
+        config['sample_subsets'],
+        config["clade_synonyms"],
     shell:
         """
         papermill {input.nb} {output.nb} \
-            -p synonymous_spectra_min_counts {params.synonymous_spectra_min_counts} \
-            -y "{params.subset_order}" \
             -p mutation_counts_csv {input.mutation_counts_csv} \
             -p clade_founder_nts_csv {input.clade_founder_nts_csv} \
             -p rates_by_clade_csv {output.rates_by_clade} \
@@ -449,8 +453,8 @@ rule fitness_vs_terminal:
         "notebooks/fitness_vs_terminal.py.ipynb"
 
 
-rule plots_to_docs:
-    """Copy plots to docs for GitHub pages."""
+rule aggregate_plots_for_docs:
+    """Aggregate plots to include in GitHub pages docs."""
     input:
         aa_fitness_plots_dir=rules.analyze_aa_fitness.output.outdir,
         dms_corr_plotsdir=rules.fitness_dms_corr.output.plotsdir,
@@ -458,13 +462,46 @@ rule plots_to_docs:
         clade_fixed_muts=rules.clade_fixed_muts.output.chart,
         fitness_vs_terminal=rules.fitness_vs_terminal.output.chart,
     output:
-        docs=directory("docs"),
+        expand(
+            os.path.join("results/plots_for_docs/{plot}.html"),
+            plot=docs_plot_annotations["plots"],
+        ),
+    params:
+        plotsdir="results/plots_for_docs",
     shell:
         """
-        mkdir -p {output.docs}
-        cp {input.aa_fitness_plots_dir}/*.html {output.docs}
-        cp {input.dms_corr_plotsdir}/*.html {output.docs}
-        cp {input.rates_plot} {output.docs}
-        cp {input.clade_fixed_muts} {output.docs}
-        cp {input.fitness_vs_terminal} {output.docs}
+        mkdir -p {params.plotsdir}
+        rm -f {params.plotsdir}/*
+        cp {input.aa_fitness_plots_dir}/*.html {params.plotsdir}
+        cp {input.dms_corr_plotsdir}/*.html {params.plotsdir}
+        cp {input.rates_plot} {params.plotsdir}
+        cp {input.clade_fixed_muts} {params.plotsdir}
+        cp {input.fitness_vs_terminal} {params.plotsdir}
+        """
+
+
+rule format_plot_for_docs:
+    """Format a specific plot for the GitHub pages docs."""
+    input:
+        plot=os.path.join(rules.aggregate_plots_for_docs.params.plotsdir, "{plot}.html"),
+        script="scripts/format_altair_html.py",
+    output:
+        plot="docs/{plot}.html",
+        markdown=temp("results/plots_for_docs/{plot}.md"),
+    params:
+        annotations=lambda wc: docs_plot_annotations["plots"][wc.plot],
+        url=os.path.join(config["docs_url"], "{plot}.html"),
+        legend_suffix=docs_plot_annotations["legend_suffix"]
+    shell:
+        """
+        echo "## {params.annotations[title]}\n" > {output.markdown}
+        echo "{params.annotations[legend]}\n\n" >> {output.markdown}
+        echo "{params.legend_suffix}" >> {output.markdown}
+        python {input.script} \
+            --chart {input.plot} \
+            --markdown {output.markdown} \
+            --site {params.url} \
+            --title "{params.annotations[title]}" \
+            --description "{params.annotations[title]}" \
+            --output {output.plot}
         """
