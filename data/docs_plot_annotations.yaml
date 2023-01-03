@@ -246,3 +246,38 @@ plots:
   ORF10:
     <<: *heatmap_template
     title: ORF10 amino-acid fitnesses
+
+  fitness_vs_terminal:
+    title: fitness effects versus ratio of mutation counts on non-terminal and terminal branches
+    legend: |
+      Interactive plot of the correlation between fitness estimates and the ratio of
+      the counts for each amino-acid mutation on non-terminal versus terminal branches
+      of the tree. This plot is designed to help assess whether mutations with higher
+      fitness tend to be associated with more descendant sequences (in which case
+      they would have a higher ratio of non-terminal to terminal counts).
+
+      Each point on the plot represents a fitness estimate for a
+      different amino-acid mutation. The Pearson correlation coefficient and the number
+      of mutations being correlated are shown in the upper left of the scatter plot.
+      The mutations are stratified by whether they are nonsynonymous, synonymous, or
+      introduce a stop codon.
+
+      You can mouse over points for details.
+
+      The *minimum actual count* slider below the plot indicates the total number of
+      observed counts we require for a mutation before it is shown on the plot. The
+      non-terminal to terminal ratio may be noisier for smaller values of this threshold,
+      although more deleterious mutations are also expected to have lower actual counts.
+    
+      The *minimum expected count* slider below the plot indicates how many expected counts of an
+      an amino acid we require before making a fitness estimate. Larger values yield more
+      accurate estimates but for fewer amino acids. So move the slider to the left to show
+      estimates for more amino acids at lower confidence, and move it to the right to show
+      estimates for fewer amino acids at higher confidence. Values in a range of 10 to 20
+      are usually sufficient to yield reasonably accurate estimates.
+
+      You can click/shift-click on specific genes in the legend below the plot to only
+      show mutations for that gene.
+
+      The log ratio of the non-terminal to terminal counts is computed after adding a
+      pseudocount of 0.5 to each count.
