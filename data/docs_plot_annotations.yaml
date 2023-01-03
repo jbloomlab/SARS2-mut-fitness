@@ -112,10 +112,40 @@ plots:
       For the RBD deep mutational scanning, the effects of mutations are averaged across
       the different homolog backgrounds. The *DMS effect RBD* is quantified as the mean
       of the effect of the mutation on ACE2 affinity and RBD expression.
-
   dms_S_all_corr:
     <<: *dms_S_corr_template
     title: correlation of fitness estimated with spike deep mutational scanning (all phenotypes)
+
+  dms_nsp5_corr: &dms_nsp5_corr_template
+    title: correlation of fitness estimates with Mpro (nsp5) deep mutational scanning
+    legend: |
+      Interactive plot correlating the fitness estimates for Mpro (nsp5) amino-acid mutations
+      with experimental measurements of the effects of these mutations in yeast-based deep 
+      mutational scanning by [Flynn et al (2022)](https://elifesciences.org/articles/77433)
+      or [Iketani et al (2022)](https://www.cell.com/cell-host-microbe/fulltext/S1931-3128(22)00402-4).
+      Each point represents an amino-acid mutation. The Pearson correlation coefficient and
+      the number of mutations being correlated are shown in the upper left of the scatter plot.
+
+      You can mouse over points for details.
+
+      The *minimum expected count* slider below the plot indicates how many expected counts of an
+      an amino acid we require before making a fitness estimate. Larger values yield more
+      accurate estimates but for fewer amino acids. So move the slider to the left to show
+      estimates for more amino acids at lower confidence, and move it to the right to show
+      estimates for fewer amino acids at higher confidence. Values in a range of 10 to 20
+      are usually sufficient to yield reasonably accurate estimates.
+
+      Click *yes* for the *only show mutations measured in all subsets* box to only show
+      the same subset of mutations in each panel; otherwise different panels may show
+      different subsets of mutations depending on which mutations have measurements or
+      fitness estimates for each pair of variables being correlated.
+
+      For the [Flynn et al (2022)](https://elifesciences.org/articles/77433) deep mutational
+      scanning, the *DMS effect Mpro* is quantified as the mean of the effect of the mutation
+      in the growth, FRET and TF assays.
+  dms_nsp5_all_corr:
+    <<: *dms_nsp5_corr_template
+    title: correlation of fitness estimates with Mpro (nsp5) deep mutational scanning (all phenotypes)
 
   # heatmaps of mutational effects
   nsp1: &heatmap_template
