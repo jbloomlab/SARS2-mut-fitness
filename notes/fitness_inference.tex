@@ -129,9 +129,15 @@ In this case, the above simplifies to
 \begin{equation}
     \langle \phi \rangle \approx \frac{z}{\gamma_0(z+s)}
 \end{equation}
+
+
+In a variant that has been growing with rate $\gamma_0$ for a time $\tau=T-t$ and sampled with $z=\epsilon$, we thus expect that the number of times we observe separate mutant lineages depends on $s$ as
+\begin{equation}
+    \langle \phi \rangle \approx \frac{\epsilon}{\gamma_0(\epsilon+s)}
+\end{equation}
 This has a very similar behavior as the solution for constant population size, which suggests that the overall dependence on $s$ is robust and we can assume that the number of times a mutation is observed is inversely proportional to its effect on fitness.
 In a constant population, this relationship breaks down for dense sampling $\epsilon > \sqrt{s}$.
-In growing population, the approximation fails if the product of fitness effect and the time over which the variant is grown is large, i.e., if the fitness effect is substantial on this time scale.
+In growing population, the approximation fails if the product of fitness effect and the time over which the variant has grown, $s\tau$, is large, i.e., if the fitness effect is substantial on this time scale.
 Outside this parameter range, there is still a dependence on $s$, but it is weaker.
 
 
