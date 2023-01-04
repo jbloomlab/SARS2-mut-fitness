@@ -1,0 +1,138 @@
+\documentclass[aps,rmp, onecolumn]{revtex4}
+%\documentclass[a4paper,10pt]{scrartcl}
+%\documentclass[aps,rmp,twocolumn]{revtex4}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,graphicx}
+\usepackage{color}
+%\usepackage{cite}
+
+\newcommand{\bq}{\begin{equation}}
+\newcommand{\eq}{\end{equation}}
+\newcommand{\bn}{\begin{eqnarray}}
+\newcommand{\en}{\end{eqnarray}}
+\newcommand{\Richard}[1]{{\color{red}Richard: #1}}
+\newcommand{\gene}[1]{{\it #1}}
+\newcommand{\mat}[1]{{\bf #1}}
+\newcommand{\vecb}[1]{{\bf #1}}
+\newcommand{\abet}{\mathcal{A}}
+\newcommand{\eqp}{p}
+\newcommand{\LH}{\mathcal{L}}
+\begin{document}
+\title{Estimating fitness costs from mutation counts}
+\author{Richard Neher}
+\maketitle
+
+With millions of SARS-CoV-2 sequences shared publicly, almost all mutations that are tolerated by the virus are observed dozens to hundreds of times.
+Where on the tree and how often on the tree we observe specific mutations has information about the effect of these mutations on viral spread.
+The mutation rate depends on the nucleotides involved and possibly on the sequence context and other viral determinants, but for the purpose of this note, we will assume the neutral rate $\mu$ is known.
+If the mutation is neutral, the total number of times the mutation is observed on the tree is $\mu T$, where $T$ is the total length of the tree (assuming that the mutation never reached high frequency which is true for almost all mutations.).
+
+If a mutation reduces fitness, the lineages descending from branches on which this mutation happened will spread more slowly than the those without this mutation.
+As a result, the down-stream subclades are smaller and more short lived, which in turn means that they will be less likely to be sampled and represented in the tree.
+The number of times a mutation is observed in the tree can be readily assessed using UShER and compared to the number of times we'd expect to see the mutation if it was neutral (e.g.~same change at 4-fold synonymous sites).
+To infer its effect on fitness, we need to calculate how the number of observations depends on the this fitness effect.
+
+For a mutation to be represented in the tree, one of its descendents has to be sampled and sequenced.
+If the total number of descendents is $w$ and the sampling fraction is $\epsilon$, the probability that the mutation is present in the tree is
+\begin{equation}
+    p = 1 - e^{-w\epsilon}
+\end{equation}
+$W$ is a random number that depends on the realization of the transmission process, which is commonly modeled by a branching process with birth rate $b$ and death rate $d$.
+The death rate here corresponds to clearing an infection, the birth rate to onward transmission. The latter is affected by the fitness cost of the mutation.
+
+To obtain insight how the probability of observing a lineage depends on parameters, we calculate the probability $p(w, T|t)$ that a lineage had in integrated size $w = \int_t^T k(t') \; dt'$, where $t$ is the birth time of the lineage, $T$ is the current time, and $k(t')$ is the size of the lineage at time $t'$.
+To calculate $p(w,T|k)$, we generalize is slightly to $p(W, T|k,t)$, where $k$ is the number of individuals at the start time $t$. This quantity obeys the following ``first-step'' equation:
+\begin{equation}
+    -(\partial_t - k \partial_w) p(w,T|k,t) = -k(b+d) p(w,T|k,t) + k b p(w,T|k+1,t) + k d p(w,T| k-1, t)
+\end{equation}
+We will solve for the Laplace transform $\hat{p}(z,T|k,t) = \int_0^\infty dw\; e^{-wz} p(w,T|k,t) = \hat{p}^k(z,T|1,t)$.
+Using the identity for the derivative of the Laplace transform
+\begin{equation}
+    \begin{split}
+        \int_0^\infty e^{-wz} \partial_w p  \; dw& = [e^{-wz} p]_0^\infty - \int_0^\infty  p \partial_w e^{-wz} \; dw = 0 + z \int_0^\infty  p e^{-wz} = z \hat{p}
+    \end{split}
+\end{equation}
+and using $k=1$, we have
+\begin{equation}
+    -\partial_t \hat{p}(z,T|t) = -(b+d+z) \hat{p}(z,T|t) + b \hat{p}^2(z,T|t) + d
+\end{equation}
+This simplifies further to if we substitute $\phi(z,T|t) = 1 - \hat{p}(z,T|t)$.
+\begin{equation}
+    \begin{split}
+        \partial_t \phi(z,T|t) & = -(b+d+z) (1-\phi(z,T|t)) + b (1-\phi(z,T|t))^2 + d \\
+         & = -z - (b-d-z) \phi(z,T|t) + b \phi(z,T|t)^2
+    \end{split}
+\end{equation}
+where it is important to note that the derivative is with respect to the first time point and the interval $T-t$ is shrinking with increasing $t$.
+
+\subsection*{Constant birth and death rate}
+If the fitness effect of the mutation in question is detrimental and the overall population is constant (background $b_0=d_0$), all mutant lineages will eventually die out and we can consider large $T-t$ and $\partial_t \phi(z,T|t)$.
+Further define $b=b_0 - s$ and $d=d_0$.
+The steady state generating function is then
+\begin{equation}
+    0 = -z - (b-d-z) \phi(z) + b \phi(z)^2
+\end{equation}
+with solution
+\begin{equation}
+    \begin{split}
+        \phi(z) & = -\frac{s + z}{2(b_0 - s)} \pm \frac{\sqrt{(s+z)^2 + 4z(b_0-s)}}{2(b_0-s)} \\
+        &\approx -\frac{s + z}{2b_0} \pm \frac{\sqrt{(s+z)^2 + 4z b_0}}{2b_0} \\
+        & \approx \begin{cases}
+            \frac{z}{s+z} & (s+z)^2 \gg 4zb_0 \\
+            \sqrt{\frac{z}{b_0}}\left(1+\frac{(s+z)^2}{8zb_0}\right)-\frac{s + z}{2b_0}  & (s+z)^2 \ll 4zb_0 \\
+        \end{cases}
+    \end{split}
+\end{equation}
+Since $\phi(z) = 1 - \int e^{-wz}p(w) \; dw$, $\phi(\epsilon)$ is exactly the probability that a lineage is sampled when the entire population is sampled at rate $\epsilon$.
+We thus expect two regimes: if the square of the fitness effect exceeds the sampling density (typically at 1\% or less), the probability of sampling a lineage is essentially inversely proportional to the fitness effect.
+The sampling probability of lineages with smaller fitness effects depends less strongly on $s$.
+Their sampling mostly comes down to stochasticity independent of the fitness effect.
+
+\subsection*{Growing populations}
+In many scenarios relevant for lineages that arise during a viral outbreak, the background population isn't constant but is undergoing a rapid exponential expansion.
+The background birth rate $b_0$ is bigger than $d_0$ in this case.
+Since the population is growing, deleterious mutations can increase in frequency deterministically and we can not send the $t$ to infinity as before.
+Instead, we need to integrate
+\begin{equation}
+    \begin{split}
+        \partial_t \phi(z,T|t) & = -z - (b-d-z) \phi(z,T|t) + b \phi(z,T|t)^2
+    \end{split}
+\end{equation}
+backwards in time starting from $\phi(z,T|T)=0$ at $t=T$.
+While $\phi(z,T|t)$ is small, this is approximately solved by
+\begin{equation}
+\begin{split}
+    \phi(z,T|t) & = z e^{\int_t^T (b-d-z)dt'} \int_t^T e^{-\int_\tau^T (b-d-z)dt'} d\tau \\
+    & = z e^{(b-d-z)(T-t)} \int_t^T e^{-(b-d-z)(T-\tau)} d\tau \\
+    & = z e^{(b-d-z)(T-t)}\left[1   - e^{-(b-d-z)(T-t)}\right]/(b-d-z) \\
+    & = \frac{z}{b-d-z}\left[e^{(b-d-z)(T-t)} - 1\right] = \frac{z}{\gamma_0 - s - z}\left[e^{\gamma_0 (T-t) - (s+z) (T-t)} - 1\right]
+\end{split}
+\end{equation}
+where $\gamma_0$ is the growth rate of the background population.
+
+At longer times when $z e^{\gamma_0 (T-t)}\sim 1$ and $\phi$ is no longer small, $\phi$ tends towards a constant value determined by the same quadratic equation as above.
+This limit is neither interesting or relevant for the present purpose, since there are very few lineages that emerged early enough to have saturated $\phi$.
+Instead, we need to average $\phi$ (the linear approximation) over all the time points when the lineage could have arisen.
+\begin{equation}
+    \begin{split}
+        \langle \phi \rangle &\sim \int_t^T dt' \; e^{-\gamma_0(T-t')} \frac{z (e^{\gamma_0(T-t') - (s+z)(T-t')}-1)}{(\gamma_0 - s - z)}\\
+        &= \int_t^T dt' \;  \frac{z (e^{-(s+z)(T-t')}-e^{-\gamma_0(T-t')})}{(\gamma_0 - s - z)}\\
+        &\approx \begin{cases}
+            \frac{z}{\gamma_0-s-z} [ \frac{1}{z+s} - \frac{1}{\gamma_0}] & s(T-t)\gg 1\\
+            \frac{z}{\gamma_0-s-z} [ (T-t) - \frac{(s+z)(T-t)^2}{2} - \frac{1}{\gamma_0}] & s(T-t)<1 \\
+        \end{cases}
+    \end{split}
+\end{equation}
+This derivation assumed that $\gamma_0(T-t)\gg1$, i.e.~that the overall population size has expanded substantially.
+The most relevant fitness effects will be those with $s(T-t)>1$ but $\gamma_0>s$ such that the mutant lineage has been amplified but its fitness difference to the background is a perturbation.
+In this case, the above simplifies to
+\begin{equation}
+    \langle \phi \rangle \approx \frac{z}{\gamma_0(z+s)}
+\end{equation}
+This has a very similar behavior as the solution for constant population size, which suggests that the overall dependence on $s$ is robust and we can assume that the number of times a mutation is observed is inversely proportional to its effect on fitness.
+In a constant population, this relationship breaks down for dense sampling $\epsilon > \sqrt{s}$.
+In growing population, the approximation fails if the product of fitness effect and the time over which the variant is grown is large, i.e., if the fitness effect is substantial on this time scale.
+Outside this parameter range, there is still a dependence on $s$, but it is weaker.
+
+\end{document}
