@@ -8,7 +8,7 @@ legend_suffix: See [https://github.com/jbloomlab/SARS2-mut-fitness](https://gith
 plots:
   
   mut_rates:
-    title: mutation rates for each clade
+    title: neutral mutation rates for each clade
     legend: |
       Interactive plot of neutral mutation rates for each SARS-CoV-2 clade estimated using 
       four-fold degenerate synonymous sites. 

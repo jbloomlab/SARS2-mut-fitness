@@ -1,12 +1,67 @@
-# Estimate fitness effects of SARS-CoV-2 mutations from observed versus expected mutation counts
+# Fitness effects of SARS-CoV-2 amino-acid mutations estimated from observed versus expected mutation counts
 
 ## Overview
-This repository analyzes mutations in human SARS-CoV-2, and looks at how many counts of each mutation are observed versus those expected from mutation rate.
+This repository estimates the fitness effects of mutations to all SARS-CoV-2 proteins.
+It does this by analyzing mutations in millions human SARS-CoV-2 sequences, and quantifying how the observed counts of each mutation compares to the expected counts from the underlying neutral mutation rate.
 
-This analysis was originally based off starting to replicate analyses [Neher (2022)](https://www.biorxiv.org/content/10.1101/2022.08.22.504731v1.full), but then checking the assumption that underlying synonymous mutation spectra were conserved across clades.
+The analysis is by [Jesse Bloom](https://scholar.google.com/citations?user=S12x_eQAAAAJ&hl=en) and [Richard Neher](https://neherlab.org/), and makes use of the SARS-CoV-2 mutation-annotated tree provided by the [developers of UShER](https://usher-wiki.readthedocs.io/).
+
+## References
+For details, see the following references:
+ - The main paper describing the analysis is still in preparation by Bloom & Neher.
+ - Secondary references:
+    - The approach builds on ideas initially described in [Neher (2022)](https://doi.org/10.1093/ve/veac113).
+    - The estimation of the neutral mutation rate is done as described in [Bloom, Beichman, Neher, & Harris (2022)](https://www.biorxiv.org/content/10.1101/2022.11.19.517207v1).
+    - The mutational data are extracted from publicly available SARS-CoV-2 sequences using the UShER package described by [Turakhia et al (2021)](https://www.nature.com/articles/s41588-021-00862-7).
+
+## Interactive plots of results
+The easiest way to access the results is through a set of interactive plots rendered with [altair](https://altair-viz.github.io/).
+These plots are at the following links:
+ - [neutral mutation rates for each clade](https://jbloomlab.github.io/SARS2-mut-fitness/mut_rates.html)
+ - [distribution of fitness effects of mutations](https://jbloomlab.github.io/SARS2-mut-fitness/effects_histogram.html)
+ - [mutation fitness effects for each gene](https://jbloomlab.github.io/SARS2-mut-fitness/effects_dist.html)
+ - correlation of fitness estimates [for different viral clades](https://jbloomlab.github.io/SARS2-mut-fitness/clade_corr_chart.html) and [for different countries](https://jbloomlab.github.io/SARS2-mut-fitness/subset_corr_chart.html)
+ - correlation of fitness estimates with deep mutational scanning measurements for [spike](https://jbloomlab.github.io/SARS2-mut-fitness/dms_S_corr.html) and [Mpro (nsp5)](https://jbloomlab.github.io/SARS2-mut-fitness/dms_nsp5_corr.html), and more detailed versions of the [spike](https://jbloomlab.github.io/SARS2-mut-fitness/dms_S_all_corr.html) and [Mpro](https://jbloomlab.github.io/SARS2-mut-fitness/dms_nsp5_all_corr.html) plots with all deep mutational scanning phenotypes
+ - heatmaps showing amino-acid fitness estimates for:
+   - [nsp1](https://jbloomlab.github.io/SARS2-mut-fitness/nsp1.html)
+   - [nsp2](https://jbloomlab.github.io/SARS2-mut-fitness/nsp2.html)
+   - [nsp3](https://jbloomlab.github.io/SARS2-mut-fitness/nsp3.html)
+   - [nsp4](https://jbloomlab.github.io/SARS2-mut-fitness/nsp4.html)
+   - [nsp5 (Mpro)](https://jbloomlab.github.io/SARS2-mut-fitness/nsp5.html)
+   - [nsp6](https://jbloomlab.github.io/SARS2-mut-fitness/nsp6.html)
+   - [nsp7](https://jbloomlab.github.io/SARS2-mut-fitness/nsp7.html)
+   - [nsp8](https://jbloomlab.github.io/SARS2-mut-fitness/nsp8.html)
+   - [nsp9](https://jbloomlab.github.io/SARS2-mut-fitness/nsp9.html)
+   - [nsp10](https://jbloomlab.github.io/SARS2-mut-fitness/nsp10.html)
+   - [nsp12 (RdRp)](https://jbloomlab.github.io/SARS2-mut-fitness/nsp12.html)
+   - [nsp13 (helicase)](https://jbloomlab.github.io/SARS2-mut-fitness/nsp13.html)
+   - [nsp14 (ExoN)](https://jbloomlab.github.io/SARS2-mut-fitness/nsp14.html)
+   - [nsp15](https://jbloomlab.github.io/SARS2-mut-fitness/nsp15.html)
+   - [nsp16](https://jbloomlab.github.io/SARS2-mut-fitness/nsp16.html)
+   - [spike (S)](https://jbloomlab.github.io/SARS2-mut-fitness/S.html)
+   - [ORF3a](https://jbloomlab.github.io/SARS2-mut-fitness/ORF3a.html)
+   - [E (envelope)](https://jbloomlab.github.io/SARS2-mut-fitness/E.html)
+   - [M (membrane)](https://jbloomlab.github.io/SARS2-mut-fitness/M.html)
+   - [ORF6](https://jbloomlab.github.io/SARS2-mut-fitness/ORF6.html)
+   - [ORF7a](https://jbloomlab.github.io/SARS2-mut-fitness/ORF7a.html)
+   - [ORF7b](https://jbloomlab.github.io/SARS2-mut-fitness/ORF7b.html)
+   - [ORF8](https://jbloomlab.github.io/SARS2-mut-fitness/ORF8.html)
+   - [N (nucleocapsid)](https://jbloomlab.github.io/SARS2-mut-fitness/N.html)
+   - [ORF10](https://jbloomlab.github.io/SARS2-mut-fitness/ORF10.html)
+ - [fitness effects versus ratio of mutation counts on non-terminal and terminal branches](https://jbloomlab.github.io/SARS2-mut-fitness/fitness_vs_terminal.html) 
+
+## CSV files with numerical results
+Here are links to files with major numerical results:
+ - Final estimates of relative [fitnesses of each amino acid](results/aa_fitness/aa_fitness.csv). For most purposes, you probably want to use this file for the final "best" estimate of the amino-acid fitnesses. Note that estimates are more accurate for amino acids with larger values of *expected_count*. Sites in ORF1ab / nsp proteins are listed both with the ORF1ab and nsp numbering.
+ - Estimates of the effects of amino-acid mutations [aggregated across all clades](results/aa_fitness/aamut_fitness_all.csv), for each [individual clade](results/aa_fitness/aamut_fitness_by_clade.csv), and for just [subsets of sequences from specific countries](results/aa_fitness/aamut_fitness_by_subset.csv).
+ - Estimates of the relative neutral mutation rates for different types of mutations for each clade, as estimated at four-fold degenerate synonymous sites, are [here](results/synonymous_mut_rates/rates_by_clade.csv).
+ - The counts of each mutation at each site in each clade are [here](results/mutation_counts/aggregated.csv); note this file also contains excluded sites.
+ - The observed counts of each mutation versus the counts expected from the underlying neutral mutation rate are [here](results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv); note that this file include excluded sites.
+ - The nucleotide identities at each position in the "founder" sequence for each viral clade are [here](results/clade_founder_nts/clade_founder_nts.csv). This file also indicates which sites are four-fold degenerate.
+ - The deep mutational scanning results processed and aggregated from published experimental studies are in [this subdirectory](results/dms/).
 
 ## Structure of repository and running the analysis
-The analysis is entirely reproducible.
+The analysis is entirely reproducible from the code provided in this GitHub repository.
 
 First build the [conda](https://docs.conda.io/) environment in [environment.yml](environment.yml).
 This requires you to install [conda](https://docs.conda.io/), and then run:
@@ -26,9 +81,10 @@ where `<n_cpus>` is the number of CPUs to use.
 Note that the pipeline uses Python scripts in [./scripts/](scripts) and Jupyter notebooks in [./notebooks/](notebooks).
 
 The created files are placed in [./results/](results).
-Only some of those results files are tracked in this repo (others are too large to track).
+Only some of those results files are tracked in this repo (others are too large or numerous to track).
+The output interactive HTML [altair](https://github.com/altair-viz/altair) plots are placed in [./docs/](docs) where they are displayed via GitHub pages.
 
-Note that you can format and flake the analysis by running the commands `black` and `flake8_nb`.
+In addition to the configuration in [config.yaml](config.yaml), there is also some input data / specifications in [./data/](data).
 
 ## Analysis
 Basic steps, performed for each Nextstrain clade:
@@ -39,7 +95,11 @@ Basic steps, performed for each Nextstrain clade:
 
  - Based on the mutation rates and total number of observed synonymous mutations at those sites, calculate **expected** number of occurrences of each nucleotide mutation.
 
- - Compare observed to expected mutation counts to estimate selection.
+ - Compare observed to expected mutation counts to estimate the fitness effects of amino-acid mutations.
+
+ - Make overall estimates of amino-acid fitnesses by aggregating mutation-effect estimates across clades.
+
+ - Some additional plotting and analyses, as well as comparison to experimental measurements from deep mutational scanning studies.
 
 ### Counting mutations
 Mutation counts are extracted from the pre-built mutation-annotated tree that is made available for use with the [UShER](https://usher-wiki.readthedocs.io/) package.
@@ -47,7 +107,7 @@ This tree contains all public access SARS-CoV-2 sequences, with mutations annota
 For the specific version of the tree used here, see the [config.yaml](config.yaml) file.
 
 We analyze mutations grouping sequences at the level of [Nextstrain clades](https://clades.nextstrain.org/), which are already annotated on the pre-built mutation-annotated tree.
-For each Nextstrain clade, we use the clade founder genotype manually defined by [Neher (2022)](https://www.biorxiv.org/content/10.1101/2022.08.22.504731v1.full) and available at the URL indicated in [config.yaml](config.yaml).
+For each Nextstrain clade, we use the clade founder genotype manually defined by [Neher (2022)](https://doi.org/10.1093/ve/veac113) and available at the URL indicated in [config.yaml](config.yaml).
 
 We perform some crucial filtering to remove spurious mutations as can arise from bad sequencing, base calling to reference, etc:
 
@@ -63,10 +123,12 @@ We perform some crucial filtering to remove spurious mutations as can arise from
 
  6. Note also that indels are ignored, as they are not captured in the mutation-annotated tree.
 
-The above mutation counts both for all sequences for a clade, and for the sample subsets defined in [config.yaml](config.yaml) are stored in [results/mutation_counts/aggregated.csv](results/mutation_counts/aggregated.csv).
-Note that mutations are annotated by the protein(s) they affect, if they are synonymous, if they are at 4-fold degenerate sites, etc.
+ 7. Although the main analysis here uses the total counts of each mutation, we also keep track of how many of these counts are on non-terminal (interior) branches of the tree versus terminal (tip) branches.
 
-### Analysis of 4-fold synonymous mutation spectrum / rates
+The above mutation counts both for all sequences for a clade, and for the sample subsets defined in [config.yaml](config.yaml) are stored in [results/mutation_counts/aggregated.csv](results/mutation_counts/aggregated.csv).
+Note that mutations are annotated by the protein(s) they affect, if they are synonymous, if they are at 4-fold degenerate sites, if they are at an excluded site, etc.
+
+### Analysis of 4-fold degenerate synonymous mutation spectrum / rates
 
 We then analyze the mutation spectra and rate of mutations.
 For this analysis, we only consider synonymous mutations at sites (third codon positions) that are four-fold degenerate in the founder sequence for each clade.
@@ -79,7 +141,8 @@ We also perform analyses for subsets of sequences from different regions (as spe
 For all of these analyses, we only include subsets/partitions with at least the minimum number of mutations indicated in [config.yaml](config.yaml).
 
 Most of the analysis of the synonymous mutation spectrum is done by [notebooks/synonymous_mut_rates.ipynb](notebooks/synonymous_mut_rates.ipynb).
-You can look at the HTML rendering of running that Jupyter notebook at [results/synonymous_mut_rates/synonymous_mut_rates.html](results/synonymous_mut_rates/synonymous_mut_rates.html): download and open that notebook to look at the interactive `altair` plots.
+
+A plot of the neutral mutation rates is available in [Interactive plots of results](#interactive-plots-of-results).
 
 ### Computation of "expected" number of occurrences for each mutation
 
@@ -110,10 +173,13 @@ The resulting fitness effect estimates are written to the following files:
 
  - [results/aa_fitness/aamut_fitness_all.csv](results/aa_fitness/aamut_fitness_all.csv): estimates aggregating across all clades.
  - [results/aa_fitness/aamut_fitness_by_clade.csv](results/aa_fitness/aamut_fitness_by_clade.csv): estimates for each individual clade.
- - [results/aa_fitness/aamut_fitness_by_subset.csv](results/aa_fitness/aamut_fitness_by_subset.csv): estimates splitting out by sequence subset.
+ - [results/aa_fitness/aamut_fitness_by_subset.csv](results/aa_fitness/aamut_fitness_by_subset.csv): estimates splitting out by sequence subset (country).
 
 Note also that the above files contain mutations in both numbering of the ORF1ab polypeptide and the nsp proteins contained within it.
 The nsp protein mutations are a subset of the ORF1ab mutations, so if you examine both you would be double counting mutations.
+The [config.yaml](config.yaml) file specifies the conversion from ORF1ab to nsp numbering.
+
+Summaries are also plotted and are available
 
 ### Computation of amino-acid fitnesses
 For each clade have estimated the change in fitness $\Delta f_{xy}$ caused by mutating a site from amino-acid $x$ to $y$, where $x$ is the amino acid in the clade founder sequence.
@@ -149,11 +215,19 @@ Amino acids with larger values of $N_x$ should have more accurate estimates of $
 
 The resulting amino-acid fitness values (aggregated across all clades) are in the following file:
 
-- [results/aa_fitness/aa_fitness.csv](results/aa_fitness/aa_fitness.csv)
+ - [results/aa_fitness/aa_fitness.csv](results/aa_fitness/aa_fitness.csv)
+
+The are also plotted in the heat maps in [Interactive plots of results](#interactive-plots-of-results).
 
 ### Comparison to deep mutational scanning mutation effects
 We compare the estimated fitness values to those extracted from a set of deep mutational scanning studies as specified under `dms_datasets` in [config.yaml](config.yaml).
 The processed deep mutational scanning mutation effects are in `processed.csv` files in subdirectories of [./results/dms/](results/dms).
+
+The correlation of the fitness estimates to the deep mutational scanning are plotted in [Interactive plots of results](#interactive-plots-of-results).
+
+### Non-terminal versus terminal counts
+We compare the fitness effects of mutations to how often the mutation is observed on non-terminal versus terminal branches of the tree.
+See the plot linked in [Interactive plots of results](#interactive-plots-of-results).
 
 ### Caveats of analysis
 None of these are expected to seriously affect the accuracy of the current analysis, but they could become problematic if the same analysis is applied to substantially more diverged clades:
@@ -164,7 +238,7 @@ None of these are expected to seriously affect the accuracy of the current analy
 
  - Indels are ignored.
 
- - The way that codon positions are assigned for identify synonymous sites will fail if there are non-in-frame indels.
+ - The way that codon positions are assigned to identify synonymous sites will fail if there are non-in-frame indels.
 
  - Four-fold synonymous sites are identified in the clade founder, which could lead to mis-identification if seuqences in a clade become highly diverged from the founder.
 
