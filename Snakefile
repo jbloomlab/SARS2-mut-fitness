@@ -1,6 +1,8 @@
 """Top-level ``snakemake`` file that runs pipeline."""
 
 
+import textwrap
+
 import pandas as pd
 
 import yaml
@@ -21,6 +23,7 @@ rule all:
         "results/aa_fitness/aamut_fitness_by_subset.csv",
         "results/aa_fitness/aa_fitness.csv",
         expand("docs/{plot}.html", plot=docs_plot_annotations["plots"]),
+        "docs/index.html",
 
 
 rule get_mat_tree:
@@ -505,3 +508,27 @@ rule format_plot_for_docs:
             --description "{params.annotations[title]}" \
             --output {output.plot}
         """
+
+
+rule docs_index:
+    """Write index for GitHub Pages docs that re-directs to main repo."""
+    output:
+        index="docs/index.html",
+    params:
+        github_url=config["github_url"],
+    run:
+        with open(output.index, "w") as f:
+            f.write(
+                textwrap.dedent(f"""\
+                <!DOCTYPE html>
+                <html>
+                  <head>
+                    <meta http-equiv="refresh" content="0; url='{params.github_url}'" />
+                  </head>
+                  <body>
+                    <p>Redirecting to <a href="{params.github_url}">{params.github_url}</a></p>
+                  </body>
+                </html>
+                """
+                )
+            )
