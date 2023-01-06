@@ -430,7 +430,8 @@ rule clade_fixed_muts:
         aamut_by_clade=rules.aamut_fitness.output.aamut_by_clade,
         clade_founder_nts_csv=rules.clade_founder_nts.output.csv,
     output:
-        chart="results/clade_fixed_muts/clade_fixed_muts.html",
+        fixed_muts_chart="results/clade_fixed_muts/clade_fixed_muts.html",
+        fixed_muts_hist="results/clade_fixed_muts/clade_fixed_muts_hist.html",
     params:
         min_expected_count=config["min_expected_count"],
         ref=config["clade_fixed_muts_ref"],
@@ -463,7 +464,8 @@ rule aggregate_plots_for_docs:
         aa_fitness_plots_dir=rules.analyze_aa_fitness.output.outdir,
         dms_corr_plotsdir=rules.fitness_dms_corr.output.plotsdir,
         rates_plot=rules.synonymous_mut_rates.output.rates_plot,
-        clade_fixed_muts=rules.clade_fixed_muts.output.chart,
+        clade_fixed_muts=rules.clade_fixed_muts.output.fixed_muts_chart,
+        clade_fixed_hist=rules.clade_fixed_muts.output.fixed_muts_hist,
         fitness_vs_terminal=rules.fitness_vs_terminal.output.chart,
     output:
         expand(
@@ -480,6 +482,7 @@ rule aggregate_plots_for_docs:
         cp {input.dms_corr_plotsdir}/*.html {params.plotsdir}
         cp {input.rates_plot} {params.plotsdir}
         cp {input.clade_fixed_muts} {params.plotsdir}
+        cp {input.clade_fixed_hist} {params.plotsdir}
         cp {input.fitness_vs_terminal} {params.plotsdir}
         """
 

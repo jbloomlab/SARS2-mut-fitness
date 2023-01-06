@@ -281,3 +281,39 @@ plots:
 
       The log ratio of the non-terminal to terminal counts is computed after adding a
       pseudocount of 0.5 to each count.
+
+  clade_fixed_muts:
+    title: fitness effects of mutations fixed in at least one clade
+    legend: |
+      Interactive plot of the fitness effects of amino-acid mutations fixed in at least one clade,
+      stratified by non-spike and spike mutations. The point shapes show the overall fitness
+      estimate using data from all clades, the estimates from just forward mutation counts
+      in clades without the mutation, and the estimates (when available) for direct amino-acid
+      reversions in clades with the mutation fixed. Note that we exclude direct nucleotide
+      reversions in counts because they are error-prone due to calling to consensus, and so
+      reversion estimates are often unavailable. Missing points indicate no estimate can be
+      made for a mutation from the available data.
+
+      Mouseover points for details.
+
+      The *minimum expected count* slider below the plot indicates how many expected counts of an
+      an amino acid we require before making a fitness estimate. Larger values yield more
+      accurate estimates but for fewer amino acids. So move the slider to the left to show
+      estimates for more amino acids at lower confidence, and move it to the right to show
+      estimates for fewer amino acids at higher confidence. Values in a range of 10 to 20
+      are usually sufficient to yield reasonably accurate estimates.
+
+      You can click/shift-click on specific genes in the legend below the plot to only
+      show mutations for that gene.
+  clade_fixed_muts_hist:
+    title: fitness effects of mutations fixed in a clade versus all mutations
+    legend: |
+      The histograms show the effects of all mutations (to the reference genome)
+      with fitness estimates, and just those mutations that have fixed in a clade.
+
+      The *minimum expected count* slider below the plot indicates how many expected counts of an
+      an amino acid we require before making a fitness estimate. Larger values yield more
+      accurate estimates but for fewer amino acids. So move the slider to the left to show
+      estimates for more amino acids at lower confidence, and move it to the right to show
+      estimates for fewer amino acids at higher confidence. Values in a range of 10 to 20
+      are usually sufficient to yield reasonably accurate estimates.

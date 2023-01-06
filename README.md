@@ -49,6 +49,7 @@ These plots are at the following links:
    - [N (nucleocapsid)](https://jbloomlab.github.io/SARS2-mut-fitness/N.html)
    - [ORF10](https://jbloomlab.github.io/SARS2-mut-fitness/ORF10.html)
  - [fitness effects versus ratio of mutation counts on non-terminal and terminal branches](https://jbloomlab.github.io/SARS2-mut-fitness/fitness_vs_terminal.html) 
+ - [fitness effects of mutations fixed in a clade](https://jbloomlab.github.io/SARS2-mut-fitness/clade_fixed_muts.html), and the [distribution of effects of fixed versus all mutations](https://jbloomlab.github.io/SARS2-mut-fitness/clade_fixed_muts_hist.html)
 
 ## CSV files with numerical results
 Here are links to files with major numerical results:
