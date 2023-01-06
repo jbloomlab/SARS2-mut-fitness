@@ -434,6 +434,7 @@ rule clade_fixed_muts:
     params:
         min_expected_count=config["min_expected_count"],
         ref=config["clade_fixed_muts_ref"],
+        orf1ab_to_nsps=config["orf1ab_to_nsps"],
     log:
         notebook="results/clade_fixed_muts/clade_fixed_muts.ipynb",
     notebook:
