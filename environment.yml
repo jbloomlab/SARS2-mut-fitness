@@ -12,6 +12,7 @@ dependencies:
   - jupyter_contrib_nbextensions
   - jupyterlab
   - markdown
+  - matplotlib=3.6
   - openpyxl
   - pandas=1.4
   - papermill=2.3.4
