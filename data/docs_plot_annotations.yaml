@@ -24,6 +24,18 @@ plots:
       See [Bloom, Beichman, Neher, & Harris (2022)](https://www.biorxiv.org/content/10.1101/2022.11.19.517207v1)
       for more details on the mutation rates are estimated.
 
+  avg_counts:
+    title: average per-site counts of each nucleotide mutation type
+    legend: |
+      Interactive plot of average counts per nucleotide site averaged over all clades and
+      sites. Counts are reported separately for the expected counts (estimated from
+      4-fold degenerate sites) and the counts for all synonymous mutations (including 4-fold
+      degenerate sites), nonsynonymous mutations, and stop mutations. Counts are stratified
+      by the type of nucleotide change in the mutation.
+
+      You can mouseover points for details and click/shift-click the legend to highlight
+      specific types of counts.
+
   effects_histogram:
     title: distribution of fitness effects of mutations
     legend: |
