@@ -317,6 +317,18 @@ rule merge_expected_and_actual_counts:
         "notebooks/merge_expected_and_actual_counts.py.ipynb"
 
 
+rule summarize_expected_vs_actual:
+    """Summarize expected vs actual across mutations."""
+    input:
+        csv=rules.merge_expected_and_actual_counts.output.csv,
+    output:
+        chart="results/expected_vs_actual_mut_counts/avg_counts.html",
+    log:
+        notebook="results/expected_vs_actual_mut_counts/summarize_expected_vs_actual.ipynb",
+    notebook:
+        "notebooks/summarize_expected_vs_actual.py.ipynb"
+
+
 rule aamut_fitness:
     """Fitness effects from expected vs actual counts for amino-acid mutations."""
     input:
@@ -467,6 +479,7 @@ rule aggregate_plots_for_docs:
         clade_fixed_muts=rules.clade_fixed_muts.output.fixed_muts_chart,
         clade_fixed_hist=rules.clade_fixed_muts.output.fixed_muts_hist,
         fitness_vs_terminal=rules.fitness_vs_terminal.output.chart,
+        avg_counts=rules.summarize_expected_vs_actual.output.chart
     output:
         expand(
             os.path.join("results/plots_for_docs/{plot}.html"),
@@ -484,6 +497,7 @@ rule aggregate_plots_for_docs:
         cp {input.clade_fixed_muts} {params.plotsdir}
         cp {input.clade_fixed_hist} {params.plotsdir}
         cp {input.fitness_vs_terminal} {params.plotsdir}
+        cp {input.avg_counts} {params.plotsdir}
         """
 
 
