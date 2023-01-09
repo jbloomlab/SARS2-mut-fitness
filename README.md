@@ -18,6 +18,7 @@ For details, see the following references:
 The easiest way to access the results is through a set of interactive plots rendered with [altair](https://altair-viz.github.io/).
 These plots are at the following links:
  - [neutral mutation rates for each clade](https://jbloomlab.github.io/SARS2-mut-fitness/mut_rates.html)
+ - [average expected and actual counts per site for each mutation type](https://jbloomlab.github.io/SARS2-mut-fitness/avg_counts.html)
  - [distribution of fitness effects of mutations](https://jbloomlab.github.io/SARS2-mut-fitness/effects_histogram.html)
  - [mutation fitness effects for each gene](https://jbloomlab.github.io/SARS2-mut-fitness/effects_dist.html)
  - correlation of fitness estimates [for different viral clades](https://jbloomlab.github.io/SARS2-mut-fitness/clade_corr_chart.html) and [for different countries](https://jbloomlab.github.io/SARS2-mut-fitness/subset_corr_chart.html)
