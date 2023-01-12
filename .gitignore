@@ -3,6 +3,8 @@
 _*
 *.out
 
+!.nojekyll
+
 results/*
 
 !results/synonymous_mut_rates
