@@ -1,0 +1,109 @@
+\documentclass[9pt,twocolumn,twoside]{gsajnl_modified}
+% Use the documentclass option 'lineno' to view line numbers
+
+\usepackage[htt]{hyphenat}  % https://tex.stackexchange.com/a/543
+\usepackage[export]{adjustbox}
+\usepackage{xurl}
+\usepackage{stfloats}
+\usepackage[leftcaption]{sidecap}
+\sidecaptionvpos{figure}{t}
+
+\renewcommand{\topfraction}{0.9}	% max fraction of floats at top
+    \renewcommand{\bottomfraction}{0.8}	% max fraction of floats at bottom
+    %   Parameters for TEXT pages (not float pages):
+    \setcounter{topnumber}{2}
+    \setcounter{bottomnumber}{2}
+    \setcounter{totalnumber}{4}     % 2 may work better
+    \setcounter{dbltopnumber}{2}    % for 2-column pages
+    \renewcommand{\dbltopfraction}{0.9}	% fit big float above 2-col. text
+    \renewcommand{\textfraction}{0.07}	% allow minimal text w. figs
+    %   Parameters for FLOAT pages (not text pages):
+    \renewcommand{\floatpagefraction}{0.7}	% require fuller float pages
+	% N.B.: floatpagefraction MUST be less than topfraction !!
+    \renewcommand{\dblfloatpagefraction}{0.7}	% require fuller float pages
+    
+\newcommand\jdbcomment[1]{\textcolor{red}{[#1]}}
+
+\title{Estimated fitness effects of amino-acid mutations to SARS-CoV-2 proteins}
+
+\author[*]{\Large Jesse D. Bloom$^{1,2,3^*}$ and Richard A. Neher$^{4,5}$}
+
+\affil[1]{Basic Sciences and Computational Biology, Fred Hutchinson Cancer Center
+
+} 
+\affil[2]{Department of Genome Sciences, University of Washington
+
+}
+\affil[3]{Howard Hughes Medical Institute
+
+}
+\affil[4]{Biozentrum, University of Basel
+
+}
+\affil[5]{Swiss Institute of Bioinformatics
+
+\jdbcomment{Should we add Angie Hinrichs as co-author? She helped answer some UShER questions on GitHub. Probably just acknowledgments is fine, but what do you think?}
+
+}
+
+\keywords{}
+
+\runningtitle{} % For use in the footer 
+\runningauthor{}
+
+\begin{abstract}
+Knowledge of the fitness effects of mutations to SARS-CoV-2 can inform risk assessment of new viral variants and targeting of therapeutics to constrained sites where resistance is unlikely to emerge.
+However, experimentally determining the effects of mutations is challenging: we lack tractable lab assays for the functions of many SARS-CoV-2 proteins, and for this reason systematic deep mutational scanning has been applied to only two of the virus's proteins.
+Here we develop a new approach that leverages millions of publicly available SARS-CoV-2 sequences to estimate the effects of most amino-acid mutations accessible by single-nucleotide changes.
+To do this, we first calculate how many independent times each mutation is expected to occur along the SARS-CoV-2 phylogeny in the absence of selection. 
+We then compare these expected counts to the actual observed counts of each mutation, and use the ratio of counts to estimate the effect of each mutation.
+For the two proteins with deep mutational scanning data, our sequence-based estimates correlate with experimental measurements nearly as well as independent experiments correlate with each other.
+For most genes, synonymous mutations are nearly neutral, stop-codon mutations are deleterious, and amino-acid mutations have a range of effects.
+However, some viral accessory proteins are under little to no selection during SARS-CoV-2 evolution in humans.
+We provide interactive visualizations of the estimated effects of individual mutations to each viral protein, enabling these data to be easily used in viral surveillance and drug development.
+Overall, our work provides a framework to estimate the effects of mutations to any virus (or organism) for which the number of available sequences is sufficiently large that that each neutral mutation independently occurs many times.
+\end{abstract}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{firststyle}
+%\marginmark
+\firstpagefootnote
+
+\correspondingauthoraffiliation{}{*\href{mailto:jbloom@fredhutch.org}{jbloom@fredhutch.org} or \href{mailto:richard.neher@unibas.ch}{richard.neher@unibas.ch}}
+\vspace{-33pt}% Only used for adjusting extra space in the left column of the first page
+
+\lettrine[lines=2]{\color{color2}B}{}ackground. It's important to understand effects of individual mutations.
+
+Experiments have filled this role for some viral proteins (spike, Mpro), but not for majority of SARS-CoV-2 viral protein.
+
+An alternative is sequence-based estimates, which so far have focused largely on clade growth. \jdbcomment{Richard, can you note any key papers you think should be cited as background.}
+
+Here we describe new approach based on comparing expected versus observed counts. 
+
+\section{Results}
+
+\section{Discussion}
+
+
+{\small
+
+\section{Methods}
+\subsection{Code and data availability}
+Code and data are at \url{https://github.com/jbloomlab/SARS2-mut-fitness}.
+
+\section{Acknowledgments}
+We thank Angie Hinrichs for assistance with resolving several questions related to use of the UShER package and its pre-built mutation-annotated tree \jdbcomment{if we don't add as co-author}.
+\jdbcomment{Jesse to acknowledge AVIDD, CEIRR, and R01 grants.}
+JDB is an Investigator of the Howard Hughes Medical Institute.
+
+\section{Competing interests}
+JDB is on the scientific advisory boards of Apriori Bio, Aerium Therapeutics, Invivyd, the Vaccine Company, and Oncorus.
+JDB receives payments as an inventor on a Fred Hutch licensed patents related to deep mutational scanning of viral proteins.
+
+\bibliography{references}
+}
+
+
+\end{document}
