@@ -1,7 +1,27 @@
 # Annotations for plots shown via GitHub pages.
 
 # suffix added to all legends
-legend_suffix: See [https://github.com/jbloomlab/SARS2-mut-fitness](https://github.com/jbloomlab/SARS2-mut-fitness) for full computer code and data.
+legend_suffix: |
+  See [https://github.com/jbloomlab/SARS2-mut-fitness](https://github.com/jbloomlab/SARS2-mut-fitness) for full computer code and data.
+
+  See [https://jbloomlab.github.io/SARS2-mut-fitness/](https://jbloomlab.github.io/SARS2-mut-fitness/) for links to all interactive plots.
+
+# some information for the index page
+index_title: Interactive plots of estimated fitness effects of SARS-CoV-2 amino-acid mutations
+index_abstract: |
+  Fitness effects estimated from expected versus observed counts of mutations.
+
+  Analysis by Jesse D. Bloom and Richard A. Neher.
+
+# ordering of plots into sections
+sections:
+  heatmap: Heatmaps of effects of mutations
+  expected: Expected counts per site
+  distribution: Distribution of estimated mutation fitness effects
+  correlation: Correlations among effect estimates
+  dms: Correlations of estimates with deep mutational scanning
+  fixed: Effects of fixed mutations
+  terminal: Effects of mutations on terminal and non-terminal branches
 
 # List of all plots along with a *title* and markdown *legend*.
 # The keys should be the base name of the plot.
@@ -9,6 +29,7 @@ plots:
   
   mut_rates:
     title: neutral mutation rates for each clade
+    section: expected
     legend: |
       Interactive plot of neutral mutation rates for each SARS-CoV-2 clade estimated using 
       four-fold degenerate synonymous sites. 
@@ -26,6 +47,7 @@ plots:
 
   avg_counts:
     title: average per-site counts of each nucleotide mutation type
+    section: expected
     legend: |
       Interactive plot of average counts per nucleotide site averaged over all clades and
       sites. Counts are reported separately for the expected counts (estimated from
@@ -38,6 +60,7 @@ plots:
 
   effects_histogram:
     title: distribution of fitness effects of mutations
+    section: distribution
     legend: |
       Interactive histograms of the estimated fitness effects of different types of mutations.
       Mutations are stratified by whether they are nonsynonymous, synonymous, or introduce
@@ -55,6 +78,7 @@ plots:
 
   effects_dist:
     title: mutation fitness effects for each gene
+    section: distribution
     legend: |
       Interactive plot of the distribution of fitness effects of different types
       of mutations for each viral gene. The dark squares show the median effect of
@@ -76,6 +100,7 @@ plots:
 
   clade_corr_chart: &corr_template
     title: correlation of fitness estimates for different viral clades
+    section: correlation
     legend: |
       Interactive plot of the correlation between fitness estimates made using different
       subsets of the sequence data. Each point represents a fitness estimate for a
@@ -99,6 +124,7 @@ plots:
 
   dms_S_corr: &dms_S_corr_template
     title: correlation of fitness estimates with spike deep mutational scanning
+    section: dms
     legend: |
       Interactive plot correlating the fitness estimates for spike amino-acid mutations
       with experimental measurements of the effects of these mutations in deep mutational
@@ -130,6 +156,7 @@ plots:
 
   dms_nsp5_corr: &dms_nsp5_corr_template
     title: correlation of fitness estimates with Mpro (nsp5) deep mutational scanning
+    section: dms
     legend: |
       Interactive plot correlating the fitness estimates for Mpro (nsp5) amino-acid mutations
       with experimental measurements of the effects of these mutations in yeast-based deep 
@@ -161,6 +188,7 @@ plots:
 
   # heatmaps of mutational effects
   nsp1: &heatmap_template
+    section: heatmap
     legend: |
       Interactive plot of fitnesses amino acids at each site estimated from the observed versus
       actual counts of the amino acids among natural sequences.
@@ -261,6 +289,7 @@ plots:
 
   fitness_vs_terminal:
     title: fitness effects versus ratio of mutation counts on non-terminal and terminal branches
+    section: terminal
     legend: |
       Interactive plot of the correlation between fitness estimates and the ratio of
       the counts for each amino-acid mutation on non-terminal versus terminal branches
@@ -296,6 +325,7 @@ plots:
 
   clade_fixed_muts:
     title: fitness effects of mutations fixed in at least one clade
+    section: fixed
     legend: |
       Interactive plot of the fitness effects of amino-acid mutations fixed in at least one clade,
       stratified by non-spike and spike mutations. The point shapes show the overall fitness
@@ -319,6 +349,7 @@ plots:
       show mutations for that gene.
   clade_fixed_muts_hist:
     title: fitness effects of mutations fixed in a clade versus all mutations
+    section: fixed
     legend: |
       The histograms show the effects of all mutations (to the reference genome)
       with fitness estimates, and just those mutations that have fixed in a clade.

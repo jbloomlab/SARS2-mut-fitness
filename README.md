@@ -15,42 +15,7 @@ For details, see the following references:
     - The mutational data are extracted from publicly available SARS-CoV-2 sequences using the UShER package described by [Turakhia et al (2021)](https://www.nature.com/articles/s41588-021-00862-7).
 
 ## Interactive plots of results
-The easiest way to access the results is through a set of interactive plots rendered with [altair](https://altair-viz.github.io/).
-These plots are at the following links:
- - [neutral mutation rates for each clade](https://jbloomlab.github.io/SARS2-mut-fitness/mut_rates.html)
- - [average expected and actual counts per site for each mutation type](https://jbloomlab.github.io/SARS2-mut-fitness/avg_counts.html)
- - [distribution of fitness effects of mutations](https://jbloomlab.github.io/SARS2-mut-fitness/effects_histogram.html)
- - [mutation fitness effects for each gene](https://jbloomlab.github.io/SARS2-mut-fitness/effects_dist.html)
- - correlation of fitness estimates [for different viral clades](https://jbloomlab.github.io/SARS2-mut-fitness/clade_corr_chart.html) and [for different countries](https://jbloomlab.github.io/SARS2-mut-fitness/subset_corr_chart.html)
- - correlation of fitness estimates with deep mutational scanning measurements for [spike](https://jbloomlab.github.io/SARS2-mut-fitness/dms_S_corr.html) and [Mpro (nsp5)](https://jbloomlab.github.io/SARS2-mut-fitness/dms_nsp5_corr.html), and more detailed versions of the [spike](https://jbloomlab.github.io/SARS2-mut-fitness/dms_S_all_corr.html) and [Mpro](https://jbloomlab.github.io/SARS2-mut-fitness/dms_nsp5_all_corr.html) plots with all deep mutational scanning phenotypes
- - heatmaps showing amino-acid fitness estimates for:
-   - [nsp1](https://jbloomlab.github.io/SARS2-mut-fitness/nsp1.html)
-   - [nsp2](https://jbloomlab.github.io/SARS2-mut-fitness/nsp2.html)
-   - [nsp3](https://jbloomlab.github.io/SARS2-mut-fitness/nsp3.html)
-   - [nsp4](https://jbloomlab.github.io/SARS2-mut-fitness/nsp4.html)
-   - [nsp5 (Mpro)](https://jbloomlab.github.io/SARS2-mut-fitness/nsp5.html)
-   - [nsp6](https://jbloomlab.github.io/SARS2-mut-fitness/nsp6.html)
-   - [nsp7](https://jbloomlab.github.io/SARS2-mut-fitness/nsp7.html)
-   - [nsp8](https://jbloomlab.github.io/SARS2-mut-fitness/nsp8.html)
-   - [nsp9](https://jbloomlab.github.io/SARS2-mut-fitness/nsp9.html)
-   - [nsp10](https://jbloomlab.github.io/SARS2-mut-fitness/nsp10.html)
-   - [nsp12 (RdRp)](https://jbloomlab.github.io/SARS2-mut-fitness/nsp12.html)
-   - [nsp13 (helicase)](https://jbloomlab.github.io/SARS2-mut-fitness/nsp13.html)
-   - [nsp14 (ExoN)](https://jbloomlab.github.io/SARS2-mut-fitness/nsp14.html)
-   - [nsp15](https://jbloomlab.github.io/SARS2-mut-fitness/nsp15.html)
-   - [nsp16](https://jbloomlab.github.io/SARS2-mut-fitness/nsp16.html)
-   - [spike (S)](https://jbloomlab.github.io/SARS2-mut-fitness/S.html)
-   - [ORF3a](https://jbloomlab.github.io/SARS2-mut-fitness/ORF3a.html)
-   - [E (envelope)](https://jbloomlab.github.io/SARS2-mut-fitness/E.html)
-   - [M (membrane)](https://jbloomlab.github.io/SARS2-mut-fitness/M.html)
-   - [ORF6](https://jbloomlab.github.io/SARS2-mut-fitness/ORF6.html)
-   - [ORF7a](https://jbloomlab.github.io/SARS2-mut-fitness/ORF7a.html)
-   - [ORF7b](https://jbloomlab.github.io/SARS2-mut-fitness/ORF7b.html)
-   - [ORF8](https://jbloomlab.github.io/SARS2-mut-fitness/ORF8.html)
-   - [N (nucleocapsid)](https://jbloomlab.github.io/SARS2-mut-fitness/N.html)
-   - [ORF10](https://jbloomlab.github.io/SARS2-mut-fitness/ORF10.html)
- - [fitness effects versus ratio of mutation counts on non-terminal and terminal branches](https://jbloomlab.github.io/SARS2-mut-fitness/fitness_vs_terminal.html) 
- - [fitness effects of mutations fixed in a clade](https://jbloomlab.github.io/SARS2-mut-fitness/clade_fixed_muts.html), and the [distribution of effects of fixed versus all mutations](https://jbloomlab.github.io/SARS2-mut-fitness/clade_fixed_muts_hist.html)
+The easiest way to access the results is through a set of interactive plots available at [https://jbloomlab.github.io/SARS2-mut-fitness](https://jbloomlab.github.io/SARS2-mut-fitness)
 
 ## CSV files with numerical results
 Here are links to files with major numerical results:
@@ -84,9 +49,10 @@ Note that the pipeline uses Python scripts in [./scripts/](scripts) and Jupyter 
 
 The created files are placed in [./results/](results).
 Only some of those results files are tracked in this repo (others are too large or numerous to track).
-The output interactive HTML [altair](https://github.com/altair-viz/altair) plots are placed in [./docs/](docs) where they are displayed via GitHub pages.
+The output interactive HTML [altair](https://github.com/altair-viz/altair) plots are placed in [./docs/](docs) where they are displayed via GitHub pages at [https://jbloomlab.github.io/SARS2-mut-fitness](https://jbloomlab.github.io/SARS2-mut-fitness)
 
 In addition to the configuration in [config.yaml](config.yaml), there is also some input data / specifications in [./data/](data).
+This includes the file[data/docs_plot_annotations.yaml usher_masked_sites.yaml](data/docs_plot_annotations.yaml usher_masked_sites.yaml) that specifies how to layout and label the plots rendered on GitHub pages.
 
 ## Analysis
 Basic steps, performed for each Nextstrain clade:
@@ -144,7 +110,7 @@ For all of these analyses, we only include subsets/partitions with at least the 
 
 Most of the analysis of the synonymous mutation spectrum is done by [notebooks/synonymous_mut_rates.ipynb](notebooks/synonymous_mut_rates.ipynb).
 
-A plot of the neutral mutation rates is available in [Interactive plots of results](#interactive-plots-of-results).
+A plot of the neutral mutation rates is available at [https://jbloomlab.github.io/SARS2-mut-fitness](https://jbloomlab.github.io/SARS2-mut-fitness)
 
 ### Computation of "expected" number of occurrences for each mutation
 
@@ -219,17 +185,17 @@ The resulting amino-acid fitness values (aggregated across all clades) are in th
 
  - [results/aa_fitness/aa_fitness.csv](results/aa_fitness/aa_fitness.csv)
 
-The are also plotted in the heat maps in [Interactive plots of results](#interactive-plots-of-results).
+The are also plotted in the heat maps at [https://jbloomlab.github.io/SARS2-mut-fitness](https://jbloomlab.github.io/SARS2-mut-fitness)
 
 ### Comparison to deep mutational scanning mutation effects
 We compare the estimated fitness values to those extracted from a set of deep mutational scanning studies as specified under `dms_datasets` in [config.yaml](config.yaml).
 The processed deep mutational scanning mutation effects are in `processed.csv` files in subdirectories of [./results/dms/](results/dms).
 
-The correlation of the fitness estimates to the deep mutational scanning are plotted in [Interactive plots of results](#interactive-plots-of-results).
+The correlation of the fitness estimates to the deep mutational scanning are plotted at [https://jbloomlab.github.io/SARS2-mut-fitness](https://jbloomlab.github.io/SARS2-mut-fitness)
 
 ### Non-terminal versus terminal counts
 We compare the fitness effects of mutations to how often the mutation is observed on non-terminal versus terminal branches of the tree.
-See the plot linked in [Interactive plots of results](#interactive-plots-of-results).
+See the plot linked at [https://jbloomlab.github.io/SARS2-mut-fitness](https://jbloomlab.github.io/SARS2-mut-fitness)
 
 ### Caveats of analysis
 None of these are expected to seriously affect the accuracy of the current analysis, but they could become problematic if the same analysis is applied to substantially more diverged clades:

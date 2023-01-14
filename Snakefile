@@ -531,22 +531,9 @@ rule format_plot_for_docs:
 rule docs_index:
     """Write index for GitHub Pages docs that re-directs to main repo."""
     output:
-        index="docs/index.html",
+        html="docs/index.html",
     params:
-        github_url=config["github_url"],
-    run:
-        with open(output.index, "w") as f:
-            f.write(
-                textwrap.dedent(f"""\
-                <!DOCTYPE html>
-                <html>
-                  <head>
-                    <meta http-equiv="refresh" content="0; url='{params.github_url}'" />
-                  </head>
-                  <body>
-                    <p>Redirecting to <a href="{params.github_url}">{params.github_url}</a></p>
-                  </body>
-                </html>
-                """
-                )
-            )
+        docs_url=config["docs_url"],
+        plot_annotations=docs_plot_annotations,
+    script:
+        "scripts/docs_index.py"

@@ -2,6 +2,7 @@
 !.git*
 _*
 *.out
+~$*
 
 !.nojekyll
 
