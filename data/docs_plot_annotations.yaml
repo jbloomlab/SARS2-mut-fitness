@@ -70,8 +70,7 @@ plots:
       of a mutation we require before making a fitness estimate. Larger values yield more
       accurate estimates but for fewer mutations. Move the slider to the left to show
       estimates for more mutations at lower confidence, and move it to the right to show
-      estimates for fewer mutations at higher confidence. Values in a range of 10 to 20
-      are usually sufficient to yield reasonably accurate estimates.
+      estimates for fewer mutations at higher confidence.
 
       You can click/shift-click on specific genes in the legend below the plot to show
       only estimates for those genes.
@@ -95,8 +94,7 @@ plots:
       of a mutation we require before making a fitness estimate. Larger values yield more
       accurate estimates but for fewer mutations. Move the slider to the left to show
       estimates for more mutations at lower confidence, and move it to the right to show
-      estimates for fewer mutations at higher confidence. Values in a range of 10 to 20
-      are usually sufficient to yield reasonably accurate estimates.
+      estimates for fewer mutations at higher confidence.
 
   clade_corr_chart: &corr_template
     title: correlation of fitness estimates for different viral clades
@@ -113,8 +111,7 @@ plots:
       an amino acid we require before making a fitness estimate. Larger values yield more
       accurate estimates but for fewer amino acids. So move the slider to the left to show
       estimates for more amino acids at lower confidence, and move it to the right to show
-      estimates for fewer amino acids at higher confidence. Values in a range of 10 to 20
-      are usually sufficient to yield reasonably accurate estimates.
+      estimates for fewer amino acids at higher confidence.
 
       You can click/shift-click on specific genes in the legend below the plot to only
       show mutations for that gene.
@@ -139,8 +136,7 @@ plots:
       an amino acid we require before making a fitness estimate. Larger values yield more
       accurate estimates but for fewer amino acids. So move the slider to the left to show
       estimates for more amino acids at lower confidence, and move it to the right to show
-      estimates for fewer amino acids at higher confidence. Values in a range of 10 to 20
-      are usually sufficient to yield reasonably accurate estimates.
+      estimates for fewer amino acids at higher confidence.
 
       Click *yes* for the *only show mutations measured in all subsets* box to only show
       the same subset of mutations in each panel; otherwise different panels may show
@@ -171,8 +167,7 @@ plots:
       an amino acid we require before making a fitness estimate. Larger values yield more
       accurate estimates but for fewer amino acids. So move the slider to the left to show
       estimates for more amino acids at lower confidence, and move it to the right to show
-      estimates for fewer amino acids at higher confidence. Values in a range of 10 to 20
-      are usually sufficient to yield reasonably accurate estimates.
+      estimates for fewer amino acids at higher confidence.
 
       Click *yes* for the *only show mutations measured in all subsets* box to only show
       the same subset of mutations in each panel; otherwise different panels may show
@@ -211,8 +206,7 @@ plots:
       an amino acid we require before making a fitness estimate. Larger values yield more
       accurate estimates but for fewer amino acids. So move the slider to the left to show
       estimates for more amino acids at lower confidence, and move it to the right to show
-      estimates for fewer amino acids at higher confidence. Values in a range of 10 to 20
-      are usually sufficient to yield reasonably accurate estimates.
+      estimates for fewer amino acids at higher confidence.
     title: nsp1 amino-acid fitnesses
   nsp2:
     <<: *heatmap_template
@@ -314,8 +308,7 @@ plots:
       an amino acid we require before making a fitness estimate. Larger values yield more
       accurate estimates but for fewer amino acids. So move the slider to the left to show
       estimates for more amino acids at lower confidence, and move it to the right to show
-      estimates for fewer amino acids at higher confidence. Values in a range of 10 to 20
-      are usually sufficient to yield reasonably accurate estimates.
+      estimates for fewer amino acids at higher confidence.
 
       You can click/shift-click on specific genes in the legend below the plot to only
       show mutations for that gene.
@@ -342,8 +335,7 @@ plots:
       an amino acid we require before making a fitness estimate. Larger values yield more
       accurate estimates but for fewer amino acids. So move the slider to the left to show
       estimates for more amino acids at lower confidence, and move it to the right to show
-      estimates for fewer amino acids at higher confidence. Values in a range of 10 to 20
-      are usually sufficient to yield reasonably accurate estimates.
+      estimates for fewer amino acids at higher confidence.
 
       You can click/shift-click on specific genes in the legend below the plot to only
       show mutations for that gene.
@@ -358,5 +350,4 @@ plots:
       an amino acid we require before making a fitness estimate. Larger values yield more
       accurate estimates but for fewer amino acids. So move the slider to the left to show
       estimates for more amino acids at lower confidence, and move it to the right to show
-      estimates for fewer amino acids at higher confidence. Values in a range of 10 to 20
-      are usually sufficient to yield reasonably accurate estimates.
+      estimates for fewer amino acids at higher confidence.

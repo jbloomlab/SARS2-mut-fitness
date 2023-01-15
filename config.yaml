@@ -89,7 +89,7 @@ orf1ab_to_nsps:
 fitness_pseudocount: 0.5
 
 # initial cutoff for minimum expected count to show fitness values
-min_expected_count: 20
+min_expected_count: 10
 
 # only plot correlation among clades when at least this many expected counts
 clade_corr_min_count: 500000

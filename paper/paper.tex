@@ -21,8 +21,9 @@
     \renewcommand{\floatpagefraction}{0.7}	% require fuller float pages
 	% N.B.: floatpagefraction MUST be less than topfraction !!
     \renewcommand{\dblfloatpagefraction}{0.7}	% require fuller float pages
-    
+
 \newcommand\jdbcomment[1]{\textcolor{red}{[#1]}}
+\newcommand\rancomment[1]{\textcolor{blue}{[#1]}}
 
 \title{Fitness effects of mutations to SARS-CoV-2 proteins}
 
@@ -30,7 +31,7 @@
 
 \affil[1]{Basic Sciences and Computational Biology, Fred Hutchinson Cancer Center
 
-} 
+}
 \affil[2]{Department of Genome Sciences, University of Washington
 
 }
@@ -46,10 +47,11 @@
 
 \keywords{}
 
-\runningtitle{} % For use in the footer 
+\runningtitle{} % For use in the footer
 \runningauthor{}
 
 \begin{abstract}
+<<<<<<< HEAD
 Knowledge of the fitness effects of mutations to SARS-CoV-2 can inform risk assessment of new viral variants and targeting of therapeutics to sites where resistance is unlikely to emerge.
 However, experimentally determining the effects of mutations is challenging: we lack tractable lab assays for many SARS-CoV-2 proteins, and systematic deep mutational scanning has been applied to only two of the virus's proteins.
 Here we develop a new approach that leverage millions of publicly available SARS-CoV-2 sequences to estimate the effects of most amino-acid mutations accessible by single-nucleotide changes.
@@ -76,9 +78,13 @@ The framework we describe is applicable to any virus (or organism) for which the
 
 Experiments have filled this role for some viral proteins (spike, Mpro), but not for majority of SARS-CoV-2 viral protein.
 
-An alternative is sequence-based estimates, which so far have focused largely on clade growth. \jdbcomment{Richard, can you note any key papers you think should be cited as background.}
+An alternative is sequence-based estimates, which so far have focused largely on clade growth and identification of mutations that mediate immune escape or increase transmissibility \citep{obermeyer2022analysis,lee2022inferring}.
+Mutations that are repeatedly observed at the base of clades that grow faster than the background likely contribute to growth.
+Such adaptive mutations are only a small minority of all available mutations and which mutations are adaptive depends on the environment (immunity) and the genetic background.
+The great majority of mutations, however, have either small fitness effects (approximately neutral) or are deleterious to viral replication.
+Here, we describe an approach to quantify the fitness cost of these mutations based on comparing expected versus observed counts.
 
-Here we describe new approach based on comparing expected versus observed counts. 
+\rancomment{older paper on flu where not counts but trajectories were used to partition sequences into good and bad \citep{strelkowa2021clonal}}
 
 \section{Results}
 
@@ -132,7 +138,7 @@ See \url{https://jbloomlab.github.io/SARS2-mut-fitness/effects_histogram.html} a
 
 \begin{figure*}
 \centering
-{\bf \Large A \hspace{0.32\linewidth} B \hspace{0.32\linewidth}} 
+{\bf \Large A \hspace{0.32\linewidth} B \hspace{0.32\linewidth}}
 
 \includegraphics[width=0.32\linewidth]{figs/clade_corr_chart.pdf}
 \hspace{0.05\linewidth}
