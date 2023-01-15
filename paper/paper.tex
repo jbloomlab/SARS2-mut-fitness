@@ -167,38 +167,14 @@ See the links at \url{https://jbloomlab.github.io/SARS2-mut-fitness} for compara
 \end{figure*}
 
 \begin{figure*}
-{\bf \Large A}
-
-\includegraphics[width=0.8\linewidth]{figs/clade_fixed_muts_hist.pdf}
-\vspace{0.05in}
-
-{\bf \Large B}
-
-\includegraphics[width=\linewidth]{figs/clade_fixed_muts.pdf}
-
+\centering
+\includegraphics[width=0.7\linewidth]{figs/fixed_dist.pdf}
 \caption{
-Effects of amino-acid mutations that have fixed in at least one SARS-CoV-2 clade.
-{\bf (A)}
-Distribution of fitness effects of all amino-acid mutations relative to Wuhan-Hu-1 and all mutations that are fixed in at least one of the clades (as defined by Nextclade\jdbcomment{cite}).
-\jdbcomment{add vertical line at zero to these plots.}
-{\bf (B)}
-Effects of individual fixed mutations faceted by whether they are in spike or another protein.
-Plots show estimates of effects of mutations made across all clades (including those that have fixed the mutation) and just from direct forward occurrences of the mutation in clades in which it has not yet fixed.
-Estimates are only shown for mutations with expected counts of at least 20.
-Interactive versions of this plot that enable easier exploration of the data are at \url{https://jbloomlab.github.io/SARS2-mut-fitness/clade_fixed_muts_hist.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/clade_fixed_muts.html}.
-\label{fig:fixed}
-}
-\end{figure*}
-
-\begin{figure*}
-\includegraphics[width=0.8\linewidth, trim={0 1.1in 0 0in}, clip=true]{figs/fitness_vs_terminal.pdf}
-\caption{
-Relationship between fitness effects of mutations and ratio of counts on terminal (tip) branches versus non-terminal (internal) branches.
-Each point is an amino-acid mutation, and the orange text in the upper right give the number of mutations and the Pearson correlation coefficient.
-This plot shows only mutations with at least 20 expected counts and 5 actual counts.
-An interactive version of this plot that allows filtering by the number of actual or expected counts, or by gene, is at \url{https://jbloomlab.github.io/SARS2-mut-fitness/fitness_vs_terminal.html}.
-\jdbcomment{add same color coding as in other panels for synonymous, nonsynonymous, stop types}
-\label{fig:terminal}
+Distribution of fitness effects of all amino-acid mutations relative to Wuhan-Hu-1, and all mutations that fixed in at least one clade of SARS-CoV-2 (using the Nextstrain clade definitions).
+The vertical dashed line at zero indicates the effect of a neutral mutation.
+Estimates are only shown for mutations with expected counts of at least 10.
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness/clade_fixed_muts_hist.html} for an interactive version of this plot that allows adjustment of the minimum expected count threshold.
+\label{fig:fixed_dist}
 }
 \end{figure*}
 
@@ -223,5 +199,38 @@ JDB receives payments as an inventor on a Fred Hutch licensed patents related to
 \bibliography{references}
 }
 
+\onecolumn
+\renewcommand{\thepage}{S\arabic{page}}
+\setcounter{page}{1}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\setcounter{figure}{0}
+
+\clearpage
+
+\section{Supplementary Material}
+
+\begin{figure*}[b]
+\includegraphics[width=\linewidth]{figs/fixed.pdf}
+\caption{
+Effects of individual mutations that fixed in at least one clade of SARS-CoV-2, faceted by whether they are in spike or another protein.
+Plots show estimates of effects of mutations made across all clades (including those that have fixed the mutation) and just from direct forward occurrences of the mutation in clades in which it has not yet fixed.
+Estimates are only shown for mutations with expected counts of at least 10.
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness/clade_fixed_muts.html} for an interactive version of this plot.
+\label{fig:fixed}
+}
+\end{figure*}
+
+
+\begin{figure*}
+\centering
+\includegraphics[width=0.75\linewidth]{figs/terminal.png}
+\caption{
+Relationship between fitness effects of mutations and ratio of counts on terminal (tip) branches versus non-terminal (internal) branches.
+Each point is an amino-acid mutation, and the orange text in the upper left give the number of mutations and the Pearson correlation coefficient.
+This plot shows only mutations with at least 10 expected counts and 5 actual counts.
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness/fitness_vs_terminal.html} for an interactive version of this plot that allows filtering by the number of actual or expected counts, or by gene.
+\label{fig:terminal}
+}
+\end{figure*}
 
 \end{document}
