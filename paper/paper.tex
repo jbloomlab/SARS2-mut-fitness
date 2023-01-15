@@ -24,7 +24,7 @@
     
 \newcommand\jdbcomment[1]{\textcolor{red}{[#1]}}
 
-\title{Estimated fitness effects of amino-acid mutations to SARS-CoV-2 proteins}
+\title{Fitness effects of mutations to SARS-CoV-2 proteins}
 
 \author[*]{\Large Jesse D. Bloom$^{1,2,3^*}$ and Richard A. Neher$^{4,5}$}
 
@@ -42,8 +42,6 @@
 }
 \affil[5]{Swiss Institute of Bioinformatics
 
-\jdbcomment{Should we add Angie Hinrichs as co-author? She helped answer some UShER questions on GitHub. Probably just acknowledgments is fine, but what do you think?}
-
 }
 
 \keywords{}
@@ -52,16 +50,16 @@
 \runningauthor{}
 
 \begin{abstract}
-Knowledge of the fitness effects of mutations to SARS-CoV-2 can inform risk assessment of new viral variants and targeting of therapeutics to constrained sites where resistance is unlikely to emerge.
-However, experimentally determining the effects of mutations is challenging: we lack tractable lab assays for the functions of many SARS-CoV-2 proteins, and for this reason systematic deep mutational scanning has been applied to only two of the virus's proteins.
-Here we develop a new approach that leverages millions of publicly available SARS-CoV-2 sequences to estimate the effects of most amino-acid mutations accessible by single-nucleotide changes.
-To do this, we first calculate how many independent times each mutation is expected to occur along the SARS-CoV-2 phylogeny in the absence of selection. 
-We then compare these expected counts to the actual observed counts of each mutation, and use the ratio of counts to estimate the effect of each mutation.
-For the two proteins with deep mutational scanning data, our sequence-based estimates correlate with experimental measurements nearly as well as independent experiments correlate with each other.
+Knowledge of the fitness effects of mutations to SARS-CoV-2 can inform risk assessment of new viral variants and targeting of therapeutics to sites where resistance is unlikely to emerge.
+However, experimentally determining the effects of mutations is challenging: we lack tractable lab assays for many SARS-CoV-2 proteins, and systematic deep mutational scanning has been applied to only two of the virus's proteins.
+Here we develop a new approach that leverage millions of publicly available SARS-CoV-2 sequences to estimate the effects of most amino-acid mutations accessible by single-nucleotide changes.
+We first calculate how many times each mutation is expected to occur along the SARS-CoV-2 phylogeny in the absence of selection. 
+We then compare these expected counts to the actual observed counts to estimate the effect of each mutation.
+Our sequence-based estimates correlate with experimental deep mutational scanning measurements nearly as well as independent experiments correlate with each other.
 For most genes, synonymous mutations are nearly neutral, stop-codon mutations are deleterious, and amino-acid mutations have a range of effects.
-However, some viral accessory proteins are under little to no selection during SARS-CoV-2 evolution in humans.
-We provide interactive visualizations of the estimated effects of individual mutations to each viral protein, enabling these data to be easily used in viral surveillance and drug development.
-Overall, our work provides a framework to estimate the effects of mutations to any virus (or organism) for which the number of available sequences is sufficiently large that that each neutral mutation independently occurs many times.
+However, some viral accessory proteins are under little to no selection.
+To enable our results to be easily used in viral surveillance and drug development, we provide interactive visualizations of the effects of mutations (\url{https://jbloomlab.github.io/SARS2-mut-fitness/}).
+The framework we describe is applicable to any virus (or organism) for which the number of available sequences is sufficiently large that that each neutral mutation independently occurs many times.
 \end{abstract}
 
 \begin{document}
@@ -94,16 +92,16 @@ Here we describe new approach based on comparing expected versus observed counts
 \hspace{0.02\linewidth}
 \includegraphics[width=0.5\linewidth,valign=t]{figs/avg_counts.pdf}
 \caption{
-Calculation of expected versus actual counts for each mutation.
+Expected versus actual counts of mutations.
 {\bf (A)}
-The number of expected counts of each type of nucleotide mutation is computed from the observed counts at four-fold degenerate sites,
-and then compared the actual observed counts of each mutation.
-Note that the counts represent independent occurrences of each mutation on the tree, not counts of mutations in the alignment of observed sequences (a single occurrence of a mutation can be present in many sequences in an alignment).
+The number of expected counts of each type of nucleotide mutation is computed from four-fold degenerate sites, and then compared the actual counts of each mutation.
+The counts are of independent occurrences of each mutation on the tree, not mutations in the alignment of observed sequences (a single occurrence of a mutation can be present in many sequences in an alignment).
 {\bf (B)}
 Expected versus actual counts for each nucleotide mutation type averaged across all sites where the mutation is four-fold degenerate, synonymous (including four-fold degenerate), nonsynonymous, or introduces a stop codon.
-Synonymous mutations are often roughly neutral, so the number of expected and actual counts are similar, but nonsynonymous and especially stop-codon mutations are often deleterious, so the number of actual counts is generally less than the number of expected counts.
-Note that due to the highly uneven mutation spectrum of SARS-CoV-2, some nucleotide mutation types are expected to occur far more often than others.
-An interactive version of panel B is at \url{https://jbloomlab.github.io/SARS2-mut-fitness/avg_counts.html}.
+Synonymous mutations are often roughly neutral, so the expected and actual counts are similar.
+Nonsynonymous and especially stop-codon mutations are often deleterious, so the actual counts are generally less than the expected counts.
+Due to the uneven mutation spectrum of SARS-CoV-2, some nucleotide mutation types are expected to occur more often than others.
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness/avg_counts.html} for an interactive version of panel B.
 \label{fig:expected_vs_actual}
 }
 \end{figure*}
@@ -123,11 +121,11 @@ Histograms of effects of synonymous, nonsynonymous, and stop-codon mutations acr
 Neutral mutations have effects of zero, and deleterious mutations have negative effects.
 \jdbcomment{Maybe add dotted vertical line at zero to denote neutrality?}
 {\bf (B)}
-Distribution of effects of each type of mutation for each viral gene.
-The dark squares indicate the median effect of mutations of that type for that gene, and the lighter rectangles span the interquartile range.
+Effects of each type of mutation for each viral gene.
+Dark squares indicate the median effect, and the lighter rectangles span the interquartile range.
 Mutation types are color-coded as in panel A.
 Both panels show only mutations with expected counts of at least 20.
-For interactive versions of these plots that allow adjustment of the expected-count cutoff and other options (such as separate histograms for each gene), see \url{https://jbloomlab.github.io/SARS2-mut-fitness/effects_histogram.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/effects_dist.html}.
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness/effects_histogram.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/effects_dist.html} for interactive versions of these plots that allow adjustment of the expected-count cutoff and other options (such as separate histograms for each gene).
 \label{fig:effects_dist}
 }
 \end{figure*}
