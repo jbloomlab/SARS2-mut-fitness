@@ -52,7 +52,7 @@
 
 \begin{abstract}
 Knowledge of the fitness effects of mutations to SARS-CoV-2 can inform risk assessment of new viral variants and targeting of therapeutics to sites where resistance is unlikely to emerge.
-However, experimentally determining the effects of mutations is challenging: we lack tractable lab assays for many SARS-CoV-2 proteins, and systematic deep mutational scanning has been applied to only two of the virus's proteins.
+However, experimentally determining the effects of mutations is challenging: we lack tractable lab assays for many SARS-CoV-2 proteins, and comprehensive deep mutational scanning has been applied to only two of the virus's proteins.
 Here we develop a new approach that leverage millions of publicly available SARS-CoV-2 sequences to estimate the effects of most amino-acid mutations accessible by single-nucleotide changes.
 We first calculate how many times each mutation is expected to occur along the SARS-CoV-2 phylogeny in the absence of selection. 
 We then compare these expected counts to the actual observed counts to estimate the effect of each mutation.
@@ -73,9 +73,15 @@ The framework we describe is applicable to any virus (or organism) for which the
 \correspondingauthoraffiliation{}{*\href{mailto:jbloom@fredhutch.org}{jbloom@fredhutch.org} or \href{mailto:richard.neher@unibas.ch}{richard.neher@unibas.ch}}
 \vspace{-33pt}% Only used for adjusting extra space in the left column of the first page
 
-\lettrine[lines=2]{\color{color2}B}{}ackground. It's important to understand effects of individual mutations.
+\lettrine[lines=2]{\color{color2}T}{}he rapid evolution of SARS-CoV-2 has led to the repeated emergence of viral variants with enhanced transmissibility, escape from anti-viral therapeutics, or reduced recognition by immunity~\citep{?}.
+To anticipate and mitigate this evolution, the scientific community has launched major efforts to assess the risk of new viral variants and develop therapeutics that target constrained regions of the virus where resistance is less likely to evolve~\citep{?}.
+Both efforts require determining how specific mutations affect the fitness of the virus.
 
-Experiments have filled this role for some viral proteins (spike, Mpro), but not for majority of SARS-CoV-2 viral protein.
+Unfortunately, experimentally determining the effects of mutations remains challenging for most SARS-CoV-2 proteins.
+For spike, tractable laboratory assays have identified key functional and antigenic mutations~\citep{?}, and enabled deep mutational scanning of how most mutations affect receptor binding, cellular infection, and antibody recognition~\citep{?}.
+These experimental data have proven valuable for assessing new spike variants, and are informing development of new antibody therapeutics with greater resistance to escape~\citep{?}.
+But most other viral proteins lack comparably tractable laboratory assays, despite the fact that non-spike proteins clearly contribute to variant fitness~\citep{?} and are the targets of efforts to develop anti-viral drugs~\citep{?}.
+The only non-spike SARS-CoV-2 protein with large-scale deep mutational scanning data is Mpro~\citep{?}, and those measurements were performed in yeast.
 
 An alternative is sequence-based estimates, which so far have focused largely on clade growth and identification of mutations that mediate immune escape or increase transmissibility \citep{obermeyer2022analysis,lee2022inferring}.
 Mutations that are repeatedly observed at the base of clades that grow faster than the background likely contribute to growth.
