@@ -51,16 +51,16 @@
 \runningauthor{}
 
 \begin{abstract}
-Knowledge of the fitness effects of mutations to SARS-CoV-2 can inform risk assessment of new viral variants and targeting of therapeutics to sites where resistance is unlikely to emerge.
+Knowledge of the fitness effects of mutations to SARS-CoV-2 can inform risk assessment of new variants and targeting of therapeutics to sites where resistance is unlikely to emerge.
 However, experimentally determining the effects of mutations is challenging: we lack tractable lab assays for many SARS-CoV-2 proteins, and comprehensive deep mutational scanning has been applied to only two of the virus's proteins.
-Here we develop a new approach that leverage millions of publicly available SARS-CoV-2 sequences to estimate the effects of most amino-acid mutations accessible by single-nucleotide changes.
+Here we develop an approach that leverages millions of publicly available SARS-CoV-2 sequences to estimate the effects of mutations.
 We first calculate how many times each mutation is expected to occur along the SARS-CoV-2 phylogeny in the absence of selection. 
-We then compare these expected counts to the actual observed counts to estimate the effect of each mutation.
-Our sequence-based estimates correlate with experimental deep mutational scanning measurements nearly as well as independent experiments correlate with each other.
+We then compare these expected counts to the actual counts to estimate the effect of each mutation.
+These estimates correlate well with deep mutational scanning measurements.
 For most genes, synonymous mutations are nearly neutral, stop-codon mutations are deleterious, and amino-acid mutations have a range of effects.
 However, some viral accessory proteins are under little to no selection.
-To enable our results to be easily used in viral surveillance and drug development, we provide interactive visualizations of the effects of mutations (\url{https://jbloomlab.github.io/SARS2-mut-fitness/}).
-The framework we describe is applicable to any virus (or organism) for which the number of available sequences is sufficiently large that that each neutral mutation independently occurs many times.
+To enable our estimates to be easily used, we provide interactive visualizations (\url{https://jbloomlab.github.io/SARS2-mut-fitness/}).
+The framework we describe is applicable to any virus for which the number of available sequences is sufficiently large that each neutral mutation independently occurs many times.
 \end{abstract}
 
 \begin{document}
@@ -73,18 +73,18 @@ The framework we describe is applicable to any virus (or organism) for which the
 \correspondingauthoraffiliation{}{*\href{mailto:jbloom@fredhutch.org}{jbloom@fredhutch.org} or \href{mailto:richard.neher@unibas.ch}{richard.neher@unibas.ch}}
 \vspace{-33pt}% Only used for adjusting extra space in the left column of the first page
 
-\lettrine[lines=2]{\color{color2}T}{}he rapid evolution of SARS-CoV-2 has led to the repeated emergence of viral variants with enhanced transmissibility, escape from anti-viral therapeutics, or reduced recognition by immunity~\citep{?}.
-To anticipate and mitigate this evolution, the scientific community has launched major efforts to assess the risk of new viral variants and create therapeutics that target constrained regions of the virus where resistance is less likely to evolve~\citep{?}.
+\lettrine[lines=2]{\color{color2}T}{}he rapid evolution of SARS-CoV-2 has led to the repeated emergence of viral variants with enhanced transmissibility, escape from anti-viral therapeutics, or reduced recognition by immunity~\citep{harvey2021sars,abdool2021new}.
+To anticipate and mitigate this evolution, the scientific community has launched major efforts to assess the risk of new viral variants~\citep{degrace2022defining} and create therapeutics that target constrained regions of the virus where resistance is less likely to evolve~\citep{moghadasi2022,iketani2022multiple,hiscox2021shutting}.
 Both efforts require determining how specific mutations affect the fitness of the virus.
 
 Unfortunately, experimentally determining the effects of mutations remains challenging for most SARS-CoV-2 proteins.
-For spike, tractable laboratory assays have identified key functional and antigenic mutations~\citep{?}, and enabled deep mutational scanning measurements of how most mutations affect receptor binding, cellular infection, and antibody recognition~\citep{?}.
-These experimental data are valuable for assessing new spike variants and informing development of antibody therapeutics with greater resistance to escape~\citep{?}.
-But most other viral proteins lack comparably tractable laboratory assays, despite the fact that non-spike proteins clearly contribute to variant fitness~\citep{?} and are the targets of efforts to develop anti-viral drugs~\citep{?}.
-The only non-spike SARS-CoV-2 protein with large-scale deep mutational scanning data is Mpro~\citep{?}, and those measurements were performed in yeast.
+For spike, tractable laboratory assays have identified key functional and antigenic mutations~\citep{weisblum2020escape}, and enabled deep mutational scanning measurements of how most mutations affect receptor binding, cellular infection, and antibody recognition~\citep{starr2020deep,dadonaite2022pseudovirus,greaney2021complete,cao2022imprinted}.
+These experimental data are valuable for assessing new spike variants~\citep{degrace2022defining,greaney2022antibody} and informing development of antibody therapeutics with greater resistance to escape~\citep{starr2021sars,rappazzo2021broad,cao2022rational}.
+But most other viral proteins lack comparably tractable laboratory assays, despite the fact that non-spike proteins clearly contribute to viral fitness~\citep{thorne2022evolution,syed2021rapid,mcgrath2022sars} and are the targets of efforts to develop anti-viral drugs~\citep{tao2021sars}.
+The only non-spike SARS-CoV-2 protein with large-scale deep mutational scanning data is Mpro~\citep{flynn2022,iketani2022functional}, and those measurements were performed in yeast.
 
 An alternative to experiments is to estimate the effects of mutations by analyzing naturally occurring viral sequences.
-The amount of data available for such analyses has increased dramatically over the last few years with the full-genome sequencing of SARS-CoV-2 from millions of human infections~\citep{?}.
+The amount of data available for such analyses has increased dramatically over the last few years with the full-genome sequencing of SARS-CoV-2 from millions of human infections.
 So far analyses of these sequences have focused on analyzing expanding viral clades to identify mutations that mediate immune escape or increase transmissibility~\citep{obermeyer2022analysis,lee2022inferring}.
 The basic idea of these prior analyses is that mutations that repeatedly appear near the base of clades that expand in relative frequency are likely beneficial to the virus.
 However, only a small minority of all possible mutations are beneficial, with the great majority being either nearly neutral or deleterious.
@@ -93,9 +93,9 @@ For purposes such as identifying functionally constrained drug targets, it is im
 
 Here we develop a new approach that uses natural sequences to estimate the effects of mutations to SARS-CoV-2.
 Our basic insight is that there are now so many SARS-CoV-2 sequences that all non-deleterious single-nucleotide mutations are expected to independently occur tens to hundreds of times along the observed phylogeny.
-We therefore first calculate the number of \emph{expected} occurrences of each mutation based on the neutral mutation spectrum of SARS-CoV-2 as estimated from four-fold degenerate synonymous sites~\citep{?}.
+We therefore first calculate the number of \emph{expected} occurrences of each mutation based on the neutral mutation spectrum of SARS-CoV-2 as estimated from four-fold degenerate synonymous sites~\citep{bloom2022evolution}.
 We then compare these expected occurrences to the actual occurrences in the SARS-CoV-2 phylogeny to estimate the effect of each mutation.
-The resulting estimates are used to create maps of mutation-level functional constraint across each viral protein, which correlate well with existing deep mutational scanning data.
+The resulting estimates are used to create maps of mutation-level functional constraint across each viral protein, and correlate well with existing deep mutational scanning data.
 Most viral proteins have regions that are under strong selective constraints.
 However the accessory proteins show only weak selection against amino-acid and even stop-codon mutations, with the main exception being strong selection against premature stop codons in most of ORF3a.
 Overall, our work demonstrates a new approach to determine the effects of mutations, and provides detailed maps of functional constraint across the SARS-CoV-2 proteome.
