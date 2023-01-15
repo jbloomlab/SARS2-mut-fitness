@@ -142,20 +142,14 @@ See \url{https://jbloomlab.github.io/SARS2-mut-fitness/clade_corr_chart.html} an
 \end{figure*}
 
 \begin{figure*}
-{\bf \Large A}
-
-\includegraphics[width=0.9\linewidth]{figs/dms_S_corr.pdf}
-\vspace{0.05in}
-
-{\bf \Large B}
-
-\includegraphics[width=0.9\linewidth]{figs/dms_nsp5_corr.pdf}
+\centering
+\includegraphics[width=0.75\linewidth]{figs/dms.png}
 \caption{
-Correlation of fitness effect estimates with experimental measurements from deep mutational scanning studies for {\bf (A)} spike and {\bf (B)} Mpro (nsp5).
-Each point is an amino-acid mutation, and the oragne text in the upper left shows the number of mutations and Pearson correlation coefficient.
+Correlation of amino-acid fitness estimates with experimental measurements from deep mutational scanning studies for {\bf (A)} spike and {\bf (B)} Mpro (nsp5).
+Each point is an amino-acid mutation, and the orange text in the upper left shows the number of mutations and Pearson correlation coefficient.
 Data are taken from two independent deep mutational scanning studies for spike~\citep{cite}, and two studies for Mpro~\citep{cite}.
-Each sub-panel shows a different set of mutations (those that are measured in each of the two datasets being correlated), and uses a minimum expected count cutoff of 20.
-Interactive versions of these plots that enable subsetting on just mutations shown across all datasets and adjustment of the minimum expected count cutoff are at \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_S_corr.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_nsp5_corr.html}.
+Each sub-panel shows a different set of mutations (depending on which mutations were measured in that experiment), and and only shows fitness estimates for mutations with at least 10 expected counts.
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_S_corr.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_nsp5_corr.html} for interactive versions of these plots that enable subsetting on just mutations shared across all datasets, and adjustment of the minimum expected count cutoff .
 \label{fig:dms_corr}
 }
 \end{figure*}
