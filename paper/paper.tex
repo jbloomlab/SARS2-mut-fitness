@@ -51,7 +51,6 @@
 \runningauthor{}
 
 \begin{abstract}
-<<<<<<< HEAD
 Knowledge of the fitness effects of mutations to SARS-CoV-2 can inform risk assessment of new viral variants and targeting of therapeutics to sites where resistance is unlikely to emerge.
 However, experimentally determining the effects of mutations is challenging: we lack tractable lab assays for many SARS-CoV-2 proteins, and systematic deep mutational scanning has been applied to only two of the virus's proteins.
 Here we develop a new approach that leverage millions of publicly available SARS-CoV-2 sequences to estimate the effects of most amino-acid mutations accessible by single-nucleotide changes.
@@ -113,24 +112,17 @@ See \url{https://jbloomlab.github.io/SARS2-mut-fitness/avg_counts.html} for an i
 \end{figure*}
 
 \begin{figure*}
-{\bf \Large A}
-
-\includegraphics[width=\linewidth, trim={0in 0.7in 0 0.05in}, clip=true]{figs/effects_histogram.pdf}
-
-{\bf \Large B}
-
-\includegraphics[width=\linewidth, trim={0in 0.36in 0 0in}, clip=true]{figs/effects_dist.pdf}
+\includegraphics[width=\linewidth]{figs/fig2.pdf}
 \caption{
 Distribution of effects of different types of mutations.
 {\bf (A)}
 Histograms of effects of synonymous, nonsynonymous, and stop-codon mutations across all viral genes.
-Neutral mutations have effects of zero, and deleterious mutations have negative effects.
-\jdbcomment{Maybe add dotted vertical line at zero to denote neutrality?}
+Neutral mutations have effects of zero (dashed gray vertical lines), and deleterious mutations have negative effects.
 {\bf (B)}
 Effects of each type of mutation for each viral gene.
 Dark squares indicate the median effect, and the lighter rectangles span the interquartile range.
 Mutation types are color-coded as in panel A.
-Both panels show only mutations with expected counts of at least 20.
+Both panels show only mutations with expected counts of at least 10.
 See \url{https://jbloomlab.github.io/SARS2-mut-fitness/effects_histogram.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/effects_dist.html} for interactive versions of these plots that allow adjustment of the expected-count cutoff and other options (such as separate histograms for each gene).
 \label{fig:effects_dist}
 }
