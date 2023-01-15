@@ -112,7 +112,7 @@ See \url{https://jbloomlab.github.io/SARS2-mut-fitness/avg_counts.html} for an i
 \end{figure*}
 
 \begin{figure*}
-\includegraphics[width=\linewidth]{figs/fig2.pdf}
+\includegraphics[width=\linewidth]{figs/dist.pdf}
 \caption{
 Distribution of effects of different types of mutations.
 {\bf (A)}
@@ -124,23 +124,19 @@ Dark squares indicate the median effect, and the lighter rectangles span the int
 Mutation types are color-coded as in panel A.
 Both panels show only mutations with expected counts of at least 10.
 See \url{https://jbloomlab.github.io/SARS2-mut-fitness/effects_histogram.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/effects_dist.html} for interactive versions of these plots that allow adjustment of the expected-count cutoff and other options (such as separate histograms for each gene).
-\label{fig:effects_dist}
+\label{fig:dist}
 }
 \end{figure*}
 
 \begin{figure*}
 \centering
-{\bf \Large A \hspace{0.32\linewidth} B \hspace{0.32\linewidth}}
-
-\includegraphics[width=0.32\linewidth]{figs/clade_corr_chart.pdf}
-\hspace{0.05\linewidth}
-\includegraphics[width=0.32\linewidth]{figs/subset_corr_chart.pdf}
+\includegraphics[width=\linewidth]{figs/corr.png}
 \caption{
 Correlations between amino-acid fitness estimates made using different sequence subsets.
-{\bf (A)} Estimates made using only sequences from the Omicron BA.2 clade or only the Alpha clade, or {\bf (B)} estimates made using only sequences from the USA or England.
-In the scatter plots, each point is a different amino-acid mutation, and the orange text at upper left shows the number of mutations and Pearson correlation coefficient.
-Both panels show only mutations with expected counts of at least 20.
-For interactive versions of these plots that show correlations among estimates from all clade pairs, allow adjustment of the expected-count cutoff, and allow examination of correlations for just specific genes, see \url{https://jbloomlab.github.io/SARS2-mut-fitness/clade_corr_chart.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/subset_corr_chart.html}.
+{\bf (A)} Estimates made using only sequences from the indicated viral clades, or {\bf (B)} estimates made using only sequences from the USA or England.
+Each point is a different amino-acid mutation, and the orange text at upper left shows the number of mutations and Pearson correlation coefficient.
+Both panels show only mutations with expected counts of at least 10 in each subset of sequences.
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness/clade_corr_chart.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/subset_corr_chart.html}.For interactive versions of these plots that show correlations among additional clade pairs, allow adjustment of the expected-count cutoff, and allow examination of mutations for just specific genes.
 \label{fig:corr}
 }
 \end{figure*}
