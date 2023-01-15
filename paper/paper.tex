@@ -83,13 +83,13 @@ These experimental data have proven valuable for assessing new spike variants, a
 But most other viral proteins lack comparably tractable laboratory assays, despite the fact that non-spike proteins clearly contribute to variant fitness~\citep{?} and are the targets of efforts to develop anti-viral drugs~\citep{?}.
 The only non-spike SARS-CoV-2 protein with large-scale deep mutational scanning data is Mpro~\citep{?}, and those measurements were performed in yeast.
 
-An alternative is sequence-based estimates, which so far have focused largely on clade growth and identification of mutations that mediate immune escape or increase transmissibility \citep{obermeyer2022analysis,lee2022inferring}.
-Mutations that are repeatedly observed at the base of clades that grow faster than the background likely contribute to growth.
-Such adaptive mutations are only a small minority of all available mutations and which mutations are adaptive depends on the environment (immunity) and the genetic background.
-The great majority of mutations, however, have either small fitness effects (approximately neutral) or are deleterious to viral replication.
-Here, we describe an approach to quantify the fitness cost of these mutations based on comparing expected versus observed counts.
-
-\rancomment{older paper on flu where not counts but trajectories were used to partition sequences into good and bad \citep{strelkowa2021clonal}}
+An alternative to experiments is to estimate the effects of mutations by analyzing naturally occurring viral sequences.
+The amount of data available for such analyses has increased dramatically over the last few years with the full-genome sequencing of SARS-CoV-2 viruses from millions of human infections~\citep{?}.
+So analyses of these sequences have focused largely on analyzing expanding viral clades to identify mutations that mediate immune escape or increase transmissibility~\citep{obermeyer2022analysis,lee2022inferring}.
+The basic idea of these prior analyses is that mutations that repeatedly appear in clades that subsequently expand in relative frequency are likely beneficial to the virus.
+However, only a small minority of all possible mutations are beneficial, with the great majority being either nearly neutral or deleterious to viral fitness.
+For purposes such as identifying functionally constrained drug targets, it is important to accurately estimate the effects of neutral or deleterious mutations as well as beneficial ones.
+\jdbcomment{Richard, I could not quite figure out how to fit in \citep{strelkowa2021clonal}, let me know if you have ideas.}
 
 \section{Results}
 
