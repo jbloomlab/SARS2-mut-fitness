@@ -78,31 +78,41 @@ To anticipate and mitigate this evolution, the scientific community has launched
 Both efforts require determining how specific mutations affect the fitness of the virus.
 
 Unfortunately, experimentally determining the effects of mutations remains challenging for most SARS-CoV-2 proteins.
-For spike, tractable laboratory assays have identified key functional and antigenic mutations~\citep{weisblum2020escape}, and enabled deep mutational scanning measurements of how most mutations affect receptor binding, cellular infection, and antibody recognition~\citep{starr2020deep,dadonaite2022pseudovirus,greaney2021complete,cao2022imprinted}.
+For spike, tractable laboratory assays have identified key functional and antigenic mutations~\citep{weisblum2020escape,harvey2021sars}, and enabled deep mutational scanning measurements of how most mutations affect receptor binding, cellular infection, and antibody recognition~\citep{starr2020deep,dadonaite2022pseudovirus,greaney2021complete,cao2022imprinted}.
 These experimental data are valuable for assessing new spike variants~\citep{degrace2022defining,greaney2022antibody} and informing development of antibody therapeutics with greater resistance to escape~\citep{starr2021sars,rappazzo2021broad,cao2022rational}.
-But most other viral proteins lack comparably tractable laboratory assays, despite the fact that non-spike proteins clearly contribute to viral fitness~\citep{thorne2022evolution,syed2021rapid,mcgrath2022sars} and are the targets of efforts to develop anti-viral drugs~\citep{tao2021sars}.
+But most other viral proteins lack comparably tractable laboratory assays, despite clearly contributing to viral fitness~\citep{thorne2022evolution,syed2021rapid,mcgrath2022sars} and being the targets of efforts to develop anti-viral drugs~\citep{tao2021sars}.
 The only non-spike SARS-CoV-2 protein with large-scale deep mutational scanning data is Mpro~\citep{flynn2022,iketani2022functional}, and those measurements were performed in yeast.
 
-An alternative to experiments is to estimate the effects of mutations by analyzing naturally occurring viral sequences.
+An alternative to experiments is to estimate the effects of mutations by analyzing natural viral sequences.
 The amount of data available for such analyses has increased dramatically over the last few years with the full-genome sequencing of SARS-CoV-2 from millions of human infections.
 So far analyses of these sequences have focused on analyzing expanding viral clades to identify mutations that mediate immune escape or increase transmissibility~\citep{obermeyer2022analysis,lee2022inferring}.
-The basic idea of these prior analyses is that mutations that repeatedly appear near the base of clades that expand in relative frequency are likely beneficial to the virus.
+The basic idea is that mutations that repeatedly appear near the base of clades that increase in relative frequency are likely beneficial to the virus.
 However, only a small minority of all possible mutations are beneficial, with the great majority being either nearly neutral or deleterious.
 For purposes such as identifying functionally constrained drug targets, it is important to accurately estimate the effects of neutral or deleterious mutations as well as beneficial ones.
-\jdbcomment{Richard, I could not quite figure out how to fit in \citep{strelkowa2021clonal}, let me know if you have ideas.}
+% \jdbcomment{Richard, I could not quite figure out how to fit in \citep{strelkowa2021clonal}, let me know if you have ideas.}
 
-Here we develop a new approach that uses natural sequences to estimate the effects of mutations to SARS-CoV-2.
-Our basic insight is that there are now so many SARS-CoV-2 sequences that all non-deleterious single-nucleotide mutations are expected to independently occur tens to hundreds of times along the observed phylogeny.
-We therefore first calculate the number of \emph{expected} occurrences of each mutation based on the neutral mutation spectrum of SARS-CoV-2 as estimated from four-fold degenerate synonymous sites~\citep{bloom2022evolution}.
-We then compare these expected occurrences to the actual occurrences in the SARS-CoV-2 phylogeny to estimate the effect of each mutation.
-The resulting estimates are used to create maps of mutation-level functional constraint across each viral protein, and correlate well with existing deep mutational scanning data.
+Here we develop a new approach that uses natural sequences to estimate the effects of mutations.
+Our basic insight is that there are now so many SARS-CoV-2 sequences that all non-deleterious single-nucleotide mutations are expected to independently occur many times along the observed phylogenetic tree.
+We therefore first calculate the number of expected occurrences of each mutation based on the neutral mutation spectrum of SARS-CoV-2 estimated from four-fold degenerate synonymous sites~\citep{bloom2022evolution}.
+We then compare these expected occurrences to the actual occurrences in the SARS-CoV-2 tree to estimate the effect of each mutation.
+The resulting estimates correlate well with existing deep mutational scanning data.
 Most viral proteins have regions that are under strong selective constraints.
-However the accessory proteins show only weak selection against amino-acid and even stop-codon mutations, with the main exception being strong selection against premature stop codons in most of ORF3a.
+However the accessory proteins mostly show only weak selection against amino-acid and even stop-codon mutations.
 Overall, our work demonstrates a new approach to determine the effects of mutations, and provides detailed maps of functional constraint across the SARS-CoV-2 proteome.
 
 \section{Results}
 
-\subsection{Theory}
+\subsection{Estimating fitness from actual versus expected mutation counts}
+To determine how many times each mutation is expected to be observed, we used the pre-built UShER tree~\citep{turakhia2021ultrafast,lanfear2020} of $\sim$6.5-million public SARS-CoV-2 sequences to count nucleotide mutations at four-fold degenerate sites~\citep[Figure~\ref{fig:expected_vs_actual};][]{bloom2022evolution}.
+Because mutations at such sites never alter the amino-acid sequence, these counts reflect the mutation process in the absence of protein-level selection (see Discussion for caveats about nucleotide-level selection).
+The expected counts of a mutation from nucleotide $x$ to $y$ is simply the average count of this type of mutation across all four-fold degenerate sites with parental identity $x$.
+Importantly, we count independent \emph{occurrences} of each mutation along the branches of the tree, not the sequences with the mutation in the final alignment (Figure~\ref{fig:expected_vs_actual}A.
+We also compute expected counts separately for each SARS-CoV-2 clade to account for shifts in mutation spectrum~\cite{bloom2022evolution,ruis2022mutational}, and apply quality-control steps to remove spurious mutations (see Methods).
+
+The expected counts (summed across all viral clades) vary with mutation type, ranging from $\sim$500 for \texttt{C$\rightarrow$T} to only $\sim$8 for \texttt{T$\rightarrow$G} mutations (Figure~\ref{fig:expected_vs_actual}B).
+This wide variation is because the SARS-CoV-2 mutation spectrum is highly biased towards specific mutation types~\citep{bloom2022evolution,ruis2022mutational,de2021mutation}.
+However, as Figure~\ref{fig:expected_vs_actual}B shows, in the absence of selection we expect to observe multiple independent occurrences of all nucleotide mutations at each site. 
+
 \jdbcomment{Include Richard's calculations, either in entirety or summarized with details in Methods / Appendix}
 
 \begin{figure*}
@@ -115,12 +125,8 @@ Overall, our work demonstrates a new approach to determine the effects of mutati
 Expected versus actual counts of mutations.
 {\bf (A)}
 The number of expected counts of each type of nucleotide mutation is computed from four-fold degenerate sites, and then compared the actual counts of each mutation.
-The counts are of independent occurrences of each mutation on the tree, not mutations in the alignment of observed sequences (a single occurrence of a mutation can be present in many sequences in an alignment).
 {\bf (B)}
 Expected versus actual counts for each nucleotide mutation type averaged across all sites where the mutation is four-fold degenerate, synonymous (including four-fold degenerate), nonsynonymous, or introduces a stop codon.
-Synonymous mutations are often roughly neutral, so the expected and actual counts are similar.
-Nonsynonymous and especially stop-codon mutations are often deleterious, so the actual counts are generally less than the expected counts.
-Due to the uneven mutation spectrum of SARS-CoV-2, some nucleotide mutation types are expected to occur more often than others.
 See \url{https://jbloomlab.github.io/SARS2-mut-fitness/avg_counts.html} for an interactive version of panel B.
 \label{fig:expected_vs_actual}
 }
