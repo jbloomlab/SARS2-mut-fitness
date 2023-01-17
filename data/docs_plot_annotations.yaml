@@ -197,7 +197,8 @@ plots:
       Interactive plot of fitnesses amino acids at each site estimated from the observed versus
       actual counts of the amino acids among natural sequences.
 
-      The black area plot at top shows the mean fitness for each site, with more negative values
+      The black area plot at top shows the mean fitness for all non-stop amino acids at each
+      site, with more negative values
       indicating mutations at a site tend to be deleterious. The plot is zoomable, and you can
       click and drag with the mouse to highlight specific regions to show in the heat map. You
       can use the *site fitness statistic* click box at bottom to change whether the black area
