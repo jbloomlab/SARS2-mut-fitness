@@ -121,11 +121,11 @@ See \url{https://jbloomlab.github.io/SARS2-mut-fitness/avg_counts.html} for an i
 }
 \end{figure*}
 
-To determine how many times each mutation is expected to be observed, we used the pre-built UShER tree~\citep{turakhia2021ultrafast,lanfear2020} of $\sim$6.5-million public SARS-CoV-2 sequences to count nucleotide mutations at four-fold degenerate sites~\citep[Figure~\ref{fig:expected_vs_actual};][]{bloom2022evolution}.
+To determine how many times each mutation is expected to be observed, we used the pre-built UShER tree~\citep{turakhia2021ultrafast,lanfear2020} of $\sim$6.5-million public SARS-CoV-2 sequences to count nucleotide mutations at four-fold degenerate sites~\citep[Figure~\ref{fig:expected_vs_actual}A;][]{bloom2022evolution}.
 Because mutations at such sites never alter the amino-acid sequence, these counts reflect the mutation process in the absence of protein-level selection (see Discussion for caveats about nucleotide-level selection).
 The expected counts of a mutation from nucleotide $x$ to $y$ is simply the average count of this type of mutation across all four-fold degenerate sites with parental identity $x$.
 Importantly, we count independent \emph{occurrences} of each mutation along the branches of the tree, not the sequences with the mutation in the final alignment (Figure~\ref{fig:expected_vs_actual}A.
-We also compute expected counts separately for each SARS-CoV-2 clade to account for shifts in mutation spectrum~\cite{bloom2022evolution,ruis2022mutational}, and apply quality-control steps to remove spurious mutations (see Methods).
+We also compute expected counts separately for each SARS-CoV-2 clade to account for shifts in mutation spectrum~\citep{bloom2022evolution,ruis2022mutational}, and apply quality-control steps to remove spurious mutations (see Methods).
 
 The expected counts (summed across all viral clades) vary with mutation type, ranging from $\sim$500 for \texttt{C$\rightarrow$T} to only $\sim$8 for \texttt{T$\rightarrow$G} mutations (Figure~\ref{fig:expected_vs_actual}B).
 This variation is because the SARS-CoV-2 mutation spectrum is highly biased towards specific mutation types~\citep{bloom2022evolution,ruis2022mutational,de2021mutation}.
@@ -134,14 +134,27 @@ We then compared the expected counts to the actual observed counts of mutations 
 For synonymous mutations, the expected and actual counts are similar.
 But for nonsynonymous and especially stop-codon mutations, the actual counts are substantially lower than the expected counts, reflecting purifying selection for protein function.
 
+\begin{figure*}
+\centering
+\includegraphics[width=\linewidth]{figs/corr.png}
+\caption{
+Correlations between amino-acid mutation fitness effect estimates made using {\bf (A)} different viral clades or {\bf (B)} sequences from only the USA or only England.
+Each point is an amino-acid mutation, and orange text at upper left shows the number of mutations and Pearson correlation coefficient.
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness/clade_corr_chart.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/subset_corr_chart.html} for interactive plots that include additional viral clades, allow adjustment of the expected-count cutoff, and allow examination of just specific genes.
+\label{fig:corr}
+}
+\end{figure*}
+
 The ratio of actual to expected counts for each mutation is related to its effect on viral fitness.
 The intuition is straightforward: mutations arise at all sites during viral replication, but viruses with deleterious mutations are less likely to transmit and be observed in sequencing of human SARS-CoV-2.
 Therefore, the ratio of actual to expected counts will be one for neutral mutations, and less than one for deleterious mutations.
-In the Methods, we show that under plausible assumptions about SARS-CoV-2 evolution and sampling intensity (fraction of viruses sequenced), the fitness effects of deleterious mutations will scale roughly logarithmically with the ratio of actual to expected counts for mutations with effects greater than a few percent.
+In the Methods, we show that under plausible assumptions about SARS-CoV-2 evolution and sampling intensity (fraction of viruses sequenced), the fitness effects of deleterious mutations scales roughly logarithmically with the ratio of actual to expected counts for mutations with effects greater than a few percent.
 We therefore estimate the effect of each mutation as the logarithm of this ratio after summing counts for all nucleotides that encode the relevant amino-acid.
 The statistical noise in the count ratios is greater for mutations with fewer expected counts: the figures in this paper show only mutations with $\ge10$ expected counts, with the legends providing links to interactive plots that enable adjustment of this threshold.
 
+The estimated effects of mutations are robust to partitioning
 
+\subsection*{new subsection}
 
 \begin{figure*}
 \includegraphics[width=\linewidth]{figs/dist.pdf}
@@ -157,19 +170,6 @@ Mutation types are color-coded as in panel A.
 Both panels show only mutations with expected counts of at least 10.
 See \url{https://jbloomlab.github.io/SARS2-mut-fitness/effects_histogram.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/effects_dist.html} for interactive versions of these plots that allow adjustment of the expected-count cutoff and other options (such as separate histograms for each gene).
 \label{fig:dist}
-}
-\end{figure*}
-
-\begin{figure*}
-\centering
-\includegraphics[width=\linewidth]{figs/corr.png}
-\caption{
-Correlations between amino-acid fitness estimates made using different sequence subsets.
-{\bf (A)} Estimates made using only sequences from the indicated viral clades, or {\bf (B)} estimates made using only sequences from the USA or England.
-Each point is a different amino-acid mutation, and the orange text at upper left shows the number of mutations and Pearson correlation coefficient.
-Both panels show only mutations with expected counts of at least 10 in each subset of sequences.
-See \url{https://jbloomlab.github.io/SARS2-mut-fitness/clade_corr_chart.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/subset_corr_chart.html}.For interactive versions of these plots that show correlations among additional clade pairs, allow adjustment of the expected-count cutoff, and allow examination of mutations for just specific genes.
-\label{fig:corr}
 }
 \end{figure*}
 
