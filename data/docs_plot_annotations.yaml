@@ -118,6 +118,15 @@ plots:
   subset_corr_chart:
     <<: *corr_template
     title: correlation of fitness estimates for different countries
+  spike_nonspike_corrs:
+    title: average correlation of fitness estimates for spike and non-spike proteins
+    section: correlation
+    legend: |
+      Pearson correlation coefficients for fitness estimates for amino-acid mutations
+      made from subsets of sequences from different clades or different geographic regions.
+      Correlations are calculated separately for spike and non-spike mutations, and the
+      x-axis indicates the threshold for minimum expected counts for a mutation to be
+      included in the correlations.
 
   dms_S_corr: &dms_S_corr_template
     title: correlation of fitness estimates with spike deep mutational scanning
