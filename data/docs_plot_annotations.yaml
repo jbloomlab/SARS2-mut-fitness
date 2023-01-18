@@ -203,6 +203,8 @@ plots:
       click and drag with the mouse to highlight specific regions to show in the heat map. You
       can use the *site fitness statistic* click box at bottom to change whether the black area
       plot at top shows the mean, maximum, or minimum fitness of amino acids at that site.
+      You can use the *show stop* option at bottom to overlay the effect of stop codon mutations
+      on this plot.
 
       The heat map shows the estimated fitness values for specific amino acids. Red indicates
       low fitness (deleterious) amino acids, and blue indicates high fitness amino acids.
