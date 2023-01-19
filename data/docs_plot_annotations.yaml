@@ -126,7 +126,18 @@ plots:
       made from subsets of sequences from different clades or different geographic regions.
       Correlations are calculated separately for spike and non-spike mutations, and the
       x-axis indicates the threshold for minimum expected counts for a mutation to be
-      included in the correlations.
+      included in the correlations. The correlations
+      include only mutations at the sites with the same wildtype identity in the clades.
+  spike_nonspike_corrs_by_divergence:
+    title: clade correlations of fitness estimates versus protein divergence
+    section: correlation
+    legend: |
+      Pearson correlation coefficients for fitness estimates for amino-acid mutations
+      made for sequences from different clades versus the protein divergence between clades.
+      Correlations are calculated separately for spike and non-spike mutations.
+      Use the radio button below the plot to choose the threshold for minimum
+      expected counts for a mutation to be included in the correlations. The correlations
+      include only mutations at the sites with the same wildtype identity in the clades.
 
   dms_S_corr: &dms_S_corr_template
     title: correlation of fitness estimates with spike deep mutational scanning
