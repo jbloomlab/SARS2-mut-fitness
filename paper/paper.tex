@@ -51,7 +51,7 @@
 \runningauthor{}
 
 \begin{abstract}
-Knowledge of the fitness effects of mutations to SARS-CoV-2 can inform risk assessment of new variants and targeting of therapeutics to sites where resistance is unlikely to emerge.
+Knowledge of the fitness effects of mutations to SARS-CoV-2 can inform assessment of new variants, design of therapeutics resistant to escape, and basic understanding of the function of viral proteins.
 However, experimentally determining the effects of mutations is challenging: we lack tractable lab assays for many SARS-CoV-2 proteins, and comprehensive deep mutational scanning has been applied to only two of the virus's proteins.
 Here we develop an approach that leverages millions of publicly available SARS-CoV-2 sequences to estimate the effects of mutations.
 We first calculate how many times each mutation is expected to occur along the SARS-CoV-2 phylogeny in the absence of selection. 
@@ -79,16 +79,16 @@ Both efforts require determining how specific mutations affect the fitness of th
 
 Unfortunately, experimentally determining the effects of mutations remains challenging for most SARS-CoV-2 proteins.
 For spike, tractable laboratory assays have identified key functional and antigenic mutations~\citep{weisblum2020escape,harvey2021sars}, and enabled deep mutational scanning measurements of how most mutations affect receptor binding, cellular infection, and antibody recognition~\citep{starr2020deep,dadonaite2022pseudovirus,greaney2021complete,cao2022imprinted}.
-These experimental data are valuable for assessing new spike variants~\citep{degrace2022defining,greaney2022antibody} and informing development of antibody therapeutics with greater resistance to escape~\citep{starr2021sars,rappazzo2021broad,cao2022rational}.
+These experimental data are valuable for assessing new spike variants~\citep{degrace2022defining,greaney2022antibody,tzou2022coronavirus} and informing development of antibody therapeutics with greater resistance to escape~\citep{starr2021sars,rappazzo2021broad,cao2022rational}.
 But most other viral proteins lack comparably tractable laboratory assays, despite clearly contributing to viral fitness~\citep{thorne2022evolution,syed2021rapid,mcgrath2022sars} and being the targets of efforts to develop anti-viral drugs~\citep{tao2021sars}.
 The only non-spike SARS-CoV-2 protein with large-scale deep mutational scanning data is Mpro~\citep{flynn2022,iketani2022functional}, and those measurements were performed in yeast.
 
 An alternative to experiments is to estimate the effects of mutations by analyzing natural viral sequences.
 The amount of data available for such analyses has increased dramatically over the last few years with the full-genome sequencing of SARS-CoV-2 from millions of human infections.
-So far analyses of these sequences have focused on analyzing expanding viral clades to identify mutations that mediate immune escape or increase transmissibility~\citep{obermeyer2022analysis,lee2022inferring}.
+So far analyses of these sequences have focused on analyzing expanding viral clades to identify mutations that mediate immune escape or increase transmissibility~\citep{obermeyer2022analysis,lee2022inferring,maher2022predicting}.
 The basic idea is that mutations that repeatedly appear near the base of clades that increase in relative frequency are likely beneficial to the virus.
-However, only a small minority of all possible mutations are beneficial, with the great majority being either nearly neutral or deleterious.
-For purposes such as identifying functionally constrained drug targets, it is important to accurately estimate the effects of neutral or deleterious mutations as well as beneficial ones.
+However, only a small minority of all possible mutations are beneficial, with most being nearly neutral or deleterious.
+For purposes such as identifying functionally constrained drug targets or understanding the function of viral proteins, it is important to accurately estimate the effects of neutral or deleterious mutations as well as beneficial ones.
 % \jdbcomment{Richard, I could not quite figure out how to fit in \citep{strelkowa2021clonal}, let me know if you have ideas.}
 
 Here we develop a new approach that uses natural sequences to estimate the effects of mutations.
@@ -130,7 +130,7 @@ We also compute expected counts separately for each SARS-CoV-2 clade to account 
 The expected counts per mutation (summed across all viral clades) vary with mutation type, ranging from $\sim$500 for \texttt{C$\rightarrow$T} to only $\sim$8 for \texttt{T$\rightarrow$G} mutations (Figure~\ref{fig:expected_vs_actual}B).
 This variation is because the SARS-CoV-2 mutation spectrum is highly biased towards specific mutation types~\citep{bloom2022evolution,ruis2022mutational,de2021mutation}.
 
-We then compared the expected counts to the actual observed counts of mutations averaged across sites (Figure~\ref{fig:expected_vs_actual}).
+We compared the expected counts to the actual observed counts of mutations averaged across sites (Figure~\ref{fig:expected_vs_actual}).
 For synonymous mutations, the expected and actual counts are similar.
 But for nonsynonymous and especially stop-codon mutations, the actual counts are substantially lower than the expected counts, reflecting purifying selection for protein function.
 
@@ -139,7 +139,7 @@ The intuition is straightforward: mutations arise at all sites during viral repl
 Therefore, the ratio of actual to expected counts will be one for neutral mutations, and less than one for deleterious mutations.
 In the Methods, we show that under plausible assumptions about SARS-CoV-2 evolution and sampling intensity (fraction of viruses sequenced), the fitness effects of deleterious mutations scales roughly logarithmically with the ratio of actual to expected counts for mutations with effects greater than a few percent.
 We therefore estimate the effect of each mutation as the logarithm of this ratio after summing counts for all nucleotides that encode the relevant amino-acid.
-The statistical noise in the count ratios is greater for mutations with fewer expected counts: the figures in this paper show only mutations with $\ge10$ expected counts, with the legends linking to interactive plots that enable adjustment of this threshold.
+The statistical noise in the count ratios is greater for mutations with fewer expected counts: the figures in this paper show mutations with $\ge10$ expected counts unless otherwise noted, with legends linking to interactive plots that enable adjustment of this threshold.
 
 \subsection*{Mutation-effect estimates are robust to subsampling natural sequences, with some evidence of epistasis in spike}
 
@@ -163,31 +163,50 @@ To assess the robustness of the estimated effects of individual amino-acid mutat
 These estimates were highly correlated, although there is modest variation in estimates across sequence subsets (Figure~\ref{fig:corr}A,B).
 
 The modest variation in mutation effects estimated from different sequence subsets could have two causes: statistical noise due to finite mutation counts, or real differences in effects of mutations among subsets of SARS-CoV-2.
-It is not obvious why there should be real differences in mutation effects in geographic locations, but there is experimental evidence that epistasis has shifted effects of some spike mutations during viral evolution~\citep{starr2022shifting,moulana2022compensatory,mccallum2021n}.
+It is not obvious why there should be real differences in mutation effects by geographic location, but there is experimental evidence that epistasis has shifted effects of some spike mutations during viral evolution~\citep{starr2022shifting,moulana2022compensatory,mccallum2021n}.
 To test for statistical noise, we computed correlations with different thresholds for how many expected counts are required before making an estimate for a mutation (Figure~\ref{fig:corr}C).
 Correlations increased with this count threshold, consistent with a reduction in statistical noise when using larger mutation counts.
 But the correlation for spike mutations was consistently lower for cross-clade but not cross-geography comparisons (Figure~\ref{fig:corr}C).
 The lower cross-clade correlation for spike appears to be due to epistatic shifts in mutation effects that arise as sequences diverge~\citep{starr2022shifting, pollock2012amino, shah2015contingency}, since the correlation is lower between clades with higher spike divergence (Figure~\ref{fig:corr}D).
-However, for the rest of this paper we aggregate counts across clades, since for most purposes the benefits aggregating counts (which enables lower-noise estimates more mutations) outweighs the effect of modest epistatic shifts.
+However, for the rest of this paper we aggregate counts across clades, since for most purposes the benefits aggregating counts (which enables lower-noise estimates for more mutations) outweighs the effect of modest epistatic shifts.
 
-\subsection*{Structural and non-structural proteins are under strong purifying selection, but many accessory genes are not}
+\subsection*{Structural and non-structural proteins are under strong purifying selection, but most accessory proteins are not}
 
 \begin{figure*}
 \includegraphics[width=\linewidth]{figs/dist.pdf}
 \caption{
-Distribution of effects of different types of mutations.
+Distribution of effects of different classes of mutations.
 {\bf (A)}
 Histograms of effects of synonymous, nonsynonymous, and stop-codon mutations across all viral genes.
 Neutral mutations have effects of zero (dashed gray vertical lines), and deleterious mutations have negative effects.
 {\bf (B)}
-Effects of each type of mutation for each viral gene.
+Effects of each class of mutation for each viral gene.
 Dark squares indicate the median effect, and the lighter rectangles span the interquartile range.
 Mutation types are color-coded as in panel A.
-Both panels show only mutations with expected counts of at least 10.
-See \url{https://jbloomlab.github.io/SARS2-mut-fitness/effects_histogram.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/effects_dist.html} for interactive versions of these plots that allow adjustment of the expected-count cutoff and other options (such as separate histograms for each gene).
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness/effects_histogram.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/effects_dist.html} for plots that allow adjustment of the expected-count cutoff and other interactive options (such as separate histograms for each gene).
 \label{fig:dist}
 }
 \end{figure*}
+
+The overall distributions of mutation effects concurs with basic biological intuition about how different classes of mutations impact protein function.
+Most synonymous mutations are nearly neutral, most stop codons are highly deleterious, and amino-acid mutations range from slightly beneficial to highly deleterious (Figure~\ref{fig:dist}A).
+To investigate if the spread in the overall distributions of mutations might reflect biological differences among the viral proteins, we also computed the distributions of effects separately for each gene (Figure~\ref{fig:dist}B and interactive version of Figure~\ref{fig:dist}A linked in figure legend).
+
+The SARS-CoV-2 proteins can be grouped into three categories: the nonstructural (or nsp) proteins, the structural proteins (spike, M, N, and E), and the accessory proteins (names prefixed with ``ORF'')~\citep{v2021coronavirus}.
+The nonstructural proteins are essential components of the viral replication and transcript complex, and the structural proteins are essential for physical virion formation~\citep{v2021coronavirus}.
+Consistent with their essentiality, all nonstructural and structural proteins show strong selection against stop codons, and clear although variable selection against many amino-acid mutations (Figure~\ref{fig:dist}B; e.g., nsp13 is under stronger protein-level constraint than nsp1).
+
+However, most accessory proteins are under little constraint (Figure~\ref{fig:dist}B).
+In particular, stop-codon and amino-acid mutations to ORF7a and ORF8 are not appreciably more deleterious than synonymous mutations.
+The lack of deleterious mutations to ORF8 is consistent with the fact that viruses with deletions in this gene have spread in humans~\cite{su2020discovery}.
+In fact, the only accessory protein under strong purifying selection against truncation is ORF3a (Figure~\ref{fig:dist}B), for which amino-acid mutations mostly have little effect but stop codons in the first ~240 residues (but not the last ~35) have clearly deleterious effects (Figure~\ref{fig:ORF3a}).
+These observations concur with experiments showing that SARS-CoV-2 is attenuated in human-ACE2 mice by deletion of ORF3a but there is little or no effect of deleting ORF6, ORF7a, or ORF8~\citep{mcgrath2022sars,silvas2021contribution,liu2022live}.
+Whatever important functions are performed by the accessory proteins must be relatively insensitive to their amino-acid sequences: for instance, the function of ORF3a requires the first ~85\% of the protein, but beyond that there is little constraint outside a few important amino-acids at sites like 135 and 138 (Figure~\ref{fig:ORF3a}).
+We note that observations such as these could help guide experimental or structural studies to better understand the functions of these proteins.
+
+Synonymous constraint...
+
+\subsection*{Mutation-effect estimates correlate well with deep mutational scanning}
 
 \begin{figure*}
 \centering
@@ -196,11 +215,13 @@ See \url{https://jbloomlab.github.io/SARS2-mut-fitness/effects_histogram.html} a
 Correlation of amino-acid fitness estimates with experimental measurements from deep mutational scanning studies for {\bf (A)} spike and {\bf (B)} Mpro (nsp5).
 Each point is an amino-acid mutation, and the orange text in the upper left shows the number of mutations and Pearson correlation coefficient.
 Data are taken from two independent deep mutational scanning studies for spike~\citep{cite}, and two studies for Mpro~\citep{cite}.
-Each sub-panel shows a different set of mutations (depending on which mutations were measured in that experiment), and and only shows fitness estimates for mutations with at least 10 expected counts.
+Each sub-panel shows a different set of mutations (depending on which mutations were measured in that experiment).
 See \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_S_corr.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_nsp5_corr.html} for interactive versions of these plots that enable subsetting on just mutations shared across all datasets, and adjustment of the minimum expected count cutoff .
 \label{fig:dms_corr}
 }
 \end{figure*}
+
+\subsection*{Interactive exploration of amino-acid fitnesses}
 
 \begin{figure*}
 \includegraphics[width=\linewidth]{figs/E_heatmap.pdf}
