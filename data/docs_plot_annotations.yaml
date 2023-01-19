@@ -113,6 +113,8 @@ plots:
       estimates for more amino acids at lower confidence, and move it to the right to show
       estimates for fewer amino acids at higher confidence.
 
+      This plot only shows the clades with the largest numbers of sequences.
+
       You can click/shift-click on specific genes in the legend below the plot to only
       show mutations for that gene.
   subset_corr_chart:
@@ -128,6 +130,8 @@ plots:
       x-axis indicates the threshold for minimum expected counts for a mutation to be
       included in the correlations. The correlations
       include only mutations at the sites with the same wildtype identity in the clades.
+
+      You can mouseover points for details.
   spike_nonspike_corrs_by_divergence:
     title: clade correlations of fitness estimates versus protein divergence
     section: correlation
@@ -138,6 +142,9 @@ plots:
       Use the radio button below the plot to choose the threshold for minimum
       expected counts for a mutation to be included in the correlations. The correlations
       include only mutations at the sites with the same wildtype identity in the clades.
+      This plot only includes the clades with the largest numbers of sequences.
+
+      You can mouseover points for details.
 
   dms_S_corr: &dms_S_corr_template
     title: correlation of fitness estimates with spike deep mutational scanning
