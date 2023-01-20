@@ -188,21 +188,21 @@ See \url{https://jbloomlab.github.io/SARS2-mut-fitness/effects_histogram.html} a
 }
 \end{figure*}
 
-The overall distributions of mutation effects concurs with basic biological intuition about how different classes of mutations impact protein function.
+The overall distributions of mutation effects concur with biological intuition about how different classes of mutations impact protein function.
 Most synonymous mutations are nearly neutral, most stop codons are highly deleterious, and amino-acid mutations range from slightly beneficial to highly deleterious (Figure~\ref{fig:dist}A).
-To investigate if the spread in the overall distributions of mutations might reflect biological differences among the viral proteins, we also computed the distributions of effects separately for each gene (Figure~\ref{fig:dist}B and interactive version of Figure~\ref{fig:dist}A linked in figure legend).
 
-The SARS-CoV-2 proteins can be grouped into three categories: the nonstructural (or nsp) proteins, the structural proteins (spike, M, N, and E), and the accessory proteins (names prefixed with ``ORF'')~\citep{v2021coronavirus}.
-The nonstructural proteins are essential components of the viral replication and transcript complex, and the structural proteins are essential for physical virion formation~\citep{v2021coronavirus}.
-Consistent with their essentiality, all nonstructural and structural proteins show strong selection against stop codons, and clear although variable selection against many amino-acid mutations (Figure~\ref{fig:dist}B; e.g., nsp13 is under stronger protein-level constraint than nsp1).
+To investigate possible differences among viral proteins, we computed the distributions of effects separately for each gene (Figure~\ref{fig:dist}B).
+SARS-CoV-2 proteins are grouped into three categories: nonstructural (or nsp) proteins, structural proteins (spike, M, N, and E), and accessory proteins (names prefixed with ``ORF'')~\citep{v2021coronavirus}.
+The nonstructural proteins form the essential viral replication and transcript complex, and the structural proteins form the essential physical virion~\citep{v2021coronavirus}.
+Consistent with their essentiality, all nonstructural and structural proteins show strong selection against stop codons, and clear although variable purifying selection against amino-acid mutations (Figure~\ref{fig:dist}B; e.g., nsp13 is under stronger protein-level constraint than nsp1).
 
 However, most accessory proteins are under little constraint (Figure~\ref{fig:dist}B).
-In particular, stop-codon and amino-acid mutations to ORF7a and ORF8 are not appreciably more deleterious than synonymous mutations.
-The lack of deleterious mutations to ORF8 is consistent with the fact that viruses with deletions in this gene have spread in humans~\cite{su2020discovery}.
-In fact, the only accessory protein under strong purifying selection against truncation is ORF3a (Figure~\ref{fig:dist}B), for which amino-acid mutations mostly have little effect but stop codons in the first ~240 residues (but not the last ~35) have clearly deleterious effects (Figure~\ref{fig:ORF3a}).
-These observations concur with experiments showing that SARS-CoV-2 is attenuated in human-ACE2 mice by deletion of ORF3a but there is little or no effect of deleting ORF6, ORF7a, or ORF8~\citep{mcgrath2022sars,silvas2021contribution,liu2022live}.
-Whatever important functions are performed by the accessory proteins must be relatively insensitive to their amino-acid sequences: for instance, the function of ORF3a requires the first ~85\% of the protein, but beyond that there is little constraint outside a few important amino-acids at sites like 135 and 138 (Figure~\ref{fig:ORF3a}).
-We note that observations such as these could help guide experimental or structural studies to better understand the functions of these proteins.
+Stop-codon and amino-acid mutations to ORF7a and ORF8 are not more deleterious than synonymous mutations.
+The lack of deleterious mutations to ORF8 is consistent with the fact that viruses with deletions in this gene have spread in humans~\citep{su2020discovery}.
+The only accessory protein under strong purifying selection against premature stop codons is ORF3a (Figure~\ref{fig:dist}B), for which amino-acid mutations mostly have little effect but stop codons in the first ~240 residues are clearly deleterious effects (Figure~\ref{fig:ORF3a}).
+These observations concur with experiments showing SARS-CoV-2 is attenuated in human-ACE2 mice by deletion of ORF3a but there is little effect of deleting ORF6, ORF7a, or ORF8~\citep{mcgrath2022sars,silvas2021contribution,liu2022live}.
+Even ORF3a must perform functions that are relatively insensitive to its protein sequences, since there is little constraint beyond selection against stop codons in the first ~240 residues and a few important amino-acids at sites like 135 and 138 (Figure~\ref{fig:ORF3a}).
+Observations such as these could help guide experimental and structural studies to understand protein function.
 
 Synonymous constraint...
 
