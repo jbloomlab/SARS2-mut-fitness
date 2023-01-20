@@ -159,13 +159,13 @@ See \url{https://jbloomlab.github.io/SARS2-mut-fitness/clade_corr_chart.html} an
 }
 \end{figure*}
 
-To assess the robustness of the estimated effects of individual amino-acid mutations, we computed the correlations among estimates made using subsets of SARS-CoV-2 sequences from different viral clades or geographic locations.
+We computed the correlations among mutation-effect estimates made using subsets of SARS-CoV-2 sequences from different viral clades or geographic locations.
 These estimates were highly correlated, although there is modest variation in estimates across sequence subsets (Figure~\ref{fig:corr}A,B).
 
-The modest variation in mutation effects estimated from different sequence subsets could have two causes: statistical noise due to finite mutation counts, or real differences in effects of mutations among subsets of SARS-CoV-2.
+The modest variation in estimates from different sequence subsets could have two causes: statistical noise due to finite mutation counts, or real differences in effects of mutations among subsets of SARS-CoV-2.
 It is not obvious why there should be real differences in mutation effects by geographic location, but there is experimental evidence that epistasis has shifted effects of some spike mutations during viral evolution~\citep{starr2022shifting,moulana2022compensatory,mccallum2021n}.
 To test for statistical noise, we computed correlations with different thresholds for how many expected counts are required before making an estimate for a mutation (Figure~\ref{fig:corr}C).
-Correlations increased with this count threshold, consistent with a reduction in statistical noise when using larger mutation counts.
+Correlations increased with this count threshold, consistent with a reduction in statistical noise with larger mutation counts.
 But the correlation for spike mutations was consistently lower for cross-clade but not cross-geography comparisons (Figure~\ref{fig:corr}C).
 The lower cross-clade correlation for spike appears to be due to epistatic shifts in mutation effects that arise as sequences diverge~\citep{starr2022shifting, pollock2012amino, shah2015contingency}, since the correlation is lower between clades with higher spike divergence (Figure~\ref{fig:corr}D).
 However, for the rest of this paper we aggregate counts across clades, since for most purposes the benefits aggregating counts (which enables lower-noise estimates for more mutations) outweighs the effect of modest epistatic shifts.
@@ -188,23 +188,20 @@ See \url{https://jbloomlab.github.io/SARS2-mut-fitness/effects_histogram.html} a
 }
 \end{figure*}
 
-The overall distributions of mutation effects concur with biological intuition about how different classes of mutations impact protein function.
+The distributions of mutation effects concur with biological intuition about how different classes of mutations impact protein function.
 Most synonymous mutations are nearly neutral, most stop codons are highly deleterious, and amino-acid mutations range from slightly beneficial to highly deleterious (Figure~\ref{fig:dist}A).
 
-To investigate possible differences among viral proteins, we computed the distributions of effects separately for each gene (Figure~\ref{fig:dist}B).
+To investigate differences among viral proteins, we computed the distributions of effects separately for each gene (Figure~\ref{fig:dist}B).
 SARS-CoV-2 proteins are grouped into three categories: nonstructural (or nsp) proteins, structural proteins (spike, M, N, and E), and accessory proteins (names prefixed with ``ORF'')~\citep{v2021coronavirus}.
-The nonstructural proteins form the essential viral replication and transcript complex, and the structural proteins form the essential physical virion~\citep{v2021coronavirus}.
-Consistent with their essentiality, all nonstructural and structural proteins show strong selection against stop codons, and clear although variable purifying selection against amino-acid mutations (Figure~\ref{fig:dist}B; e.g., nsp13 is under stronger protein-level constraint than nsp1).
+The nonstructural and structural proteins are essential, and these proteins show strong selection against stop codons and clear although variable purifying selection against amino-acid mutations (Figure~\ref{fig:dist}B; e.g., nsp13 is under stronger protein-level constraint than nsp1).
 
 However, most accessory proteins are under little constraint (Figure~\ref{fig:dist}B).
 Stop-codon and amino-acid mutations to ORF7a and ORF8 are not more deleterious than synonymous mutations.
 The lack of deleterious mutations to ORF8 is consistent with the fact that viruses with deletions in this gene have spread in humans~\citep{su2020discovery}.
-The only accessory protein under strong purifying selection against premature stop codons is ORF3a (Figure~\ref{fig:dist}B), for which amino-acid mutations mostly have little effect but stop codons in the first ~240 residues are clearly deleterious effects (Figure~\ref{fig:ORF3a}).
-These observations concur with experiments showing SARS-CoV-2 is attenuated in human-ACE2 mice by deletion of ORF3a but there is little effect of deleting ORF6, ORF7a, or ORF8~\citep{mcgrath2022sars,silvas2021contribution,liu2022live}.
-Even ORF3a must perform functions that are relatively insensitive to its protein sequences, since there is little constraint beyond selection against stop codons in the first ~240 residues and a few important amino-acids at sites like 135 and 138 (Figure~\ref{fig:ORF3a}).
-Observations such as these could help guide experimental and structural studies to understand protein function.
-
-Synonymous constraint...
+The only accessory protein under strong purifying selection against stop codons is ORF3a (Figure~\ref{fig:dist}B), for which stop codons in the first ~240 residues are clearly deleterious (Figure~\ref{fig:ORF3a}).
+These observations concur with experiments showing SARS-CoV-2 is attenuated by deletion of ORF3a but there is little effect of deleting ORF6, ORF7a, or ORF8~\citep{mcgrath2022sars,silvas2021contribution,liu2022live}.
+However, ORF3a's function must be relatively insensitive to its protein sequence, since other than selection against stop codons there is only amino-acid level constraint at a few sites like 135 and 138 (Figure~\ref{fig:ORF3a}).
+Observations such as these could help guide experimental studies to better understand protein function.
 
 \subsection*{Mutation-effect estimates correlate well with deep mutational scanning}
 
@@ -278,6 +275,18 @@ JDB receives payments as an inventor on a Fred Hutch licensed patents related to
 \clearpage
 
 \section{Supplementary Material}
+
+\begin{figure*}[h]
+\includegraphics[width=\linewidth]{figs/ORF3a.pdf}
+\caption{
+Effects of stop-codon and amino-acid mutations across ORF3a.
+The black area plot shows the mean effect of all amino-acid mutations at each site, and the purple points show the effects of stop codon mutations.
+There is strong selection against stop codons (negative effects) for all but the C-terminus of ORF3a, but only a few positions show strong selection against amino-acid substitutions.
+This plot shows only mutations with 20 expected counts.
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness/ORF3a.html} for an interactive version of this plot along with zoomable heatmap of the effects of specific amino-acid substitutions.
+\label{fig:ORF3a}
+}
+\end{figure*}
 
 \begin{figure*}[b]
 \includegraphics[width=\linewidth]{figs/fixed.pdf}
