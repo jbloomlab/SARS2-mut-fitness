@@ -115,8 +115,8 @@ Expected versus actual counts of mutations.
 {\bf (A)}
 The number of expected counts of each type of nucleotide mutation is computed from four-fold degenerate sites, and then compared the actual counts of each mutation.
 {\bf (B)}
-Expected versus actual counts for each nucleotide mutation type averaged across all sites where the mutation is four-fold degenerate, synonymous (including four-fold degenerate), nonsynonymous, or introduces a stop codon.
-See \url{https://jbloomlab.github.io/SARS2-mut-fitness/avg_counts.html} for an interactive version of panel B.
+Expected versus actual counts for each nucleotide mutation type aggregated across all viral clades and averaged across all sites where the mutation is four-fold degenerate, synonymous (including four-fold degenerate), nonsynonymous, or introduces a stop codon.
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness/avg_counts.html} for an interactive version of panel B that enables mouseovers to read off specific values.
 \label{fig:expected_vs_actual}
 }
 \end{figure*}
@@ -160,15 +160,18 @@ See \url{https://jbloomlab.github.io/SARS2-mut-fitness/clade_corr_chart.html} an
 \end{figure*}
 
 We computed the correlations among mutation-effect estimates made using subsets of SARS-CoV-2 sequences from different viral clades or geographic locations.
-These estimates were highly correlated, although there is modest variation in estimates across sequence subsets (Figure~\ref{fig:corr}A,B).
+These estimates were well correlated, with some modest variation in estimates across sequence subsets (Figure~\ref{fig:corr}A,B).
 
-The modest variation in estimates from different sequence subsets could have two causes: statistical noise due to finite mutation counts, or real differences in effects of mutations among subsets of SARS-CoV-2.
-It is not obvious why there should be real differences in mutation effects by geographic location, but there is experimental evidence that epistasis has shifted effects of some spike mutations during viral evolution~\citep{starr2022shifting,moulana2022compensatory,mccallum2021n}.
+The modest variation in estimates from different sequence subsets could have two causes: statistical noise due to finite mutation counts, or real shifts in mutation effects during SARS-CoV-2 evolution~\citep{starr2022shifting,moulana2022compensatory}.
 To test for statistical noise, we computed correlations with different thresholds for how many expected counts are required before making an estimate for a mutation (Figure~\ref{fig:corr}C).
-Correlations increased with this count threshold, consistent with a reduction in statistical noise with larger mutation counts.
+Correlations increased with this count threshold, consistent with reduced statistical noise for larger mutation counts.
 But the correlation for spike mutations was consistently lower for cross-clade but not cross-geography comparisons (Figure~\ref{fig:corr}C).
-The lower cross-clade correlation for spike appears to be due to epistatic shifts in mutation effects that arise as sequences diverge~\citep{starr2022shifting, pollock2012amino, shah2015contingency}, since the correlation is lower between clades with higher spike divergence (Figure~\ref{fig:corr}D).
-However, for the rest of this paper we aggregate counts across clades, since for most purposes the benefits aggregating counts (which enables lower-noise estimates for more mutations) outweighs the effect of modest epistatic shifts.
+The lower cross-clade correlation for spike appears due to epistatic shifts in mutation effects~\citep{starr2022shifting, moulana2022compensatory, pollock2012amino, shah2015contingency} or changes in the selective landscape~\citep{sun2023rapidly} between SARS-CoV-2 clades, since the correlation is lower between clades with higher spike divergence (Figure~\ref{fig:corr}D).
+
+Despite evidence for some shifts in mutation effects in spike, for the rest of this paper we aggregate counts across viral clades to make a single estimate for each amino-acid mutation.
+The reason is that the accuracy of the estimates increases with the number of counts for each mutation (Figure~\ref{fig:corr}C), and several mutation types only have enough counts for reasonable estimates when aggregating across viral clades (Figure~\ref{fig:expected_vs_actual}).
+For the purposes of this paper, we deemed it preferable to have more accurate and comprehensive pan-SARS-CoV-2 mutation effect estimates than noisier clade-specific estimates for fewer mutations.
+However, the interactive version of Figure~\ref{fig:corr}A linked in the legend enables exploration of mutations with disparate estimates among clades.
 
 \subsection*{Structural and non-structural proteins are under strong purifying selection, but most accessory proteins are not}
 
@@ -203,17 +206,16 @@ These observations concur with experiments showing SARS-CoV-2 is attenuated by d
 However, ORF3a's function must be relatively insensitive to its protein sequence, since other than selection against stop codons there is only amino-acid level constraint at a few sites like 135 and 138 (Figure~\ref{fig:ORF3a}).
 Observations such as these could help guide experimental studies to better understand protein function.
 
-\subsection*{Mutation-effect estimates correlate well with deep mutational scanning}
+\subsection*{Mutation-effect estimates correlate with deep mutational scanning}
 
 \begin{figure*}
 \centering
-\includegraphics[width=0.75\linewidth]{figs/dms.png}
+\includegraphics[width=0.7\linewidth]{figs/dms.png}
 \caption{
-Correlation of amino-acid fitness estimates with experimental measurements from deep mutational scanning studies for {\bf (A)} spike and {\bf (B)} Mpro (nsp5).
-Each point is an amino-acid mutation, and the orange text in the upper left shows the number of mutations and Pearson correlation coefficient.
-Data are taken from two independent deep mutational scanning studies for spike~\citep{cite}, and two studies for Mpro~\citep{cite}.
+Correlation of amino-acid fitness estimates with experimental deep mutational scanning measurements for {\bf (A)} the full spike~\citep{dadonaite2022pseudovirus} or its receptor binding domain (RBD)~\citep{starr2022deep}, and {\bf (B)} Mpro (nsp5)~\citep{flynn2022,iketani2022functional}.
+Each point is an amino-acid mutation, and orange text in the upper left shows the number of mutations and Pearson correlation coefficient.
 Each sub-panel shows a different set of mutations (depending on which mutations were measured in that experiment).
-See \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_S_corr.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_nsp5_corr.html} for interactive versions of these plots that enable subsetting on just mutations shared across all datasets, and adjustment of the minimum expected count cutoff .
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_S_corr.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_nsp5_corr.html} for plots that enable subsetting on just mutations shared across all datasets and other interactive options.
 \label{fig:dms_corr}
 }
 \end{figure*}
