@@ -206,19 +206,34 @@ These observations concur with experiments showing SARS-CoV-2 is attenuated by d
 However, ORF3a's function must be relatively insensitive to its protein sequence, since other than selection against stop codons there is only amino-acid level constraint at a few sites like 135 and 138 (Figure~\ref{fig:ORF3a}).
 Observations such as these could help guide experimental studies to better understand protein function.
 
-\subsection*{Mutation-effect estimates correlate with deep mutational scanning}
+\subsection*{Mutation-effect estimates correlate with experiments}
 
 \begin{figure*}
 \centering
 \includegraphics[width=0.7\linewidth]{figs/dms.png}
 \caption{
-Correlation of amino-acid fitness estimates with experimental deep mutational scanning measurements for {\bf (A)} the full spike~\citep{dadonaite2022pseudovirus} or its receptor binding domain (RBD)~\citep{starr2022deep}, and {\bf (B)} Mpro (nsp5)~\citep{flynn2022,iketani2022functional}.
+Correlation of mutation-effect estimates with experimental deep mutational scanning measurements for {\bf (A)} the full spike~\citep{dadonaite2022pseudovirus} or its RBD~\citep{starr2022deep}, and {\bf (B)} Mpro~\citep{flynn2022,iketani2022functional}.
 Each point is an amino-acid mutation, and orange text in the upper left shows the number of mutations and Pearson correlation coefficient.
 Each sub-panel shows a different set of mutations (depending on which mutations were measured in that experiment).
-See \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_S_corr.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_nsp5_corr.html} for plots that enable subsetting on just mutations shared across all datasets and other interactive options.
-\label{fig:dms_corr}
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_S_corr.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_nsp5_corr.html} for plots that enable subsetting on just mutations shared across all datasets and other interactive options such as mousing over points to see mutation identities.
+\label{fig:dms}
 }
 \end{figure*}
+
+We examined how the mutation effects estimated using our approach compare with prior high-throughput deep mutational scanning measurements.
+For spike, two distinct experimental methodologies have been used to characterize large numbers of mutations: yeast display of the receptor-binding domain (RBD) to measure ACE2 affinity and RBD expression~\citep{starr2020deep,starr2022deep}, and pseudotyped lentiviruses to measure spike-mediated infection in cell culture~\citep{dadonaite2022pseudovirus}.
+For Mpro (also known as nsp5 or 3CLpro), two different labs have performed deep mutational scanning using the same basic methodology of assaying protease cleavage in yeast~\citep{flynn2022,iketani2022functional}.
+
+For spike, our estimates from natural sequences correlate with each set experiments almost as well as the two experimental methodologies correlate with each other (Figure~\ref{fig:dms}A).
+If we increase the minimum expected counts from 10 to 20 and subset only on mutations shared among all three data sets, then the correlations between the estimates and experiments ($r = 0.66$) become even closer to the cross-experiment correlations ($r = 0.72$; see interactive version of Figure~\ref{fig:dms}A linked in legend).
+Some of the mutations with the greatest divergence between our sequence-based estimates and the deep mutational scanning likely represent experimental artifacts.
+For instance, P527L, which is favorable in the RBD deep mutational scan but deleterious in the sequence-based estimates and full-spike scan, is at the C-terminus of the yeast-displayed RBD~\citep{starr2020deep} where it may adopt a non-native conformation.
+
+The sequence-based estimates for Mpro also correlate with the deep mutational scans for that protein, although in this case the two experiments correlate substantially better with each other than with our estimates (Figure~\ref{fig:dms}B).
+Because both Mpro experiments use a similar yeast-based methodology~\citep{flynn2022,iketani2022functional} it is possible that the higher correlation of the experiments with each other versus the sequence-based estimates reflects shared artifacts of the yeast-based methodology across experiments.
+In particular, some of the discrepancies appear to reflect the fact that the experiments assay Mpro outside the context of the full SARS-CoV-2 polyprotein.
+For instance, a stop codon at Q306 is well tolerated in both deep mutational scans but extremely disfavorable in our sequence-based estimates, and such a mutation would of course be highly deleterious to actual virus as it would truncate the polyprotein.
+Similarly, K61N is well tolerated in the deep mutational scanning but extremely disfavorable in our estimates, possibly because in the context of the full viral polyprotein this residue helps mediate important interactions between Mpro and nsp7-10~\citep{yadav2022biochemical}
 
 \subsection*{Interactive exploration of amino-acid fitnesses}
 
