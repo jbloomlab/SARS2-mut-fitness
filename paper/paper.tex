@@ -290,16 +290,45 @@ As this occurs, viral genomic sequencing---which has traditionally been primaril
 
 \section{Methods}
 \subsection{Code and data availability}
-Code and data are at \url{https://github.com/jbloomlab/SARS2-mut-fitness}.
+See the GitHub repository at \url{https://github.com/jbloomlab/SARS2-mut-fitness} for the computer code and processed data (eg, fitness estimates and mutation counts).
+That repository contains a README with links to specific data files as well as a description of the computational pipeline.
+The specific version of the repository used for this paper is tagged at \jdbcomment{add link to GitHub tag on final commit}.
+The pipeline is fully reproducible, and is run using \texttt{snakemake}~\citep{?} with interactive plots rendered using \texttt{altair}~\citep{?}.
+
+The interactive plots are rendered at \url{https://jbloomlab.github.io/SARS2-mut-fitness} via GitHub pages.
+
+\subsection{Counting mutations along the phylogenetic tree}
+We counted occurrences of each mutation in each viral clade using the UShER pre-built mutation-annotated tree~\citep{turakhia2021ultrafast,lanfear2020} from Dec-18-2022 (\url{http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2022/12/18/public-2022-12-18.all.masked.nextclade.pangolin.pb.gz}), which contains all $\sim$6.5-million SARS-CoV-2 sequences that are available in public databases.
+To make these counts at a per-clade level, we first subsetted the mutation-annotated tree on all sequences for each Nexstrain clade~\citep{?}, and then used the matUtils program distributed with UShER to extract the nucleotide mutations on every branch of the each clade-subsetted mutation-annotated tree.
+For the analyses by geographic location (Figure~\ref{fig:corr}), we subsetted on all sequences that began with ``USA'' or ``England'' as these were the two locations with the most publicly available sequences.
+
+We then performed quality control by ignoring any branch that met any of the following criteria:
+\begin{itemize}
+\item it had more than four nucleotide mutations,
+\item it contained more than one nucleotide mutation that was a reversion to the Wuhan-Hu-1 reference sequence,
+\item it contained more than one nucleotide mutation that was a reversion to the founder sequence for that clade as provided at \url{https://raw.githubusercontent.com/neherlab/SC2_variant_rates/7e738194a8c6592082f1caa9a6ca70cb68289790/data/clade_gts.json} by \cite{neher2022},
+\item it contained more than one nucleotide mutation to the same codon.
+\end{itemize}
+The rationale for the first exclusion is that highly mutated branches are often indicative of sequencing errors, and the rationale for the second and third exclusions is that excess reversions can arise from base-calling pipelines that erroneously call low-coverage sites as reference.
+We ignore branches with multiple nucleotide mutations to the same codon (this is very rare) because as detailed below our method is only designed to make estimates for mutations that represent single-nucleotide changes from the clade founder.
+
+Note also that the mutation-annotated tree does not include insertion or deletion mutations, and so we only consider (and make estimates for) point mutations.
+
+\subsection{Calculation of expected and actual counts}
+
+\subsection{Estimation of amino-acid fitnesses}
+
+\subsection{Derivation of relationship between actual to expected count ratio and viral fitness}
+
 
 \section{Acknowledgments}
-We thank Angie Hinrichs for assistance with resolving several questions related to use of the UShER package and its pre-built mutation-annotated tree \jdbcomment{if we don't add as co-author}.
+We thank Angie Hinrichs for assistance with resolving questions related to use of the UShER package and its pre-built mutation-annotated tree \jdbcomment{or add here as co-author}.
 \jdbcomment{Jesse to acknowledge AVIDD, CEIRR, and R01 grants.}
 JDB is an Investigator of the Howard Hughes Medical Institute.
 
 \section{Competing interests}
 JDB is on the scientific advisory boards of Apriori Bio, Aerium Therapeutics, Invivyd, the Vaccine Company, and Oncorus.
-JDB receives payments as an inventor on a Fred Hutch licensed patents related to deep mutational scanning of viral proteins.
+JDB receives royalty payments as an inventor on Fred Hutch licensed patents related to deep mutational scanning of viral proteins.
 
 \bibliography{references}
 }
