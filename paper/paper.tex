@@ -121,14 +121,14 @@ See \url{https://jbloomlab.github.io/SARS2-mut-fitness/avg_counts.html} for an i
 }
 \end{figure*}
 
-To determine how many times each mutation is expected to be observed, we used the pre-built UShER tree~\citep{turakhia2021ultrafast,lanfear2020} of $\sim$6.5-million public SARS-CoV-2 sequences to count nucleotide mutations at four-fold degenerate sites~\citep[Figure~\ref{fig:expected_vs_actual}A;][]{bloom2022evolution}.
+To determine how many times each mutation is expected to be observed, we used the pre-built UShER tree~\citep{mcbroome2021daily,turakhia2021ultrafast,lanfear2020} of $\sim$6.5-million public SARS-CoV-2 sequences to count nucleotide mutations at four-fold degenerate sites~\citep[Figure~\ref{fig:expected_vs_actual}A;][]{bloom2022evolution}.
 Because mutations at such sites never alter the amino-acid sequence, these counts reflect the mutation process in the absence of protein-level selection (see Discussion for caveats about nucleotide-level selection).
 The expected counts of a mutation from nucleotide $x$ to $y$ is simply the average count of this type of mutation across all four-fold degenerate sites with parental identity $x$.
 Importantly, we count independent \emph{occurrences} of each mutation along the branches of the tree, not the sequences with the mutation in the final alignment (Figure~\ref{fig:expected_vs_actual}A.
 We also compute expected counts separately for each SARS-CoV-2 clade to account for shifts in mutation spectrum~\citep{bloom2022evolution,ruis2022mutational}, and apply quality-control steps to remove spurious mutations (see Methods).
 
 The expected counts per mutation (summed across all viral clades) vary with mutation type, ranging from $\sim$500 for \texttt{C$\rightarrow$T} to only $\sim$8 for \texttt{T$\rightarrow$G} mutations (Figure~\ref{fig:expected_vs_actual}B).
-This variation is because the SARS-CoV-2 mutation spectrum is highly biased towards specific mutation types~\citep{bloom2022evolution,ruis2022mutational,de2021mutation,neher2022}.
+This variation is because the SARS-CoV-2 mutation spectrum is highly biased towards specific mutation types~\citep{bloom2022evolution,ruis2022mutational,de2021mutation,neher2022contributions}.
 
 We compared the expected counts to the actual observed counts of mutations averaged across sites (Figure~\ref{fig:expected_vs_actual}).
 For synonymous mutations, the expected and actual counts are similar.
@@ -266,11 +266,11 @@ These maps will be of value for designing drugs that target constrained sites, i
 There are several caveats to our approach.
 First, because the number of occurrences of any given mutation is small compared to the millions of SARS-CoV-2 sequences being analyzed, our approach is sensitive to sequencing (or base-calling) errors as low as ~0.001\% per site.
 Here we have attempted to remove spurious mutations, but further quality control is an important area for future work.
-Second, we assume the rate of each type of nucleotide mutation is uniform across the viral genome, and neglect higher-order context that may influence mutation rate~\citep{?}.
-Likewise, we neglect constraint on nucleotide identity beyond the encoded protein sequence~\citep{?}. 
+Second, we assume the rate of each type of nucleotide mutation is uniform across the viral genome, and neglect higher-order context that may influence mutation rate~\citep{sadykov2021short,beale2004comparison}.
+Likewise, we neglect constraint on nucleotide identity beyond the encoded protein sequence~\citep{huston2021comprehensive,kuo2013functional}. 
 Third, the exact relationship between the statistics we calculate and viral fitness depend on both the fraction of all infections that are sequenced (sampling intensity) and viral population dynamics.
 Although we derive this relationship in the Methods, we do not adjust for sampling intensity and population dynamics across time and space when estimating mutation effects.
-Fourth, we make a single estimate for each mutation across all SARS-CoV-2, thereby neglecting the epistasis that has affected some mutations in at least the spike protein~\citep{?}.
+Fourth, we make a single estimate for each mutation across all SARS-CoV-2, thereby neglecting the epistasis that has affected some mutations in at least the spike protein~\citep{starr2022shifting,moulana2022compensatory}.
 Finally there are a few technical caveats to how we count mutations that are discussed in the Methods section.
 
 Conceptually, our approach differs from prior methods that aim to identify beneficial mutations associated with viral clades that expand in relative frequency~\citep{obermeyer2022analysis,lee2022inferring,maher2022predicting}.
@@ -293,26 +293,38 @@ As this occurs, viral genomic sequencing---which has traditionally been primaril
 See the GitHub repository at \url{https://github.com/jbloomlab/SARS2-mut-fitness} for the computer code and processed data (eg, fitness estimates and mutation counts).
 That repository contains a README with links to specific data files as well as a description of the computational pipeline.
 The specific version of the repository used for this paper is tagged at \jdbcomment{add link to GitHub tag on final commit}.
-The pipeline is fully reproducible, and is run using \texttt{snakemake}~\citep{?} with interactive plots rendered using \texttt{altair}~\citep{?}.
+The pipeline is fully reproducible, and is run using \texttt{snakemake}~\citep{molder2021sustainable} with interactive plots rendered using \texttt{altair}~\citep{vanderplas2018altair}.
 
 The interactive plots are rendered at \url{https://jbloomlab.github.io/SARS2-mut-fitness} via GitHub pages.
 
 \subsection{Counting mutations along the phylogenetic tree}
-We counted occurrences of each mutation in each viral clade using the UShER pre-built mutation-annotated tree~\citep{turakhia2021ultrafast,lanfear2020} from Dec-18-2022 (\url{http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2022/12/18/public-2022-12-18.all.masked.nextclade.pangolin.pb.gz}), which contains all $\sim$6.5-million SARS-CoV-2 sequences that are available in public databases.
-To make these counts at a per-clade level, we first subsetted the mutation-annotated tree on all sequences for each Nexstrain clade~\citep{?}, and then used the matUtils program distributed with UShER to extract the nucleotide mutations on every branch of the each clade-subsetted mutation-annotated tree.
+We counted occurrences of each mutation in each viral clade using the UShER pre-built mutation-annotated tree~\citep{mcbroome2021daily,turakhia2021ultrafast,lanfear2020} from Dec-18-2022 (\url{http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2022/12/18/public-2022-12-18.all.masked.nextclade.pangolin.pb.gz}), which contains all $\sim$6.5-million SARS-CoV-2 sequences that are available in public databases.
+To make these counts at a per-clade level, we first subsetted the mutation-annotated tree on all sequences for each Nexstrain clade~\citep{aksamentov2021nextclade}, retained only clades with at least $10^4$ sequences, and then used the matUtils program distributed with UShER to extract the nucleotide mutations on every branch of the each clade-subsetted mutation-annotated tree.
 For the analyses by geographic location (Figure~\ref{fig:corr}), we subsetted on all sequences that began with ``USA'' or ``England'' as these were the two locations with the most publicly available sequences.
 
 We then performed quality control by ignoring any branch that met any of the following criteria:
 \begin{itemize}
-\item it had more than four nucleotide mutations,
-\item it contained more than one nucleotide mutation that was a reversion to the Wuhan-Hu-1 reference sequence,
-\item it contained more than one nucleotide mutation that was a reversion to the founder sequence for that clade as provided at \url{https://raw.githubusercontent.com/neherlab/SC2_variant_rates/7e738194a8c6592082f1caa9a6ca70cb68289790/data/clade_gts.json} by \cite{neher2022},
+\item it had more than four nucleotide mutations;
+\item it contained more than one nucleotide mutation that was a reversion to the Wuhan-Hu-1 reference sequence;
+\item it contained more than one nucleotide mutation that was a reversion to the founder sequence for that clade as provided at \url{https://raw.githubusercontent.com/neherlab/SC2_variant_rates/7e738194a8c6592082f1caa9a6ca70cb68289790/data/clade_gts.json} by \cite{neher2022contributions};
 \item it contained more than one nucleotide mutation to the same codon.
 \end{itemize}
 The rationale for the first exclusion is that highly mutated branches are often indicative of sequencing errors, and the rationale for the second and third exclusions is that excess reversions can arise from base-calling pipelines that erroneously call low-coverage sites as reference.
 We ignore branches with multiple nucleotide mutations to the same codon (this is very rare) because as detailed below our method is only designed to make estimates for mutations that represent single-nucleotide changes from the clade founder.
-
 Note also that the mutation-annotated tree does not include insertion or deletion mutations, and so we only consider (and make estimates for) point mutations.
+
+We then specified for exclusion certain mutations and sites that are prone to sequencing or base-calling errors.
+Specifically, we excluded
+\begin{itemize}
+\item the sites specified in Table S1 of \cite{turakhia2020stability} as being error prone;
+\item sites 5629, 6851, 7328, 28095, and 29362 since they had very high error rates in some clades;
+\item the problematic sites listed at \url{https://github.com/W-L/ProblematicSites_SARS-CoV2}, which are masked in the pre-built mutation-annotated tree;
+\item for each clade, the clade-specific sites listed in \url{https://github.com/jbloomlab/SARS2-mut-fitness/blob/main/data/usher_masked_sites.yaml}, which are masked in the pre-built mutation-annotated tree;
+\item for each clade, any mutation that was a reversion from the clade founder to the Wuhan-Hu-1 reference, and the reverse complements of these mutations.
+\end{itemize}
+The last exclusion criteria is because some bioinformatics pipelines called low-coverage sites as reference.
+
+See \url{https://github.com/jbloomlab/SARS2-mut-fitness/blob/main/results/mutation_counts/aggregated.csv} for the final counts of each nucleotide mutation in each clade; note that this file also contains excluded mutations.
 
 \subsection{Calculation of expected and actual counts}
 
