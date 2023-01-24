@@ -2,4 +2,6 @@
 *.log
 *.out
 *.synctex.gz
+*.bbl
+*.blg
 paper.pdf

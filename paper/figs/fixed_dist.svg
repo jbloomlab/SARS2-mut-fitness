@@ -1,0 +1,1779 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.1"
+   class="marks"
+   width="587.93555"
+   height="163.86398"
+   viewBox="0 0 587.93555 163.86398"
+   id="svg70354"
+   sodipodi:docname="fixed_dist.svg"
+   inkscape:version="1.2.2 (b0a8486, 2022-12-01)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs70358" />
+  <sodipodi:namedview
+     id="namedview70356"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="1.5707155"
+     inkscape:cx="305.91155"
+     inkscape:cy="87.221398"
+     inkscape:window-width="2282"
+     inkscape:window-height="982"
+     inkscape:window-x="82"
+     inkscape:window-y="38"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg70354" />
+  <path
+     class="background"
+     aria-hidden="true"
+     d="M 45.935547,12.176001 Z"
+     id="path69884"
+     style="fill:none;stroke-miterlimit:10" />
+  <g
+     class="mark-group role-column-footer column_footer"
+     role="graphics-object"
+     aria-roledescription="group mark container"
+     id="g70146"
+     transform="translate(45.935547,12.176001)"
+     style="fill:none;stroke-miterlimit:10">
+    <g
+       transform="translate(0,121)"
+       id="g70014">
+      <path
+         class="background"
+         aria-hidden="true"
+         d="M 0,0 H 250 V 0 Z"
+         id="path69886" />
+      <g
+         id="g70010">
+        <g
+           class="mark-group role-axis"
+           role="graphics-symbol"
+           aria-roledescription="axis"
+           aria-label="X-axis titled 'fitness effect of mutation' for a linear scale with values from −7 to 5"
+           id="g70008">
+          <g
+             transform="translate(0.5,0.5)"
+             id="g70006">
+            <path
+               class="background"
+               aria-hidden="true"
+               d="M 0,0 Z"
+               pointer-events="none"
+               id="path69888" />
+            <g
+               id="g70002">
+              <g
+                 class="mark-rule role-axis-tick"
+                 pointer-events="none"
+                 id="g69940">
+                <line
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line69890"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(10)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line69892"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(21)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line69894"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(31)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line69896"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(42)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line69898"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(52)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line69900"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(63)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line69902"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(73)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line69904"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(83)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line69906"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(94)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line69908"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(104)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line69910"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(115)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line69912"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(125)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line69914"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(135)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line69916"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(146)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line69918"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(156)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line69920"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(167)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line69922"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(177)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line69924"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(188)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line69926"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(198)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line69928"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(208)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line69930"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(219)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line69932"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(229)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line69934"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(240)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line69936"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(250)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line69938"
+                   x1="0"
+                   y1="0" />
+              </g>
+              <g
+                 class="mark-text role-axis-label"
+                 pointer-events="none"
+                 id="g69992">
+                <text
+                   text-anchor="start"
+                   transform="translate(0,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="1"
+                   id="text69942">−7.0</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(10.416667,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text69944">−6.5</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(20.833333,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text69946">−6.0</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(31.25,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text69948">−5.5</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(41.666667,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="1"
+                   id="text69950">−5.0</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(52.083333,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text69952">−4.5</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(62.5,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text69954">−4.0</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(72.916667,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text69956">−3.5</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(83.333333,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="1"
+                   id="text69958">−3.0</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(93.75,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text69960">−2.5</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(104.16667,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text69962">−2.0</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(114.58333,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text69964">−1.5</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(125,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="1"
+                   id="text69966">−1.0</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(135.41667,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text69968">−0.5</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(145.83333,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text69970">0.0</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(156.25,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text69972">0.5</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(166.66667,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="1"
+                   id="text69974">1.0</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(177.08333,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text69976">1.5</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(187.5,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text69978">2.0</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(197.91667,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text69980">2.5</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(208.33333,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="1"
+                   id="text69982">3.0</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(218.75,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text69984">3.5</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(229.16667,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text69986">4.0</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(239.58333,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text69988">4.5</text>
+                <text
+                   text-anchor="end"
+                   transform="translate(250,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="1"
+                   id="text69990">5.0</text>
+              </g>
+              <g
+                 class="mark-rule role-axis-domain"
+                 pointer-events="none"
+                 id="g69996">
+                <line
+                   x2="250"
+                   y2="0"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line69994"
+                   x1="0"
+                   y1="0" />
+              </g>
+              <g
+                 class="mark-text role-axis-title"
+                 pointer-events="none"
+                 id="g70000">
+                <text
+                   text-anchor="middle"
+                   transform="translate(125,30)"
+                   font-family="sans-serif"
+                   font-size="11px"
+                   font-weight="bold"
+                   fill="#000000"
+                   opacity="1"
+                   id="text69998">fitness effect of mutation</text>
+              </g>
+            </g>
+            <path
+               class="foreground"
+               aria-hidden="true"
+               d=""
+               pointer-events="none"
+               display="none"
+               id="path70004" />
+          </g>
+        </g>
+      </g>
+      <path
+         class="foreground"
+         aria-hidden="true"
+         d=""
+         display="none"
+         id="path70012" />
+    </g>
+    <g
+       transform="translate(291,121)"
+       id="g70144">
+      <path
+         class="background"
+         aria-hidden="true"
+         d="M 0,0 H 250 V 0 Z"
+         id="path70016" />
+      <g
+         id="g70140">
+        <g
+           class="mark-group role-axis"
+           role="graphics-symbol"
+           aria-roledescription="axis"
+           aria-label="X-axis titled 'fitness effect of mutation' for a linear scale with values from −7 to 5"
+           id="g70138">
+          <g
+             transform="translate(0.5,0.5)"
+             id="g70136">
+            <path
+               class="background"
+               aria-hidden="true"
+               d="M 0,0 Z"
+               pointer-events="none"
+               id="path70018" />
+            <g
+               id="g70132">
+              <g
+                 class="mark-rule role-axis-tick"
+                 pointer-events="none"
+                 id="g70070">
+                <line
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line70020"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(10)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line70022"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(21)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line70024"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(31)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line70026"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(42)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line70028"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(52)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line70030"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(63)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line70032"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(73)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line70034"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(83)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line70036"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(94)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line70038"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(104)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line70040"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(115)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line70042"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(125)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line70044"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(135)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line70046"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(146)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line70048"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(156)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line70050"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(167)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line70052"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(177)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line70054"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(188)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line70056"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(198)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line70058"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(208)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line70060"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(219)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line70062"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(229)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line70064"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(240)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line70066"
+                   x1="0"
+                   y1="0" />
+                <line
+                   transform="translate(250)"
+                   x2="0"
+                   y2="5"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line70068"
+                   x1="0"
+                   y1="0" />
+              </g>
+              <g
+                 class="mark-text role-axis-label"
+                 pointer-events="none"
+                 id="g70122">
+                <text
+                   text-anchor="start"
+                   transform="translate(0,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="1"
+                   id="text70072">−7.0</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(10.416667,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text70074">−6.5</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(20.833333,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text70076">−6.0</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(31.25,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text70078">−5.5</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(41.666667,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="1"
+                   id="text70080">−5.0</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(52.083333,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text70082">−4.5</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(62.5,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text70084">−4.0</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(72.916667,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text70086">−3.5</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(83.333333,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="1"
+                   id="text70088">−3.0</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(93.75,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text70090">−2.5</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(104.16667,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text70092">−2.0</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(114.58333,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text70094">−1.5</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(125,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="1"
+                   id="text70096">−1.0</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(135.41667,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text70098">−0.5</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(145.83333,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text70100">0.0</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(156.25,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text70102">0.5</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(166.66667,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="1"
+                   id="text70104">1.0</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(177.08333,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text70106">1.5</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(187.5,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text70108">2.0</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(197.91667,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text70110">2.5</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(208.33333,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="1"
+                   id="text70112">3.0</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(218.75,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text70114">3.5</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(229.16667,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text70116">4.0</text>
+                <text
+                   text-anchor="middle"
+                   transform="translate(239.58333,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="0"
+                   id="text70118">4.5</text>
+                <text
+                   text-anchor="end"
+                   transform="translate(250,15)"
+                   font-family="sans-serif"
+                   font-size="10px"
+                   fill="#000000"
+                   opacity="1"
+                   id="text70120">5.0</text>
+              </g>
+              <g
+                 class="mark-rule role-axis-domain"
+                 pointer-events="none"
+                 id="g70126">
+                <line
+                   x2="250"
+                   y2="0"
+                   stroke="#888888"
+                   stroke-width="1"
+                   opacity="1"
+                   id="line70124"
+                   x1="0"
+                   y1="0" />
+              </g>
+              <g
+                 class="mark-text role-axis-title"
+                 pointer-events="none"
+                 id="g70130">
+                <text
+                   text-anchor="middle"
+                   transform="translate(125,30)"
+                   font-family="sans-serif"
+                   font-size="11px"
+                   font-weight="bold"
+                   fill="#000000"
+                   opacity="1"
+                   id="text70128">fitness effect of mutation</text>
+              </g>
+            </g>
+            <path
+               class="foreground"
+               aria-hidden="true"
+               d=""
+               pointer-events="none"
+               display="none"
+               id="path70134" />
+          </g>
+        </g>
+      </g>
+      <path
+         class="foreground"
+         aria-hidden="true"
+         d=""
+         display="none"
+         id="path70142" />
+    </g>
+  </g>
+  <path
+     class="background"
+     aria-hidden="true"
+     d="M 46.435547,12.676001 H 296.43555 V 127.676 H 46.435547 Z"
+     stroke="#dddddd"
+     id="path70148"
+     style="fill:none;stroke-miterlimit:10" />
+  <g
+     class="mark-group role-axis"
+     role="graphics-symbol"
+     aria-roledescription="axis"
+     aria-label="Y-axis titled 'number of mutations' for a linear scale with values from 0 to 6,000"
+     id="g70186"
+     transform="translate(45.935547,12.176001)"
+     style="fill:none;stroke-miterlimit:10">
+    <g
+       transform="translate(0.5,0.5)"
+       id="g70184">
+      <path
+         class="background"
+         aria-hidden="true"
+         d="M 0,0 Z"
+         pointer-events="none"
+         id="path70150" />
+      <g
+         id="g70180">
+        <g
+           class="mark-rule role-axis-tick"
+           pointer-events="none"
+           id="g70160">
+          <line
+             transform="translate(0,115)"
+             x2="-5"
+             y2="0"
+             stroke="#888888"
+             stroke-width="1"
+             opacity="1"
+             id="line70152"
+             x1="0"
+             y1="0" />
+          <line
+             transform="translate(0,77)"
+             x2="-5"
+             y2="0"
+             stroke="#888888"
+             stroke-width="1"
+             opacity="1"
+             id="line70154"
+             x1="0"
+             y1="0" />
+          <line
+             transform="translate(0,38)"
+             x2="-5"
+             y2="0"
+             stroke="#888888"
+             stroke-width="1"
+             opacity="1"
+             id="line70156"
+             x1="0"
+             y1="0" />
+          <line
+             x2="-5"
+             y2="0"
+             stroke="#888888"
+             stroke-width="1"
+             opacity="1"
+             id="line70158"
+             x1="0"
+             y1="0" />
+        </g>
+        <g
+           class="mark-text role-axis-label"
+           pointer-events="none"
+           id="g70170">
+          <text
+             text-anchor="end"
+             transform="translate(-7,118)"
+             font-family="sans-serif"
+             font-size="10px"
+             fill="#000000"
+             opacity="1"
+             id="text70162">0</text>
+          <text
+             text-anchor="end"
+             transform="translate(-7,79.666667)"
+             font-family="sans-serif"
+             font-size="10px"
+             fill="#000000"
+             opacity="1"
+             id="text70164">2,000</text>
+          <text
+             text-anchor="end"
+             transform="translate(-7,41.333333)"
+             font-family="sans-serif"
+             font-size="10px"
+             fill="#000000"
+             opacity="1"
+             id="text70166">4,000</text>
+          <text
+             text-anchor="end"
+             transform="translate(-7,3)"
+             font-family="sans-serif"
+             font-size="10px"
+             fill="#000000"
+             opacity="1"
+             id="text70168">6,000</text>
+        </g>
+        <g
+           class="mark-rule role-axis-domain"
+           pointer-events="none"
+           id="g70174">
+          <line
+             transform="translate(0,115)"
+             x2="0"
+             y2="-115"
+             stroke="#888888"
+             stroke-width="1"
+             opacity="1"
+             id="line70172"
+             x1="0"
+             y1="0" />
+        </g>
+        <g
+           class="mark-text role-axis-title"
+           pointer-events="none"
+           id="g70178">
+          <text
+             text-anchor="middle"
+             transform="rotate(-90,9.737793,47.762207)"
+             font-family="sans-serif"
+             font-size="11px"
+             font-weight="bold"
+             fill="#000000"
+             opacity="1"
+             id="text70176">number of mutations</text>
+        </g>
+      </g>
+      <path
+         class="foreground"
+         aria-hidden="true"
+         d=""
+         pointer-events="none"
+         display="none"
+         id="path70182" />
+    </g>
+  </g>
+  <g
+     class="mark-rect role-mark child_marks"
+     role="graphics-object"
+     aria-roledescription="rect mark container"
+     id="g70236"
+     transform="translate(45.935547,12.176001)"
+     style="fill:none;stroke-miterlimit:10">
+    <path
+       aria-label="fitness effect of mutation: −7 – −6.5; number of mutations: 410"
+       role="graphics-symbol"
+       aria-roledescription="bar"
+       d="m 1,107.14167 h 9.416667 V 115 H 1 Z"
+       fill="#4c78a8"
+       id="path70188" />
+    <path
+       aria-label="fitness effect of mutation: −2.5 – −2; number of mutations: 4773"
+       role="graphics-symbol"
+       aria-roledescription="bar"
+       d="m 94.75,23.5175 h 9.41667 V 115 H 94.75 Z"
+       fill="#4c78a8"
+       id="path70190" />
+    <path
+       aria-label="fitness effect of mutation: −4.5 – −4; number of mutations: 1615"
+       role="graphics-symbol"
+       aria-roledescription="bar"
+       d="M 53.083333,84.045833 H 62.5 V 115 h -9.416667 z"
+       fill="#4c78a8"
+       id="path70192" />
+    <path
+       aria-label="fitness effect of mutation: −5 – −4.5; number of mutations: 2476"
+       role="graphics-symbol"
+       aria-roledescription="bar"
+       d="m 42.666667,67.543333 h 9.416666 V 115 h -9.416666 z"
+       fill="#4c78a8"
+       id="path70194" />
+    <path
+       aria-label="fitness effect of mutation: 0 – 0.5; number of mutations: 2809"
+       role="graphics-symbol"
+       aria-roledescription="bar"
+       d="M 146.83333,61.160833 H 156.25 V 115 h -9.41667 z"
+       fill="#4c78a8"
+       id="path70196" />
+    <path
+       aria-label="fitness effect of mutation: −1 – −0.5; number of mutations: 5441"
+       role="graphics-symbol"
+       aria-roledescription="bar"
+       d="m 126,10.714167 h 9.41667 V 115 H 126 Z"
+       fill="#4c78a8"
+       id="path70198" />
+    <path
+       aria-label="fitness effect of mutation: −6.5 – −6; number of mutations: 794"
+       role="graphics-symbol"
+       aria-roledescription="bar"
+       d="m 11.416667,99.781667 h 9.416666 V 115 h -9.416666 z"
+       fill="#4c78a8"
+       id="path70200" />
+    <path
+       aria-label="fitness effect of mutation: −2 – −1.5; number of mutations: 4503"
+       role="graphics-symbol"
+       aria-roledescription="bar"
+       d="m 105.16667,28.6925 h 9.41666 V 115 h -9.41666 z"
+       fill="#4c78a8"
+       id="path70202" />
+    <path
+       aria-label="fitness effect of mutation: −4 – −3.5; number of mutations: 5301"
+       role="graphics-symbol"
+       aria-roledescription="bar"
+       d="m 63.5,13.3975 h 9.416667 V 115 H 63.5 Z"
+       fill="#4c78a8"
+       id="path70204" />
+    <path
+       aria-label="fitness effect of mutation: −1.5 – −1; number of mutations: 5159"
+       role="graphics-symbol"
+       aria-roledescription="bar"
+       d="M 115.58333,16.119167 H 125 V 115 h -9.41667 z"
+       fill="#4c78a8"
+       id="path70206" />
+    <path
+       aria-label="fitness effect of mutation: 0.5 – 1; number of mutations: 1498"
+       role="graphics-symbol"
+       aria-roledescription="bar"
+       d="m 157.25,86.288333 h 9.41667 V 115 H 157.25 Z"
+       fill="#4c78a8"
+       id="path70208" />
+    <path
+       aria-label="fitness effect of mutation: −0.5 – 0; number of mutations: 4407"
+       role="graphics-symbol"
+       aria-roledescription="bar"
+       d="m 136.41667,30.5325 h 9.41666 V 115 h -9.41666 z"
+       fill="#4c78a8"
+       id="path70210" />
+    <path
+       aria-label="fitness effect of mutation: −3.5 – −3; number of mutations: 5548"
+       role="graphics-symbol"
+       aria-roledescription="bar"
+       d="m 73.916667,8.6633333 h 9.416666 V 115 h -9.416666 z"
+       fill="#4c78a8"
+       id="path70212" />
+    <path
+       aria-label="fitness effect of mutation: −5.5 – −5; number of mutations: 600"
+       role="graphics-symbol"
+       aria-roledescription="bar"
+       d="m 32.25,103.5 h 9.416667 V 115 H 32.25 Z"
+       fill="#4c78a8"
+       id="path70214" />
+    <path
+       aria-label="fitness effect of mutation: −3 – −2.5; number of mutations: 2695"
+       role="graphics-symbol"
+       aria-roledescription="bar"
+       d="M 84.333333,63.345833 H 93.75 V 115 h -9.416667 z"
+       fill="#4c78a8"
+       id="path70216" />
+    <path
+       aria-label="fitness effect of mutation: 1 – 1.5; number of mutations: 545"
+       role="graphics-symbol"
+       aria-roledescription="bar"
+       d="m 167.66667,104.55417 h 9.41666 V 115 h -9.41666 z"
+       fill="#4c78a8"
+       id="path70218" />
+    <path
+       aria-label="fitness effect of mutation: 2 – 2.5; number of mutations: 87"
+       role="graphics-symbol"
+       aria-roledescription="bar"
+       d="m 188.5,113.3325 h 9.41667 V 115 H 188.5 Z"
+       fill="#4c78a8"
+       id="path70220" />
+    <path
+       aria-label="fitness effect of mutation: −6 – −5.5; number of mutations: 755"
+       role="graphics-symbol"
+       aria-roledescription="bar"
+       d="M 21.833333,100.52917 H 31.25 V 115 h -9.416667 z"
+       fill="#4c78a8"
+       id="path70222" />
+    <path
+       aria-label="fitness effect of mutation: 1.5 – 2; number of mutations: 173"
+       role="graphics-symbol"
+       aria-roledescription="bar"
+       d="M 178.08333,111.68417 H 187.5 V 115 h -9.41667 z"
+       fill="#4c78a8"
+       id="path70224" />
+    <path
+       aria-label="fitness effect of mutation: 3 – 3.5; number of mutations: 14"
+       role="graphics-symbol"
+       aria-roledescription="bar"
+       d="M 209.33333,114.73167 H 218.75 V 115 h -9.41667 z"
+       fill="#4c78a8"
+       id="path70226" />
+    <path
+       aria-label="fitness effect of mutation: 3.5 – 4; number of mutations: 6"
+       role="graphics-symbol"
+       aria-roledescription="bar"
+       d="m 219.75,114.885 h 9.41667 V 115 H 219.75 Z"
+       fill="#4c78a8"
+       id="path70228" />
+    <path
+       aria-label="fitness effect of mutation: 4.5 – 5; number of mutations: 1"
+       role="graphics-symbol"
+       aria-roledescription="bar"
+       d="M 240.58333,114.98083 H 250 V 115 h -9.41667 z"
+       fill="#4c78a8"
+       id="path70230" />
+    <path
+       aria-label="fitness effect of mutation: 2.5 – 3; number of mutations: 33"
+       role="graphics-symbol"
+       aria-roledescription="bar"
+       d="m 198.91667,114.3675 h 9.41666 V 115 h -9.41666 z"
+       fill="#4c78a8"
+       id="path70232" />
+    <path
+       aria-label="fitness effect of mutation: 4 – 4.5; number of mutations: 2"
+       role="graphics-symbol"
+       aria-roledescription="bar"
+       d="m 230.16667,114.96167 h 9.41666 V 115 h -9.41666 z"
+       fill="#4c78a8"
+       id="path70234" />
+  </g>
+  <g
+     class="mark-group role-title"
+     id="g70250"
+     transform="translate(45.935547,17.117187)"
+     style="fill:none;stroke-miterlimit:10">
+    <g
+       transform="translate(125,-17)"
+       id="g70248">
+      <path
+         class="background"
+         aria-hidden="true"
+         d="M 0,0 Z"
+         pointer-events="none"
+         id="path70238" />
+      <g
+         id="g70244">
+        <g
+           class="mark-text role-title-text"
+           role="graphics-symbol"
+           aria-roledescription="title"
+           aria-label="Title text 'all mutations'"
+           pointer-events="none"
+           id="g70242">
+          <text
+             text-anchor="middle"
+             transform="translate(0,9)"
+             font-family="sans-serif"
+             font-size="12px"
+             font-style="bold"
+             fill="#000000"
+             opacity="1"
+             id="text70240">all mutations</text>
+        </g>
+      </g>
+      <path
+         class="foreground"
+         aria-hidden="true"
+         d=""
+         pointer-events="none"
+         display="none"
+         id="path70246" />
+    </g>
+  </g>
+  <path
+     class="foreground"
+     aria-hidden="true"
+     d=""
+     display="none"
+     id="path70254"
+     style="fill:none;stroke-miterlimit:10" />
+  <g
+     transform="translate(336.93555,12.176001)"
+     id="g70340"
+     style="fill:none;stroke-miterlimit:10">
+    <path
+       class="background"
+       aria-hidden="true"
+       d="m 0.5,0.5 h 250 v 115 H 0.5 Z"
+       stroke="#dddddd"
+       id="path70258" />
+    <g
+       id="g70336">
+      <g
+         class="mark-group role-axis"
+         role="graphics-symbol"
+         aria-roledescription="axis"
+         aria-label="Y-axis titled 'number of mutations' for a linear scale with values from 0 to 55"
+         id="g70292">
+        <g
+           transform="translate(0.5,0.5)"
+           id="g70290">
+          <path
+             class="background"
+             aria-hidden="true"
+             d="M 0,0 Z"
+             pointer-events="none"
+             id="path70260" />
+          <g
+             id="g70286">
+            <g
+               class="mark-rule role-axis-tick"
+               pointer-events="none"
+               id="g70268">
+              <line
+                 transform="translate(0,115)"
+                 x2="-5"
+                 y2="0"
+                 stroke="#888888"
+                 stroke-width="1"
+                 opacity="1"
+                 id="line70262"
+                 x1="0"
+                 y1="0" />
+              <line
+                 transform="translate(0,73)"
+                 x2="-5"
+                 y2="0"
+                 stroke="#888888"
+                 stroke-width="1"
+                 opacity="1"
+                 id="line70264"
+                 x1="0"
+                 y1="0" />
+              <line
+                 transform="translate(0,31)"
+                 x2="-5"
+                 y2="0"
+                 stroke="#888888"
+                 stroke-width="1"
+                 opacity="1"
+                 id="line70266"
+                 x1="0"
+                 y1="0" />
+            </g>
+            <g
+               class="mark-text role-axis-label"
+               pointer-events="none"
+               id="g70276">
+              <text
+                 text-anchor="end"
+                 transform="translate(-7,118)"
+                 font-family="sans-serif"
+                 font-size="10px"
+                 fill="#000000"
+                 opacity="1"
+                 id="text70270">0</text>
+              <text
+                 text-anchor="end"
+                 transform="translate(-7,76.181818)"
+                 font-family="sans-serif"
+                 font-size="10px"
+                 fill="#000000"
+                 opacity="1"
+                 id="text70272">20</text>
+              <text
+                 text-anchor="end"
+                 transform="translate(-7,34.363636)"
+                 font-family="sans-serif"
+                 font-size="10px"
+                 fill="#000000"
+                 opacity="1"
+                 id="text70274">40</text>
+            </g>
+            <g
+               class="mark-rule role-axis-domain"
+               pointer-events="none"
+               id="g70280">
+              <line
+                 transform="translate(0,115)"
+                 x2="0"
+                 y2="-115"
+                 stroke="#888888"
+                 stroke-width="1"
+                 opacity="1"
+                 id="line70278"
+                 x1="0"
+                 y1="0" />
+            </g>
+            <g
+               class="mark-text role-axis-title"
+               pointer-events="none"
+               id="g70284">
+              <text
+                 text-anchor="middle"
+                 transform="rotate(-90,16.688477,40.811523)"
+                 font-family="sans-serif"
+                 font-size="11px"
+                 font-weight="bold"
+                 fill="#000000"
+                 opacity="1"
+                 id="text70282">number of mutations</text>
+            </g>
+          </g>
+          <path
+             class="foreground"
+             aria-hidden="true"
+             d=""
+             pointer-events="none"
+             display="none"
+             id="path70288" />
+        </g>
+      </g>
+      <g
+         class="mark-rect role-mark child_marks"
+         role="graphics-object"
+         aria-roledescription="rect mark container"
+         id="g70320">
+        <path
+           aria-label="fitness effect of mutation: 1 – 1.5; number of mutations: 35"
+           role="graphics-symbol"
+           aria-roledescription="bar"
+           d="m 167.66667,41.818182 h 9.41666 V 115 h -9.41666 z"
+           fill="#4c78a8"
+           id="path70294" />
+        <path
+           aria-label="fitness effect of mutation: −1.5 – −1; number of mutations: 10"
+           role="graphics-symbol"
+           aria-roledescription="bar"
+           d="M 115.58333,94.090909 H 125 V 115 h -9.41667 z"
+           fill="#4c78a8"
+           id="path70296" />
+        <path
+           aria-label="fitness effect of mutation: 0 – 0.5; number of mutations: 46"
+           role="graphics-symbol"
+           aria-roledescription="bar"
+           d="M 146.83333,18.818182 H 156.25 V 115 h -9.41667 z"
+           fill="#4c78a8"
+           id="path70298" />
+        <path
+           aria-label="fitness effect of mutation: −0.5 – 0; number of mutations: 24"
+           role="graphics-symbol"
+           aria-roledescription="bar"
+           d="m 136.41667,64.818182 h 9.41666 V 115 h -9.41666 z"
+           fill="#4c78a8"
+           id="path70300" />
+        <path
+           aria-label="fitness effect of mutation: 1.5 – 2; number of mutations: 6"
+           role="graphics-symbol"
+           aria-roledescription="bar"
+           d="M 178.08333,102.45455 H 187.5 V 115 h -9.41667 z"
+           fill="#4c78a8"
+           id="path70302" />
+        <path
+           aria-label="fitness effect of mutation: −2 – −1.5; number of mutations: 6"
+           role="graphics-symbol"
+           aria-roledescription="bar"
+           d="m 105.16667,102.45455 h 9.41666 V 115 h -9.41666 z"
+           fill="#4c78a8"
+           id="path70304" />
+        <path
+           aria-label="fitness effect of mutation: 0.5 – 1; number of mutations: 53"
+           role="graphics-symbol"
+           aria-roledescription="bar"
+           d="m 157.25,4.1818182 h 9.41667 V 115 H 157.25 Z"
+           fill="#4c78a8"
+           id="path70306" />
+        <path
+           aria-label="fitness effect of mutation: −1 – −0.5; number of mutations: 21"
+           role="graphics-symbol"
+           aria-roledescription="bar"
+           d="m 126,71.090909 h 9.41667 V 115 H 126 Z"
+           fill="#4c78a8"
+           id="path70308" />
+        <path
+           aria-label="fitness effect of mutation: 2 – 2.5; number of mutations: 8"
+           role="graphics-symbol"
+           aria-roledescription="bar"
+           d="m 188.5,98.272727 h 9.41667 V 115 H 188.5 Z"
+           fill="#4c78a8"
+           id="path70310" />
+        <path
+           aria-label="fitness effect of mutation: −2.5 – −2; number of mutations: 2"
+           role="graphics-symbol"
+           aria-roledescription="bar"
+           d="m 94.75,110.81818 h 9.41667 V 115 H 94.75 Z"
+           fill="#4c78a8"
+           id="path70312" />
+        <path
+           aria-label="fitness effect of mutation: −3.5 – −3; number of mutations: 1"
+           role="graphics-symbol"
+           aria-roledescription="bar"
+           d="m 73.916667,112.90909 h 9.416666 V 115 h -9.416666 z"
+           fill="#4c78a8"
+           id="path70314" />
+        <path
+           aria-label="fitness effect of mutation: −4 – −3.5; number of mutations: 1"
+           role="graphics-symbol"
+           aria-roledescription="bar"
+           d="m 63.5,112.90909 h 9.416667 V 115 H 63.5 Z"
+           fill="#4c78a8"
+           id="path70316" />
+        <path
+           aria-label="fitness effect of mutation: 4 – 4.5; number of mutations: 1"
+           role="graphics-symbol"
+           aria-roledescription="bar"
+           d="m 230.16667,112.90909 h 9.41666 V 115 h -9.41666 z"
+           fill="#4c78a8"
+           id="path70318" />
+      </g>
+      <g
+         class="mark-group role-title"
+         id="g70334">
+        <g
+           transform="translate(125,-12)"
+           id="g70332">
+          <path
+             class="background"
+             aria-hidden="true"
+             d="M 0,0 Z"
+             pointer-events="none"
+             id="path70322" />
+          <g
+             id="g70328">
+            <g
+               class="mark-text role-title-text"
+               role="graphics-symbol"
+               aria-roledescription="title"
+               aria-label="Title text 'mutations fixed in a clade'"
+               pointer-events="none"
+               id="g70326">
+              <text
+                 text-anchor="middle"
+                 transform="translate(0,9)"
+                 font-family="sans-serif"
+                 font-size="12px"
+                 font-style="bold"
+                 fill="#000000"
+                 opacity="1"
+                 id="text70324">mutations fixed in a clade</text>
+            </g>
+          </g>
+          <path
+             class="foreground"
+             aria-hidden="true"
+             d=""
+             pointer-events="none"
+             display="none"
+             id="path70330" />
+        </g>
+      </g>
+    </g>
+    <path
+       class="foreground"
+       aria-hidden="true"
+       d=""
+       display="none"
+       id="path70338" />
+  </g>
+  <path
+     class="foreground"
+     aria-hidden="true"
+     d=""
+     display="none"
+     id="path70346"
+     style="fill:none;stroke-miterlimit:10" />
+  <path
+     style="fill:none;stroke:#737373;stroke-width:1.59753;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:3.19507, 1.59753;stroke-dashoffset:0;stroke-opacity:1"
+     d="M 193.07723,13.078969 192.52174,133.07106"
+     id="path31549-4" />
+  <path
+     style="fill:none;stroke:#737373;stroke-width:1.59753;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:3.19507, 1.59753;stroke-dashoffset:0;stroke-opacity:1"
+     d="m 483.70906,12.85474 -0.55549,119.99209"
+     id="path31549-4-0" />
+</svg>
