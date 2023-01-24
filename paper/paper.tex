@@ -292,6 +292,7 @@ As this occurs, viral genomic sequencing---which has traditionally been primaril
 \subsection{Code and data availability}
 See the GitHub repository at \url{https://github.com/jbloomlab/SARS2-mut-fitness} for the computer code and processed data (eg, fitness estimates and mutation counts).
 That repository contains a README with links to specific data files as well as a description of the computational pipeline.
+See \url{https://github.com/jbloomlab/SARS2-mut-fitness/blob/main/results/aa_fitness/aa_fitness.csv} final estimates of amino-acid fitnesses across all clades; other intermediate data files are also provided in the GitHub repository.
 The specific version of the repository used for this paper is tagged at \jdbcomment{add link to GitHub tag on final commit}.
 The pipeline is fully reproducible, and is run using \texttt{snakemake}~\citep{molder2021sustainable} with interactive plots rendered using \texttt{altair}~\citep{vanderplas2018altair}.
 
@@ -326,11 +327,78 @@ The last exclusion criteria is because some bioinformatics pipelines called low-
 
 See \url{https://github.com/jbloomlab/SARS2-mut-fitness/blob/main/results/mutation_counts/aggregated.csv} for the final counts of each nucleotide mutation in each clade; note that this file also contains excluded mutations.
 
-\subsection{Calculation of expected and actual counts}
+\subsection{Calculation of expected counts}
+To calculate the expected counts for each nucleotide mutation, we analyzed just the four-fold degenerate sites in each clade in an approach paralleling that of \cite{bloom2022evolution}.
+Specifically, we identify all non-excluded four-fold degenerate sites in each clade founder.
+We then count nucleotide mutations just at those sites in each clade, and calculate the expected per-site number of mutations from nucleotide $x$ to $y$ as the total number of $x$ to $y$ mutations at four-fold degenerate sites divided by the number of four-fold degenerate sites with $x$ as the parental identity.
+This analysis is done at the clade level for two reasons: referencing mutations to the clade founder (rather than the Wuhan-Hu-1 reference) limits problem with the approach that would arise at sites that substitute multiple times in the history of a sequence (since each clade is a relatively high-identity group multiple mutations at the same site within a clade are very rare), and because it is know that SARS-CoV-2 mutation rates vary somewhat among clades~\citep{bloom2022evolution,ruis2022mutational}.
+We only retain clades with at least 5000 mutations at four-fold degenerate sites in order to avoid inaccurate estimates of expected counts due to low sampling of mutations.
 
-\subsection{Estimation of amino-acid fitnesses}
+\subsection{Mutational effects from actual versus expected counts}
+To estimate the effects of mutations, we simply compare the expected counts of each nucleotide mutation to the actual counts in the pre-built mutation-annotated tree.
+See \url{https://github.com/jbloomlab/SARS2-mut-fitness/blob/main/results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv} for these expected versus actual counts on a per-clade basis; note that this file also includes counts at excluded sites.
+
+To estimate the effects of mutations, we first sum the counts of all non-excluded nucleotide mutations that encode each amino-acid mutation to convert the nucleotide counts to amino-acid counts.
+In doing this, we exclude any mutations that are not from the clade-founder amino-acid identity: in other words, we ignore sequences with histories that involve multiple amino-acid mutations at the same site in the same clade (this is a caveat of the approach, although because each clade is relatively high identity it does not have a major effect).
+For the overall estimates reported in this paper, we also sum these counts across all retained clades; for the analyses in Figure~\ref{fig:corr} we also make estimates without summing across clades and only for counts from sequences from specific geographic locations.
+We then compute the estimated fitness $\Delta f$ of each mutation as simply the natural logarithm of the ratio of actual to expected counts after adding a pseudocount of $P - 0.5$ to each count, namely $ \Delta f = \log \left(\frac{n_{actual} + P}{n_{expected} + P}\right)$.
+
+Note that these mutation-effect estimates will have more statistical noise the smaller the value of the expected counts for each mutation.
+Therefore, we also track the expected counts alongside the estimates.
+In this paper, we only show estimates for mutations with expected counts of at least 10 unless otherwise noted.
+However, the figures link to interactive legends that allow adjustment of this threshold: larger values (eg, 20 or more) will lead to slightly more accurate estimates but drop some mutations, lower values can be used if you need a noisier estimate for a mutation that has less then 10 expected counts.
+
+See \url{https://github.com/jbloomlab/SARS2-mut-fitness/blob/main/results/aa_fitness/aamut_fitness_all.csv} for the estimates of amino-acid mutation effects across all clades, and see \url{https://github.com/jbloomlab/SARS2-mut-fitness/blob/main/results/aa_fitness/aamut_fitness_by_clade.csv} for the clade-specific estimates.
+The all-clade estimates of mutation effects are what are shown in Figure~\ref{fig:dist}.
+
+For the clade correlations plotting in Figure~\ref{fig:corr}, we only include clades with at least $5 \times 10^5$ expected counts across all sites, as only these clades have enough counts for reasonable per-clade estimates.
+
+\subsection{Mutation effects to amino-acid fitnesses}
+For the final estimates of amino-acid fitnesses shown in the heatmaps such as in Figure~\ref{fig:E_heatmap}, we need a single estimate for each amino acid.
+This is straightforward for sites that have the same amino-acid identity in all clade founders: the ``wildtype'' residue shared across all clades has a fitness of zero, and all other amino acids have fitnesses equal to the effect of mutating from the ``wildtype'' to that amino acid.
+However, for sites that change amino-acid identity between clade founders, things are more complicated and we need to take the extra step below.
+
+For each clade have estimated the change in fitness $\Delta f_{xy}$ caused by mutating a site from amino-acid $x$ to $y$, where $x$ is the amino acid in the clade founder sequence.
+For each such mutation, we also have $n_{xy}$ which is the number of expected mutations from the clade founder amino acid $x$ to $y$.
+These $n_{xy}$ values are important because they give some estimate of our "confidence" in the $\Delta f_{xy}$ values: if a mutation has high expected counts (large $n_{xy}$) then we can estimate the change in fitness caused by the mutation more accurately, and if $n_{xy}$ is small then the estimate will be much noisier.
+
+However, we would like to aggregate the data across multiple clades to estimate amino-acid fitness values at a site under the assumption that these are constant across clades.
+Things get complicated if not all clade founders have the same amino acid identity at a site.
+For instance, let's say at our site of interest, the clade founder amino acid is $x$ in one clade and $z$ in another clade.
+For each clade we then have a set of $\Delta f_{xy}$ and $n_{xy}$ values for the first clade (where $y$ ranges over the 20 amino acids, including stop codon, that aren't $x$), and another set of up to 20 $\Delta f_{zy}$ and $n_{zy}$ values for the second clade (where $y$ ranges over the 20 amino acids that aren't $z$).
+
+From these sets of mutation fitness changes, we'd like to estimate the fitness $f_x$ of each amino acid $x$, where the $f_x$ values satisfy $\Delta f_{xy} = f_y - f_x$ (in other words, a higher $f_x$ means higher fitness of that amino acid).
+When there are multiple clades with different founder amino acids at the site, there is no guarantee that we can find $f_x$ values that precisely satisfy the above equation since there are more $\Delta f_{xy}$ values than $f_x$ values and the $\Delta f_{xy}$ values may have noise (and is some cases even real shifts among clades due to epistasis).
+Nonetheless, we can try to find the $f_x$ values that come closest to satisfying the above equation.
+
+First, we choose one amino acid to have a fitness value of zero, since the scale of the $f_x$ values is arbitrary and there are really only 20 unique parameters among the 21 $f_x$ values (there are 21 amino acids since we consider stops, but we only measure differences among them, not absolute values).
+Typically if there was just one clade, we would set the wildtype value of $f_x = 0$ and then for mutations to all other amino acids $y$ we would simply have $f_y = \Delta f_{xy}$.
+However, when there are multple clades with different founder amino acids, there is no longer a well defined "wildtype".
+So we choose the most common non-stop parental amino-acid for the observed mutations and set that to zero.
+In other words, we find $x$ that maximizes $\sum_y n_{xy}$ and set that $f_x$ value to zero.
+
+Next, we choose the $f_x$ values that most closely match the measured mutation effects, weighting more strongly mutation effects with higher expected counts (since these should be more accurate).
+Specifically, we define a loss function as
+$$
+L = \sum_x \sum_{y \ne x} n_{xy} \left(\Delta f_{xy} - \left[f_y - f_x\right]\right)^2
+$$
+where we ignore effects of synonymous mutations (the $x \ne y$ term in second summand) because we are only examining protein-level effects.
+We then use numerical optimization to find the $f_x$ values that minimize that loss $L$.
+
+Finally, we would still like to report an equivalent of the $n_{xy}$ values for the $\Delta f_{xy}$ values that give us some sense of how accurately we have estimated the fitness $f_x$ of each amino acid.
+To do that, we tabulate $N_x = \sum_y \left(n_{xy} + n_{yx} \right)$ as the total number of mutations either from or to amino-acid $x$ as the "count" for the amino acid.
+Amino acids with larger values of $N_x$ should have more accurate estimates of $f_x$.
+
+See \url{https://github.com/jbloomlab/SARS2-mut-fitness/blob/main/results/aa_fitness/aa_fitness.csv} for these overall amino-acid fitness estimates.
+
+\subsection{Site numbering and protein naming}
+All sites are numbered according to the sequential Wuhan-Hu-1 reference numbering scheme, using the reference sequence at \url{http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/bigZips/wuhCor1.fa.gz}.
+The protein annotations are taken from the associated GTF at \url{http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/bigZips/genes/ncbiGenes.gtf.gz}.
+Those protein annotations refer to the polyproteins encoding the non-structural proteins as ORF1a and ORF1ab.
+To convert to from ORF1ab numbering/naming to the nsp-based naming (eg, nsp1, nsp2, etc) we use the conversions specified under ``orf1ab\_to\_nsps'' in \url{https://github.com/jbloomlab/SARS2-mut-fitness/blob/main/config.yaml}, which are in turn taken from Theo Sanderson's annotations at \url{https://github.com/theosanderson/Codon2Nucleotide/blob/main/src/App.js}.
 
 \subsection{Derivation of relationship between actual to expected count ratio and viral fitness}
+\jdbcomment{Jesse will add this from Richard's notes.}
 
 
 \section{Acknowledgments}
@@ -369,8 +437,21 @@ See \url{https://jbloomlab.github.io/SARS2-mut-fitness/ORF3a.html} for an intera
 
 \begin{figure*}
 \centering
+\includegraphics[width=0.75\linewidth]{figs/terminal.png}
+\caption{
+Relationship between fitness effects of mutations and ratio of counts on terminal (tip) branches versus non-terminal (internal) branches.
+Each point is an amino-acid mutation, and the orange text in the upper left give the number of mutations and the Pearson correlation coefficient.
+This plot shows only mutations with at least 10 expected counts and 5 actual counts.
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness/fitness_vs_terminal.html} for an interactive version of this plot that allows filtering by the number of actual or expected counts, or by gene.
+\label{fig:terminal}
+}
+\end{figure*}
+
+\begin{figure*}
+\centering
 \includegraphics[width=0.7\linewidth]{figs/fixed_dist.pdf}
 \caption{
+\jdbcomment{Right now this figure is not reference in text; should we keep it somehow?}
 Distribution of fitness effects of all amino-acid mutations relative to Wuhan-Hu-1, and all mutations that fixed in at least one clade of SARS-CoV-2 (using the Nextstrain clade definitions).
 The vertical dashed line at zero indicates the effect of a neutral mutation.
 Estimates are only shown for mutations with expected counts of at least 10.
@@ -382,24 +463,12 @@ See \url{https://jbloomlab.github.io/SARS2-mut-fitness/clade_fixed_muts_hist.htm
 \begin{figure*}[b]
 \includegraphics[width=\linewidth]{figs/fixed.pdf}
 \caption{
+\jdbcomment{Right now this figure is not reference in text; should we keep it somehow?}
 Effects of individual mutations that fixed in at least one clade of SARS-CoV-2, faceted by whether they are in spike or another protein.
 Plots show estimates of effects of mutations made across all clades (including those that have fixed the mutation) and just from direct forward occurrences of the mutation in clades in which it has not yet fixed.
 Estimates are only shown for mutations with expected counts of at least 10.
 See \url{https://jbloomlab.github.io/SARS2-mut-fitness/clade_fixed_muts.html} for an interactive version of this plot.
 \label{fig:fixed}
-}
-\end{figure*}
-
-
-\begin{figure*}
-\centering
-\includegraphics[width=0.75\linewidth]{figs/terminal.png}
-\caption{
-Relationship between fitness effects of mutations and ratio of counts on terminal (tip) branches versus non-terminal (internal) branches.
-Each point is an amino-acid mutation, and the orange text in the upper left give the number of mutations and the Pearson correlation coefficient.
-This plot shows only mutations with at least 10 expected counts and 5 actual counts.
-See \url{https://jbloomlab.github.io/SARS2-mut-fitness/fitness_vs_terminal.html} for an interactive version of this plot that allows filtering by the number of actual or expected counts, or by gene.
-\label{fig:terminal}
 }
 \end{figure*}
 
