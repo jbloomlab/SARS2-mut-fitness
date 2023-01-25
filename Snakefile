@@ -55,6 +55,16 @@ rule get_ref_gtf:
     shell:
         "wget -O - {params.url} | gunzip -c > {output.ref_gtf}"
 
+rule get_dca_data:
+    params:
+        url = "https://raw.githubusercontent.com/GiancarloCroce/DCA_SARS-CoV-2/main/data/data_dca_proteome.csv"
+    output:
+        "data/dca_mutability.csv"
+    shell:
+        """
+        curl {params.url} -o {output}
+        """
+
 
 rule ref_coding_sites:
     """Get all sites in reference that are part of a coding sequence."""
@@ -385,7 +395,7 @@ rule process_dms_dataset:
     """Process a deep mutational scanning dataset to fitness estimates."""
     input:
         unpack(
-            lambda wc: ( 
+            lambda wc: (
                 {"wt_seq": config["dms_datasets"][wc.dms_dataset]["wt_seq"]}
                 if "wt_seq" in config["dms_datasets"][wc.dms_dataset]
                 else {}
@@ -459,7 +469,7 @@ rule fitness_vs_terminal:
     input:
         aamut_all=rules.aamut_fitness.output.aamut_all,
     output:
-        chart="results/fitness_vs_terminal/fitness_vs_terminal.html",    
+        chart="results/fitness_vs_terminal/fitness_vs_terminal.html",
     params:
         min_expected_count=config["min_expected_count"],
         min_actual_count=config["terminal_min_actual_count"],
