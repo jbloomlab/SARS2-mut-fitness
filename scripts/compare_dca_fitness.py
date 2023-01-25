@@ -38,3 +38,6 @@ if __name__ == "__main__":
         print(gene, np.corrcoef(d.T)[0,1])
         plt.figure()
         plt.scatter(d[:,0], d[:,1])
+        plt.title(gene)
+        plt.xlabel('dca')
+        plt.ylabel('fitness')
