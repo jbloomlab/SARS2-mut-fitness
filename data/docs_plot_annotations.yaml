@@ -21,7 +21,7 @@ sections:
   correlation: Correlations among effect estimates
   dms: Correlations of estimates with deep mutational scanning
   fixed: Effects of fixed mutations
-  terminal: Effects of mutations on terminal and non-terminal branches
+  terminal: Effects of mutations versus number of descendants
 
 # List of all plots along with a *title* and markdown *legend*.
 # The keys should be the base name of the plot.
@@ -312,14 +312,18 @@ plots:
     title: ORF10 amino-acid fitnesses
 
   fitness_vs_terminal:
-    title: fitness effects versus ratio of mutation counts on non-terminal and terminal branches
+    title: fitness effects versus number of descendant sequences
     section: terminal
     legend: |
-      Interactive plot of the correlation between fitness estimates and the ratio of
-      the counts for each amino-acid mutation on non-terminal versus terminal branches
-      of the tree. This plot is designed to help assess whether mutations with higher
-      fitness tend to be associated with more descendant sequences (in which case
-      they would have a higher ratio of non-terminal to terminal counts).
+      Interactive plot of the correlation between fitness estimates of mutations and number
+      of descendants. This plot is designed to help assess whether mutations with higher
+      fitness tend to be associated with more descendant sequences.
+      
+      Two measures are provided for number of descendants. The first is the log ratio
+      of branches with the mutation that are internal on the tree (non-terminal)
+      versus to (to tip nodes). The second is the log number of tip-node descendants
+      sharing all mutations on a branch. In both cases, larger values indicate a mutation
+      tends to have more descendants.
 
       Each point on the plot represents a fitness estimate for a
       different amino-acid mutation. The Pearson correlation coefficient and the number

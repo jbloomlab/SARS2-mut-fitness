@@ -91,7 +91,7 @@ We perform some crucial filtering to remove spurious mutations as can arise from
 
  6. Note also that indels are ignored, as they are not captured in the mutation-annotated tree.
 
- 7. Although the main analysis here uses the total counts of each mutation, we also keep track of how many of these counts are on non-terminal (interior) branches of the tree versus terminal (tip) branches.
+ 7. Although the main analysis here uses the total counts of each mutation, we also keep track of how many of these counts are on non-terminal (interior) branches of the tree versus terminal (tip) branches, and also the mean log descendants defined as the log of the number of leaves sharing mutations from each mutated branch in the UShER tree (with log zero values set to one).
 
 The above mutation counts both for all sequences for a clade, and for the sample subsets defined in [config.yaml](config.yaml) are stored in [results/mutation_counts/aggregated.csv](results/mutation_counts/aggregated.csv).
 Note that mutations are annotated by the protein(s) they affect, if they are synonymous, if they are at 4-fold degenerate sites, if they are at an excluded site, etc.
@@ -194,7 +194,7 @@ The processed deep mutational scanning mutation effects are in `processed.csv` f
 The correlation of the fitness estimates to the deep mutational scanning are plotted at [https://jbloomlab.github.io/SARS2-mut-fitness](https://jbloomlab.github.io/SARS2-mut-fitness)
 
 ### Non-terminal versus terminal counts
-We compare the fitness effects of mutations to how often the mutation is observed on non-terminal versus terminal branches of the tree.
+We compare the fitness effects of mutations to how often the mutation is observed on non-terminal versus terminal branches of the tree, and the mean log tip descendants sharing the mutations for each mutated branch.
 See the plot linked at [https://jbloomlab.github.io/SARS2-mut-fitness](https://jbloomlab.github.io/SARS2-mut-fitness)
 
 ### Caveats of analysis
