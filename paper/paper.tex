@@ -439,10 +439,13 @@ See \url{https://jbloomlab.github.io/SARS2-mut-fitness/ORF3a.html} for an intera
 \centering
 \includegraphics[width=0.75\linewidth]{figs/terminal.png}
 \caption{
-Relationship between fitness effects of mutations and ratio of counts on terminal (tip) branches versus non-terminal (internal) branches.
+Relationship between fitness effects of mutations and two measures of the number of descendants.
+At top is shown the log ratio of counts of the mutation on non-terminal (internal) to terminal (tip) branches; larger values indicate mutations more likely to be found in viruses that leave descendants.
+At bottom is shown the mean log number of tip descendants that share all the mutations on each branch containing the mutation of interest; larger values again indicate mutations more likely to be found in viruses that leave more descendants.
 Each point is an amino-acid mutation, and the orange text in the upper left give the number of mutations and the Pearson correlation coefficient.
 This plot shows only mutations with at least 10 expected counts and 5 actual counts.
 See \url{https://jbloomlab.github.io/SARS2-mut-fitness/fitness_vs_terminal.html} for an interactive version of this plot that allows filtering by the number of actual or expected counts, or by gene.
+The number of descendants is calculated using the ``leaves\_sharing\_mutations'' variable of the UShER mutation-annotated tree.
 \label{fig:terminal}
 }
 \end{figure*}
