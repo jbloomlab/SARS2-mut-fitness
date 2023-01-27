@@ -51,11 +51,11 @@
 \runningauthor{}
 
 \begin{abstract}
-Knowledge of the fitness effects of mutations to SARS-CoV-2 can inform assessment of new variants, design of therapeutics resistant to escape, and basic understanding of the function of viral proteins.
-However, experimentally determining the effects of mutations is challenging: we lack tractable lab assays for many SARS-CoV-2 proteins, and comprehensive deep mutational scanning has been applied to only two of the virus's proteins.
+Knowledge of the fitness effects of mutations to SARS-CoV-2 can inform assessment of new variants, design of therapeutics resistant to escape, and understanding of the functions of viral proteins.
+However, experimentally determining effects of mutations is challenging: we lack tractable lab assays for many SARS-CoV-2 proteins, and comprehensive deep mutational scanning has been applied to only two SARS-CoV-2 proteins.
 Here we develop an approach that leverages millions of publicly available SARS-CoV-2 sequences to estimate the effects of mutations.
-We first calculate how many times each mutation is expected to occur along the SARS-CoV-2 phylogeny in the absence of selection. 
-We then compare these expected counts to the actual counts to estimate the effect of each mutation.
+We first calculate how many independent occurrences of each mutation are expected to be observed along the SARS-CoV-2 phylogeny in the absence of selection. 
+We then compare these expected observations to the actual observations to estimate the effect of each mutation.
 These estimates correlate well with deep mutational scanning measurements.
 For most genes, synonymous mutations are nearly neutral, stop-codon mutations are deleterious, and amino-acid mutations have a range of effects.
 However, some viral accessory proteins are under little to no selection.
@@ -93,8 +93,8 @@ For purposes such as identifying functionally constrained drug targets or unders
 
 Here we develop a new approach that uses natural sequences to estimate the effects of mutations.
 Our basic insight is that there are now so many SARS-CoV-2 sequences that all non-deleterious single-nucleotide mutations are expected to independently occur many times along the observed phylogenetic tree.
-We therefore first calculate the number of expected occurrences of each mutation based on the neutral mutation spectrum of SARS-CoV-2 estimated from four-fold degenerate synonymous sites~\citep{bloom2022evolution}.
-We then compare these expected occurrences to the actual occurrences in the SARS-CoV-2 tree to estimate the effect of each mutation.
+We therefore first calculate the number of expected observations of independent occurrences of each mutation based on the neutral mutation spectrum of SARS-CoV-2 estimated from four-fold degenerate synonymous sites~\citep{bloom2022evolution}.
+We then compare these expected observations to the actual observations in the SARS-CoV-2 tree to estimate the effect of each mutation.
 The resulting estimates correlate well with existing deep mutational scanning data.
 Most viral proteins have regions that are under strong selective constraints.
 However the accessory proteins mostly show only weak selection against amino-acid and even stop-codon mutations.
@@ -150,7 +150,7 @@ The statistical noise is greater for mutations with fewer expected counts: the f
 \caption{
 Correlations of mutation fitness effect estimates made using subsets of natural sequences.
 Correlations between estimates made {\bf (A)} just using sequences from the Delta or Omicron BA.5 clades or {\bf (B)} just from the USA or England.
-Each point is an amino-acid mutation, and orange text at upper left shows the number of mutations and Pearson correlation coefficient.
+Each point is an amino-acid mutation, the orange line is a least-squares regression, and orange text at upper left shows the number of mutations and Pearson correlation coefficient.
 Only mutations with at least 10 expected counts are shown, which is why panels have different numbers of mutations shown (sequence subsets vary in size).
 {\bf (C)} Correlations between clade or geography subsets become higher with an increasingly large threshold for minimum expected counts.
 Spike mutations have a worse correlation when subsetting by viral clade (plot shows average correlation over all pairwise combinations of Delta, BA.1, BA.2, and BA.5), but not when subsetting by geography (USA or England).
@@ -200,7 +200,7 @@ SARS-CoV-2 proteins are grouped into three categories: nonstructural (or nsp) pr
 The nonstructural and structural proteins are essential, and these proteins show strong selection against stop codons and clear although variable purifying selection against amino-acid mutations (Figure~\ref{fig:dist}B; e.g., nsp13 is under stronger protein-level constraint than nsp1).
 
 However, most accessory proteins are under little constraint (Figure~\ref{fig:dist}B).
-Stop-codon and amino-acid mutations to ORF7a and ORF8 are not more deleterious than synonymous mutations.
+Stop-codon and amino-acid mutations to ORF7a and ORF8 are not more deleterious than synonymous mutations (although recall that our estimates are only sensitive to fitness costs greater than a few percent).
 The lack of deleterious mutations to ORF8 is consistent with the fact that viruses with deletions in this gene have spread in humans~\citep{su2020discovery}.
 The only accessory protein under strong purifying selection against stop codons is ORF3a (Figure~\ref{fig:dist}B), for which stop codons in the first ~240 residues are clearly deleterious (Figure~\ref{fig:ORF3a}).
 These observations concur with experiments showing SARS-CoV-2 is attenuated by deletion of ORF3a but there is little effect of deleting ORF6, ORF7a, or ORF8~\citep{mcgrath2022sars,silvas2021contribution,liu2022live}.
@@ -214,7 +214,7 @@ Observations such as these could help guide experimental studies to better under
 \includegraphics[width=0.7\linewidth]{figs/dms.png}
 \caption{
 Correlation of mutation-effect estimates with experimental deep mutational scanning measurements for {\bf (A)} the full spike~\citep{dadonaite2022pseudovirus} or its RBD~\citep{starr2022deep}, and {\bf (B)} Mpro~\citep{flynn2022,iketani2022functional}.
-Each point is an amino-acid mutation, and orange text in the upper left shows the number of mutations and Pearson correlation coefficient.
+Each point is an amino-acid mutation, the orange line is a least-squares regression, and orange text in the upper left shows the number of mutations and Pearson correlation coefficient.
 Each sub-panel shows a different set of mutations (depending on which mutations were measured in that experiment).
 See \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_S_corr.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_nsp5_corr.html} for plots that enable subsetting on just mutations shared across all datasets and other interactive options such as mousing over points to see mutation identities.
 \label{fig:dms}
@@ -236,6 +236,15 @@ In particular, some Mpro mutations estimated to have deleterious effects in natu
 This difference could arise if the yeast experiments only capture some of the constraints on Mpro in the context of actual virus.
 For instance, a stop codon at Q306 is well tolerated in both deep mutational scans but extremely disfavorable in our sequence-based estimates, and would be highly deleterious to actual virus as it would truncate the polyprotein.
 Similarly, K61N is well tolerated in the deep mutational scans but extremely disfavorable in our estimates, possibly because in the full viral polyprotein this residue mediates important interactions between Mpro and nsp7-10~\citep{yadav2022biochemical}
+
+\subsection*{Fixed mutations tend to have beneficial or neutral effects}
+Amino-acid mutations that have fixed in at least one viral clade are estimated to mostly have neutral or beneficial effects, whereas most other mutations are deleterious (Figure~\ref{fig:fixed_dist}).
+This fact is unsurprising: viral lineages that expand into new clades do so because they have acquired beneficial mutations while avoiding deleterious ones~\citep{luksza2014predictive, koelle2015effects, huddleston2020integrating}.
+But the fact that the beneficial effects of fixed mutations are correctly estimated by our approach, which simply counts mutation occurrences and does not incorporate information on lineage size, demonstrates such mutations occur independently in many viral lineages that are more successful than average.
+
+Most fixed mutations are estimated to be beneficial regardless of whether estimates are made using all viral clades, or just clades that did not fix the mutation (Figure~\ref{fig:fixed}).
+However, a few beneficial fixed mutations show epistatic entrenchment~\citep{shah2015contingency, starr2018pervasive} in the sense that they are not particularly beneficial in clades in which they did not fix (Figure~\ref{fig:fixed}).
+The most striking example is S373P in spike, which has experimentally been shown to be neutral or slightly deleterious in pre-Omicron clades, but strongly beneficial in the Omicron clades in which it fixed~\citep{starr2022deep, moulana2022compensatory}.
 
 \subsection*{Interactive exploration of amino-acid fitnesses}
 
@@ -583,7 +592,7 @@ See \url{https://jbloomlab.github.io/SARS2-mut-fitness/ORF3a.html} for an intera
 Relationship between fitness effects of mutations and two measures of the number of descendants.
 At top is shown the log ratio of counts of the mutation on non-terminal (internal) to terminal (tip) branches; larger values indicate mutations more likely to be found in viruses that leave descendants.
 At bottom is shown the mean log number of tip descendants that share all the mutations on each branch containing the mutation of interest; larger values again indicate mutations more likely to be found in viruses that leave more descendants.
-Each point is an amino-acid mutation, and the orange text in the upper left give the number of mutations and the Pearson correlation coefficient.
+Each point is an amino-acid mutation, the orange line is a least-squares regression, and the orange text in the upper left give the number of mutations and the Pearson correlation coefficient.
 This plot shows only mutations with at least 10 expected counts and 5 actual counts.
 See \url{https://jbloomlab.github.io/SARS2-mut-fitness/fitness_vs_terminal.html} for an interactive version of this plot that allows filtering by the number of actual or expected counts, or by gene.
 The number of descendants is calculated using the ``leaves\_sharing\_mutations'' variable of the UShER mutation-annotated tree.
@@ -595,10 +604,8 @@ The number of descendants is calculated using the ``leaves\_sharing\_mutations''
 \centering
 \includegraphics[width=0.7\linewidth]{figs/fixed_dist.pdf}
 \caption{
-\jdbcomment{Right now this figure is not reference in text; should we keep it somehow?}
-Distribution of fitness effects of all amino-acid mutations relative to Wuhan-Hu-1, and all mutations that fixed in at least one clade of SARS-CoV-2 (using the Nextstrain clade definitions).
+Distribution of fitness effects of all amino-acid mutations relative to Wuhan-Hu-1, and just those mutations that fixed in at least one clade of SARS-CoV-2 (using the Nextstrain clade definitions).
 The vertical dashed line at zero indicates the effect of a neutral mutation.
-Estimates are only shown for mutations with expected counts of at least 10.
 See \url{https://jbloomlab.github.io/SARS2-mut-fitness/clade_fixed_muts_hist.html} for an interactive version of this plot that allows adjustment of the minimum expected count threshold.
 \label{fig:fixed_dist}
 }
@@ -607,10 +614,10 @@ See \url{https://jbloomlab.github.io/SARS2-mut-fitness/clade_fixed_muts_hist.htm
 \begin{figure*}[b]
 \includegraphics[width=\linewidth]{figs/fixed.pdf}
 \caption{
-\jdbcomment{Right now this figure is not reference in text; should we keep it somehow?}
 Effects of individual mutations that fixed in at least one clade of SARS-CoV-2, faceted by whether they are in spike or another protein.
-Plots show estimates of effects of mutations made across all clades (including those that have fixed the mutation) and just from direct forward occurrences of the mutation in clades in which it has not yet fixed.
-Estimates are only shown for mutations with expected counts of at least 10.
+``Mutation polarity'' indicates if the point shows the effect of the mutation estimated using all viral clades (including those that have fixed the mutation), or just from direct forward occurrences of the mutation in clades in which it has not yet fixed.
+Some mutations are estimated to be more favorable when including clades in which they have fixed (blue circles) in addition to just clades in which it has not yet fixed (orange squares)---when this occurs, it suggests epistatic entrenchment of the mutations~\citep{shah2015contingency, starr2018pervasive}.
+Note that clades in which a mutation has already fixed contribute to estimates of its fitness via estimates of the effect of its reversion and via estimates of the effects of mutations to other amino acids at the same site.
 See \url{https://jbloomlab.github.io/SARS2-mut-fitness/clade_fixed_muts.html} for an interactive version of this plot.
 \label{fig:fixed}
 }
