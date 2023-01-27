@@ -339,7 +339,7 @@ To estimate the effects of mutations, we simply compare the expected counts of e
 See \url{https://github.com/jbloomlab/SARS2-mut-fitness/blob/main/results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv} for these expected versus actual counts on a per-clade basis; note that this file also includes counts at excluded sites.
 
 To estimate the effects of mutations, we first sum the counts of all non-excluded nucleotide mutations that encode each amino-acid mutation to convert the nucleotide counts to amino-acid counts.
-In doing this, we exclude any mutations that are not from the clade-founder amino-acid identity: in other words, we ignore sequences with histories that involve multiple amino-acid mutations at the same site in the same clade (this is a caveat of the approach, although because each clade is relatively high identity it does not have a major effect).
+In doing this, we exclude any mutations that are not from the clade-founder codon identity: in other words, we ignore sequences with histories that involve multiple mutations at the same codon in the same clade (this is a caveat of the approach, although because each clade is relatively high identity it does not have a major effect).
 For the overall estimates reported in this paper, we also sum these counts across all retained clades; for the analyses in Figure~\ref{fig:corr} we also make estimates without summing across clades and only for counts from sequences from specific geographic locations.
 We then compute the estimated fitness $\Delta f$ of each mutation as simply the natural logarithm of the ratio of actual to expected counts after adding a pseudocount of $P - 0.5$ to each count, namely $ \Delta f = \log \left(\frac{n_{actual} + P}{n_{expected} + P}\right)$.
 
