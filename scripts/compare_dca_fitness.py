@@ -7,7 +7,7 @@ remap_genes = {"Spike":"S", "ORF1a":"ORF1ab", "ORF1b":"ORF1ab",
                 "Nucleocapsid":"N", "Membrane":"M", "Envelope":"E"}
 
 def load_dca():
-    dca = pd.read_csv("data/dca_mutability.csv")
+    dca = pd.read_csv(snakemake.input.dca)
     dca_mutability = {}
     for i, row in dca.iterrows():
         dca_mutability[(remap_genes.get(row["protein"], row["protein"]), row["position_protein"])] = row["mutability_score(DCA)"]
@@ -16,7 +16,7 @@ def load_dca():
 
 
 def load_fitness():
-    return pd.read_csv("results/aa_fitness/aamut_fitness_all.csv")
+    return pd.read_csv(snakemake.input.fitness)
 
 
 if __name__ == "__main__":
@@ -32,12 +32,15 @@ if __name__ == "__main__":
         if (gene, aa_site) in dca_mutability and not pd.isna(dca_mutability[(gene, aa_site)]):
             linked_dca_fitness[gene][aa_site] = (dca_mutability.get((gene, aa_site), np.nan), row)
 
-
-    for gene in linked_dca_fitness:
+    fig, axes = plt.subplots(2, 5, figsize=(12, 5))
+    for i, gene in enumerate(linked_dca_fitness):
+        ax = axes.ravel()[i]
         d = np.array(list(linked_dca_fitness[gene].values()))
-        print(gene, np.corrcoef(d.T)[0,1])
-        plt.figure()
-        plt.scatter(d[:,0], d[:,1])
-        plt.title(gene)
-        plt.xlabel('dca')
-        plt.ylabel('fitness')
+        corr = np.corrcoef(d.T)[0,1]
+        ax.scatter(d[:,0], d[:,1], s=10, alpha=0.3)
+        ax.set_title(f"{gene} (r = {corr:.2f})")
+        ax.set_xlabel('DCA mutability')
+        ax.set_ylabel('mean fitness effect')
+    fig.tight_layout()
+    
+    fig.savefig(snakemake.output.plot)

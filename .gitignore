@@ -31,3 +31,7 @@ results/aa_fitness/*
 !results/dms
 results/dms/*/*
 !results/dms/*/processed.csv
+
+!results/dca
+results/dca/*
+!results/dca/dca_corr.pdf

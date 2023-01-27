@@ -24,6 +24,7 @@ rule all:
         "results/aa_fitness/aa_fitness.csv",
         expand("docs/{plot}.html", plot=docs_plot_annotations["plots"]),
         "docs/index.html",
+        "results/dca/dca_corr.pdf",
 
 
 rule get_mat_tree:
@@ -55,15 +56,15 @@ rule get_ref_gtf:
     shell:
         "wget -O - {params.url} | gunzip -c > {output.ref_gtf}"
 
+
 rule get_dca_data:
+    """Get DCA data to use as comparator."""
     params:
-        url = "https://raw.githubusercontent.com/GiancarloCroce/DCA_SARS-CoV-2/main/data/data_dca_proteome.csv"
+        url="https://raw.githubusercontent.com/GiancarloCroce/DCA_SARS-CoV-2/main/data/data_dca_proteome.csv"
     output:
-        "data/dca_mutability.csv"
+        csv="results/dca/dca_mutability.csv"
     shell:
-        """
-        curl {params.url} -o {output}
-        """
+        "curl {params.url} -o {output}"
 
 
 rule ref_coding_sites:
@@ -423,6 +424,16 @@ rule process_dms_dataset:
             -p processed_csv {output.processed}
         jupyter nbconvert {output.nb} --to html
         """
+
+rule compare_dca_fitness:
+    """Compare to DCA mutability estimates."""
+    input:
+        dca=rules.get_dca_data.output.csv,
+        fitness=rules.aamut_fitness.output.aamut_all,
+    output:
+        plot="results/dca/dca_corr.pdf",
+    script:
+        "scripts/compare_dca_fitness.py"
 
 
 rule fitness_dms_corr:
