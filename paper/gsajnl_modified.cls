@@ -150,8 +150,9 @@
 \cfoot{}
 \rfoot{}
 % \makeatletter
-\fancyfoot[LE]{\thepage\ \hspace{2em} \@runningauthor \hspace{0.2em}}
-\fancyfoot[RO]{\@runningtitle \hspace{2em} \thepage\ }
+\fancyfoot[C]{\thepage}
+%\fancyfoot[LE]{\thepage\ \hspace{2em} \@runningauthor \hspace{0.2em}}
+%\fancyfoot[RO]{\@runningtitle \hspace{2em} \thepage\ }
 % \makeatother
 \fancyfoot[LO,RE]{}
 \renewcommand{\headrulewidth}{0pt}% % No header rule
