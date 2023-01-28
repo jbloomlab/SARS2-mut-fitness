@@ -89,6 +89,7 @@ So far analyses of these sequences have focused on analyzing expanding viral cla
 The basic idea is that mutations that repeatedly appear near the base of clades that increase in relative frequency are likely beneficial to the virus.
 However, only a small minority of all possible mutations are beneficial, with most being nearly neutral or deleterious.
 For purposes such as identifying functionally constrained drug targets or understanding the function of viral proteins, it is important to accurately estimate the effects of neutral or deleterious mutations as well as beneficial ones.
+Other studies have analyzed broader alignments that include coronaviruses substantially diverged from SARS-CoV-2~\citep{rodriguez2022epistatic, thadani2022learning}, but the resulting estimates are inherently limited by the fact that mutational effects shift as proteins diverge~\citep{starr2022shifting, moulana2022compensatory, pollock2012amino, shah2015contingency, lee2018deep}.
 % \jdbcomment{Richard, I could not quite figure out how to fit in \citep{strelkowa2021clonal}, let me know if you have ideas.}
 
 Here we develop a new approach that uses natural sequences to estimate the effects of mutations.
@@ -167,7 +168,7 @@ The modest variation in estimates from different sequence subsets could have two
 To test for statistical noise, we computed correlations with different thresholds for how many expected counts are required before making an estimate for a mutation (Figure~\ref{fig:corr}C).
 Correlations increased with this count threshold, consistent with reduced statistical noise for larger mutation counts.
 But the correlation for spike mutations was consistently lower for cross-clade but not cross-geography comparisons (Figure~\ref{fig:corr}C).
-The lower cross-clade correlation for spike appears due to epistatic shifts in mutation effects~\citep{starr2022shifting, moulana2022compensatory, pollock2012amino, shah2015contingency} or changes in the selective landscape~\citep{sun2023rapidly} between SARS-CoV-2 clades, since the correlation is lower between clades with higher spike divergence (Figure~\ref{fig:corr}D).
+The lower cross-clade correlation for spike appears due to epistatic shifts in mutation effects~\citep{starr2022shifting, moulana2022compensatory, pollock2012amino, shah2015contingency, lee2018deep} or changes in the selective landscape~\citep{sun2023rapidly} between SARS-CoV-2 clades, since the correlation is lower between clades with higher spike divergence (Figure~\ref{fig:corr}D).
 
 Despite evidence for some shifts in mutation effects in spike, for the rest of this paper we aggregate counts across viral clades to make a single estimate for each amino-acid mutation.
 The reason is that the accuracy of the estimates increases with the number of counts for each mutation (Figure~\ref{fig:corr}C), and several mutation types only have enough counts for reasonable estimates when aggregating across viral clades (Figure~\ref{fig:expected_vs_actual}B).
@@ -430,8 +431,9 @@ However, such a derivation (if possible at all) is beyond the scope of this stud
 The key point of the derivations for our current study is simply that our approach should be sensitive to detecting the effects of mutations with fitness costs greater than a few percent.
 
 \section{Acknowledgments}
-We thank Angie Hinrichs for assistance with resolving questions related to use of the UShER package and its pre-built mutation-annotated tree \jdbcomment{or add here as co-author}.
-\jdbcomment{Jesse to acknowledge AVIDD, CEIRR, and R01 grants.}
+We thank Angie Hinrichs for assistance with questions related to use of the UShER package and its pre-built mutation-annotated tree \jdbcomment{check with her to make sure acknowledging is OK}.
+The work of JDB was supported in part by the NIH/NIAID under grants U19AI171399 and R01AI141707, and contract 75N93021C00015.  
+\jdbcomment{Jesse needs to confirm permission of Chodera and Hensley to cite U19 and CEIRR contract.}
 JDB is an Investigator of the Howard Hughes Medical Institute.
 
 \section{Competing interests}
