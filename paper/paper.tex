@@ -51,11 +51,11 @@
 \runningauthor{}
 
 \begin{abstract}
-Knowledge of the fitness effects of mutations to SARS-CoV-2 can inform assessment of new variants, design of therapeutics resistant to escape, and basic understanding of the function of viral proteins.
-However, experimentally determining the effects of mutations is challenging: we lack tractable lab assays for many SARS-CoV-2 proteins, and comprehensive deep mutational scanning has been applied to only two of the virus's proteins.
+Knowledge of the fitness effects of mutations to SARS-CoV-2 can inform assessment of new variants, design of therapeutics resistant to escape, and understanding of the functions of viral proteins.
+However, experimentally determining effects of mutations is challenging: we lack tractable lab assays for many SARS-CoV-2 proteins, and comprehensive deep mutational scanning has been applied to only two SARS-CoV-2 proteins.
 Here we develop an approach that leverages millions of publicly available SARS-CoV-2 sequences to estimate the effects of mutations.
-We first calculate how many times each mutation is expected to occur along the SARS-CoV-2 phylogeny in the absence of selection. 
-We then compare these expected counts to the actual counts to estimate the effect of each mutation.
+We first calculate how many independent occurrences of each mutation are expected to be observed along the SARS-CoV-2 phylogeny in the absence of selection. 
+We then compare these expected observations to the actual observations to estimate the effect of each mutation.
 These estimates correlate well with deep mutational scanning measurements.
 For most genes, synonymous mutations are nearly neutral, stop-codon mutations are deleterious, and amino-acid mutations have a range of effects.
 However, some viral accessory proteins are under little to no selection.
@@ -89,12 +89,13 @@ So far analyses of these sequences have focused on analyzing expanding viral cla
 The basic idea is that mutations that repeatedly appear near the base of clades that increase in relative frequency are likely beneficial to the virus.
 However, only a small minority of all possible mutations are beneficial, with most being nearly neutral or deleterious.
 For purposes such as identifying functionally constrained drug targets or understanding the function of viral proteins, it is important to accurately estimate the effects of neutral or deleterious mutations as well as beneficial ones.
+Other studies have analyzed broader alignments that include coronaviruses substantially diverged from SARS-CoV-2~\citep{rodriguez2022epistatic, thadani2022learning}, but the resulting estimates are inherently limited by the fact that mutational effects shift as proteins diverge~\citep{starr2022shifting, moulana2022compensatory, pollock2012amino, shah2015contingency, lee2018deep}.
 % \jdbcomment{Richard, I could not quite figure out how to fit in \citep{strelkowa2021clonal}, let me know if you have ideas.}
 
 Here we develop a new approach that uses natural sequences to estimate the effects of mutations.
 Our basic insight is that there are now so many SARS-CoV-2 sequences that all non-deleterious single-nucleotide mutations are expected to independently occur many times along the observed phylogenetic tree.
-We therefore first calculate the number of expected occurrences of each mutation based on the neutral mutation spectrum of SARS-CoV-2 estimated from four-fold degenerate synonymous sites~\citep{bloom2022evolution}.
-We then compare these expected occurrences to the actual occurrences in the SARS-CoV-2 tree to estimate the effect of each mutation.
+We therefore first calculate the number of expected observations of independent occurrences of each mutation based on the neutral mutation spectrum of SARS-CoV-2 estimated from four-fold degenerate synonymous sites~\citep{bloom2022evolution}.
+We then compare these expected observations to the actual observations in the SARS-CoV-2 tree to estimate the effect of each mutation.
 The resulting estimates correlate well with existing deep mutational scanning data.
 Most viral proteins have regions that are under strong selective constraints.
 However the accessory proteins mostly show only weak selection against amino-acid and even stop-codon mutations.
@@ -137,9 +138,10 @@ But for nonsynonymous and especially stop-codon mutations, the actual counts are
 The ratio of actual to expected counts for each mutation is related to its effect on viral fitness.
 The intuition is straightforward: mutations arise at all sites during viral replication, but viruses with deleterious mutations are less likely to transmit and be observed in sequencing of human SARS-CoV-2.
 Therefore, the ratio of actual to expected counts will be one for neutral mutations, and less than one for deleterious mutations.
-In the Methods, we show that under plausible assumptions about SARS-CoV-2 evolution and sampling intensity (fraction of viruses sequenced), the fitness effects of deleterious mutations scales roughly logarithmically with the ratio of actual to expected counts for mutations with effects greater than a few percent.
-We therefore estimate the effect of each mutation as the logarithm of this ratio after summing counts for all nucleotides that encode the relevant amino-acid.
-The statistical noise in the count ratios is greater for mutations with fewer expected counts: the figures in this paper show mutations with $\ge10$ expected counts unless otherwise noted, with legends linking to interactive plots that enable adjustment of this threshold.
+In the Methods and Appendix, we show that under plausible assumptions about SARS-CoV-2 evolution and sampling intensity (fraction of viruses sequenced), the fitness cost of a deleterious mutation scales roughly inversely with the ratio of actual to expected counts for mutations with costs greater than a few percent.
+A key result from this derivation is the dependence on sampling intensity: if all human SARS-CoV-2 were sequenced then our approach would only be sensitive to highly deleterious mutations, but since the actual sampling intensity is $\sim$0.1--1\% the approach can detect mutations with more subtle effects that transmit with reduced efficiency.
+We quantify the effect of each mutation as the logarithm of the ratio of actual to expected counts after summing counts for all nucleotides that encode the relevant amino-acid.
+The statistical noise is greater for mutations with fewer expected counts: the figures in this paper show mutations with $\ge10$ expected counts unless otherwise noted, with legends linking to interactive plots that enable adjustment of this threshold.
 
 \subsection*{Mutation-effect estimates are robust to subsampling natural sequences, with some evidence of epistasis in spike}
 
@@ -149,7 +151,7 @@ The statistical noise in the count ratios is greater for mutations with fewer ex
 \caption{
 Correlations of mutation fitness effect estimates made using subsets of natural sequences.
 Correlations between estimates made {\bf (A)} just using sequences from the Delta or Omicron BA.5 clades or {\bf (B)} just from the USA or England.
-Each point is an amino-acid mutation, and orange text at upper left shows the number of mutations and Pearson correlation coefficient.
+Each point is an amino-acid mutation, the orange line is a least-squares regression, and orange text at upper left shows the number of mutations and Pearson correlation coefficient.
 Only mutations with at least 10 expected counts are shown, which is why panels have different numbers of mutations shown (sequence subsets vary in size).
 {\bf (C)} Correlations between clade or geography subsets become higher with an increasingly large threshold for minimum expected counts.
 Spike mutations have a worse correlation when subsetting by viral clade (plot shows average correlation over all pairwise combinations of Delta, BA.1, BA.2, and BA.5), but not when subsetting by geography (USA or England).
@@ -166,7 +168,7 @@ The modest variation in estimates from different sequence subsets could have two
 To test for statistical noise, we computed correlations with different thresholds for how many expected counts are required before making an estimate for a mutation (Figure~\ref{fig:corr}C).
 Correlations increased with this count threshold, consistent with reduced statistical noise for larger mutation counts.
 But the correlation for spike mutations was consistently lower for cross-clade but not cross-geography comparisons (Figure~\ref{fig:corr}C).
-The lower cross-clade correlation for spike appears due to epistatic shifts in mutation effects~\citep{starr2022shifting, moulana2022compensatory, pollock2012amino, shah2015contingency} or changes in the selective landscape~\citep{sun2023rapidly} between SARS-CoV-2 clades, since the correlation is lower between clades with higher spike divergence (Figure~\ref{fig:corr}D).
+The lower cross-clade correlation for spike appears due to epistatic shifts in mutation effects~\citep{starr2022shifting, moulana2022compensatory, pollock2012amino, shah2015contingency, lee2018deep} or changes in the selective landscape~\citep{sun2023rapidly} between SARS-CoV-2 clades, since the correlation is lower between clades with higher spike divergence (Figure~\ref{fig:corr}D).
 
 Despite evidence for some shifts in mutation effects in spike, for the rest of this paper we aggregate counts across viral clades to make a single estimate for each amino-acid mutation.
 The reason is that the accuracy of the estimates increases with the number of counts for each mutation (Figure~\ref{fig:corr}C), and several mutation types only have enough counts for reasonable estimates when aggregating across viral clades (Figure~\ref{fig:expected_vs_actual}B).
@@ -199,7 +201,7 @@ SARS-CoV-2 proteins are grouped into three categories: nonstructural (or nsp) pr
 The nonstructural and structural proteins are essential, and these proteins show strong selection against stop codons and clear although variable purifying selection against amino-acid mutations (Figure~\ref{fig:dist}B; e.g., nsp13 is under stronger protein-level constraint than nsp1).
 
 However, most accessory proteins are under little constraint (Figure~\ref{fig:dist}B).
-Stop-codon and amino-acid mutations to ORF7a and ORF8 are not more deleterious than synonymous mutations.
+Stop-codon and amino-acid mutations to ORF7a and ORF8 are not more deleterious than synonymous mutations (although recall that our estimates are only sensitive to fitness costs greater than a few percent).
 The lack of deleterious mutations to ORF8 is consistent with the fact that viruses with deletions in this gene have spread in humans~\citep{su2020discovery}.
 The only accessory protein under strong purifying selection against stop codons is ORF3a (Figure~\ref{fig:dist}B), for which stop codons in the first ~240 residues are clearly deleterious (Figure~\ref{fig:ORF3a}).
 These observations concur with experiments showing SARS-CoV-2 is attenuated by deletion of ORF3a but there is little effect of deleting ORF6, ORF7a, or ORF8~\citep{mcgrath2022sars,silvas2021contribution,liu2022live}.
@@ -213,7 +215,7 @@ Observations such as these could help guide experimental studies to better under
 \includegraphics[width=0.7\linewidth]{figs/dms.png}
 \caption{
 Correlation of mutation-effect estimates with experimental deep mutational scanning measurements for {\bf (A)} the full spike~\citep{dadonaite2022pseudovirus} or its RBD~\citep{starr2022deep}, and {\bf (B)} Mpro~\citep{flynn2022,iketani2022functional}.
-Each point is an amino-acid mutation, and orange text in the upper left shows the number of mutations and Pearson correlation coefficient.
+Each point is an amino-acid mutation, the orange line is a least-squares regression, and orange text in the upper left shows the number of mutations and Pearson correlation coefficient.
 Each sub-panel shows a different set of mutations (depending on which mutations were measured in that experiment).
 See \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_S_corr.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_nsp5_corr.html} for plots that enable subsetting on just mutations shared across all datasets and other interactive options such as mousing over points to see mutation identities.
 \label{fig:dms}
@@ -230,9 +232,20 @@ Some of the mutations with the greatest divergence between our sequence-based es
 For instance, P527L, which is favorable in the RBD deep mutational scan but deleterious in the sequence-based estimates and full-spike scan, is at the C-terminus of the yeast-displayed RBD~\citep{starr2020deep} where it may adopt a non-native conformation.
 
 The sequence-based estimates for Mpro also correlate with the deep mutational scans for that protein, although in this case the two experiments correlate substantially better with each other than with our estimates (Figure~\ref{fig:dms}B).
-Because both Mpro experiments use a similar methodology~\citep{flynn2022,iketani2022functional} it is possible that the higher correlation of the experiments with each other versus the sequence-based estimates reflects shared artifacts of the yeast-based assay across experiments.
-For instance, a stop codon at Q306 is well tolerated in both deep mutational scans but extremely disfavorable in our sequence-based estimates, and such a mutation would be highly deleterious to actual virus as it would truncate the polyprotein.
-Similarly, K61N is well tolerated in the deep mutational scanning but extremely disfavorable in our estimates, possibly because in the full viral polyprotein this residue mediates important interactions between Mpro and nsp7-10~\citep{yadav2022biochemical}
+Because both Mpro experiments use a similar yeast-based methodology~\citep{flynn2022,iketani2022functional} it is possible that the higher correlation of the experiments with each other than the sequence-based estimates reflects shared artifacts of the yeast experiments.
+In particular, some Mpro mutations estimated to have deleterious effects in natural sequences are well tolerated in the yeast experiments.
+This difference could arise if the yeast experiments only capture some of the constraints on Mpro in the context of actual virus.
+For instance, a stop codon at Q306 is well tolerated in both deep mutational scans but extremely disfavorable in our sequence-based estimates, and would be highly deleterious to actual virus as it would truncate the polyprotein.
+Similarly, K61N is well tolerated in the deep mutational scans but extremely disfavorable in our estimates, possibly because in the full viral polyprotein this residue mediates important interactions between Mpro and nsp7-10~\citep{yadav2022biochemical}
+
+\subsection*{Fixed mutations tend to have beneficial or neutral effects}
+Amino-acid mutations that have fixed in at least one viral clade are estimated to mostly have neutral or beneficial effects, whereas most other mutations are deleterious (Figure~\ref{fig:fixed_dist}).
+This fact is unsurprising: viral lineages that expand into new clades do so because they have acquired beneficial mutations while avoiding deleterious ones~\citep{luksza2014predictive, koelle2015effects, huddleston2020integrating}.
+But the fact that the beneficial effects of fixed mutations are correctly estimated by our approach, which simply counts mutation occurrences and does not incorporate information on lineage size, demonstrates such mutations occur independently in many viral lineages that are more successful than average.
+
+Most fixed mutations are estimated to be beneficial regardless of whether estimates are made using all viral clades, or just clades that did not fix the mutation (Figure~\ref{fig:fixed}).
+However, a few beneficial fixed mutations show epistatic entrenchment~\citep{shah2015contingency, starr2018pervasive} in the sense that they are not particularly beneficial in clades in which they did not fix (Figure~\ref{fig:fixed}).
+The most striking example is S373P in spike, which has experimentally been shown to be neutral or slightly deleterious in pre-Omicron clades, but strongly beneficial in the Omicron clades in which it fixed~\citep{starr2022deep, moulana2022compensatory}.
 
 \subsection*{Interactive exploration of amino-acid fitnesses}
 
@@ -339,7 +352,7 @@ To estimate the effects of mutations, we simply compare the expected counts of e
 See \url{https://github.com/jbloomlab/SARS2-mut-fitness/blob/main/results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv} for these expected versus actual counts on a per-clade basis; note that this file also includes counts at excluded sites.
 
 To estimate the effects of mutations, we first sum the counts of all non-excluded nucleotide mutations that encode each amino-acid mutation to convert the nucleotide counts to amino-acid counts.
-In doing this, we exclude any mutations that are not from the clade-founder amino-acid identity: in other words, we ignore sequences with histories that involve multiple amino-acid mutations at the same site in the same clade (this is a caveat of the approach, although because each clade is relatively high identity it does not have a major effect).
+In doing this, we exclude any mutations that are not from the clade-founder codon identity: in other words, we ignore sequences with histories that involve multiple mutations at the same codon in the same clade (this is a caveat of the approach, although because each clade is relatively high identity it does not have a major effect).
 For the overall estimates reported in this paper, we also sum these counts across all retained clades; for the analyses in Figure~\ref{fig:corr} we also make estimates without summing across clades and only for counts from sequences from specific geographic locations.
 We then compute the estimated fitness $\Delta f$ of each mutation as simply the natural logarithm of the ratio of actual to expected counts after adding a pseudocount of $P - 0.5$ to each count, namely $ \Delta f = \log \left(\frac{n_{actual} + P}{n_{expected} + P}\right)$.
 
@@ -398,12 +411,29 @@ Those protein annotations refer to the polyproteins encoding the non-structural 
 To convert to from ORF1ab numbering/naming to the nsp-based naming (eg, nsp1, nsp2, etc) we use the conversions specified under ``orf1ab\_to\_nsps'' in \url{https://github.com/jbloomlab/SARS2-mut-fitness/blob/main/config.yaml}, which are in turn taken from Theo Sanderson's annotations at \url{https://github.com/theosanderson/Codon2Nucleotide/blob/main/src/App.js}.
 
 \subsection{Derivation of relationship between actual to expected count ratio and viral fitness}
-\jdbcomment{Jesse will add this from Richard's notes.}
+The ratio of actual to expected counts that we calculate in this paper is related to the probability that we observe a viral lineage containing an occurrence of a specific mutation among sequenced human SARS-CoV-2.
+This probability depends on three factors: the fitness effect of the mutation, the fraction of all SARS-CoV-2 viruses that are sequenced (sampling intensity), and the growth dynamics of the viral population.
+In the supplementary appendix, we derive the approximate relationship between this probability as a function of the fitness cost $s$ and sampling intensity $\epsilon$ for deleterious mutations for both a constant and exponentially growing viral population.
 
+We show that for a constant viral population size, the probability of observing a lineage containing a deleterious mutation with cost $s$ is roughly $\frac{\epsilon}{s + \epsilon}$ when $s^2 > \epsilon$, and more weakly dependent on $s$ for smaller fitness costs (when $s^2 < \epsilon$).
+The intuitive explanation is that the average size of a mutant lineage with fitness cost $s$ is $1/s$ and we basically ask whether we sample the lineage before it disappears.
+If we sample more intensely (larger $\epsilon$), whether a lineage gets sampled depends primarily on the stochastic dynamics and little on the fitness effect.
+With a typical sampling intensity for SARS-CoV-2 between 1/1000 and 1/100, this means our approach is sensitive to fitness effects larger than a few percent; mutations with fitness costs smaller than that will not show an appreciable difference from neutral mutations in their ratio of actual to expected accounts.
+
+In an exponentially growing population, the probability of observing a mutant lineage with fitness cost $s$ again scales as $\sim \frac{\epsilon}{\epsilon + s}$ if $sT>1$, where $T$ is the time over which the variant has expanded.
+If $T$ is $\sim$ months, that is 20 generations, which again corresponds to $s$ of at least a few percent for $sT > 1$. 
+For mutations with smaller fitness costs, the dependence scales more as $\sim \epsilon\left(1-sT\right)$.
+
+Overall, these calculations indicate that for multiple different growth dynamics of the viral population, the ratio of expected to actual counts will scale inversely with the fitness cost of deleterious mutations for mutations with costs that exceed a few percent.
+Note that the approach we use in this paper does not account for variation in sampling intensity across space or time, does not attempt to adjust for changes in viral growth dynamics over time, uses the heuristic formula of calculating the effect as the log ratio of counts, and applies this same formula to all mutations regardless of whether they are deleterious, neutral, or beneficial.
+A more complete derivation might try to calculate the fitness effects from the full distribution of lineage sizes more rigorously and incorporate information about the sampling intensity and viral growth dynamics.
+However, such a derivation (if possible at all) is beyond the scope of this study, and we also note that good empirical data is generally lacking to precisely account for sampling intensity and viral growth dynamics over the full span of time and space from which the sequences we analyze are drawn.
+The key point of the derivations for our current study is simply that our approach should be sensitive to detecting the effects of mutations with fitness costs greater than a few percent.
 
 \section{Acknowledgments}
-We thank Angie Hinrichs for assistance with resolving questions related to use of the UShER package and its pre-built mutation-annotated tree \jdbcomment{or add here as co-author}.
-\jdbcomment{Jesse to acknowledge AVIDD, CEIRR, and R01 grants.}
+We thank Angie Hinrichs for assistance with questions related to use of the UShER package and its pre-built mutation-annotated tree \jdbcomment{check with her to make sure acknowledging is OK}.
+The work of JDB was supported in part by the NIH/NIAID under grants U19AI171399 and R01AI141707, and contract 75N93021C00015.  
+\jdbcomment{Jesse needs to confirm permission of Chodera and Hensley to cite U19 and CEIRR contract.}
 JDB is an Investigator of the Howard Hughes Medical Institute.
 
 \section{Competing interests}
@@ -413,6 +443,7 @@ JDB receives royalty payments as an inventor on Fred Hutch licensed patents rela
 \bibliography{references}
 }
 
+\newgeometry{left=1in, right=1in, top=48pt, bottom=60pt}
 \onecolumn
 \renewcommand{\thepage}{S\arabic{page}}
 \setcounter{page}{1}
@@ -421,7 +452,128 @@ JDB receives royalty payments as an inventor on Fred Hutch licensed patents rela
 
 \clearpage
 
-\section{Supplementary Material}
+\section{Supplementary appendix deriving relationship between fitness cost and ratio of expected to actual counts}
+
+With millions of SARS-CoV-2 sequences shared publicly, almost all mutations that are tolerated by the virus are observed dozens to hundreds of times.
+Where on the tree and how often on the tree we observe specific mutations has information about the effects of these mutations on viral spread.
+The mutation rate depends on the nucleotides involved and possibly on the sequence context and other viral determinants, but for the purpose of this derivation, we will assume the neutral rate $\mu$ is known.
+If the mutation is neutral, the total number of times the mutation is observed on the tree is $\mu T$, where $T$ is the total length of the tree (assuming that the mutation never reached high frequency which is true for almost all mutations, particularly when mutations are counted on a per-clade basis relative too the clade founder as done above).
+
+If a mutation reduces fitness, the lineages descending from branches on which this mutation happened will spread more slowly than those without this mutation.
+As a result, the down-stream subclades are smaller and more short lived, which in turn means that they will be less likely to be sampled and represented in the tree.
+To infer a mutation's effect on fitness, we need to calculate how the probability of observation depends on the this fitness effect.
+
+For a mutation to be represented in the tree, one of its descendants has to be sampled and sequenced.
+If the total number of descendants is $w$ and the sampling fraction is $\epsilon$, the probability that the mutation is present in the tree is
+\begin{equation}
+    P = 1 - e^{-w\epsilon}
+\end{equation}
+$W$ is a random number that depends on the realization of the transmission process, which is commonly modeled by a branching process with birth rate $b$ and death rate $d$.
+The death rate here corresponds to clearing an infection, the birth rate to onward transmission. The latter is affected by the fitness cost of the mutation.
+
+To obtain insight how the probability of observing a lineage depends on parameters, we calculate the probability $p(w, T|t)$ that a lineage had an integrated size $w = \int_t^T k(t') \; dt'$, where $t$ is the birth time of the lineage, $T$ is the current time, and $k(t')$ is the size of the lineage at time $t'$.
+To calculate $p(w,T|k)$, we generalize it slightly to $p(W, T|k,t)$, where $k$ is the number of individuals at the start time $t$. This quantity obeys the following ``first-step'' equation:
+\begin{equation}
+    -(\partial_t - k \partial_w) p(w,T|k,t) = -k(b+d) p(w,T|k,t) + k b p(w,T|k+1,t) + k d p(w,T| k-1, t)
+\end{equation}
+We will solve for the Laplace transform $\hat{p}(z,T|k,t) = \int_0^\infty dw\; e^{-wz} p(w,T|k,t) = \hat{p}^k(z,T|1,t)$.
+Using the identity for the derivative of the Laplace transform
+\begin{equation}
+    \begin{split}
+        \int_0^\infty e^{-wz} \partial_w p  \; dw& = [e^{-wz} p]_0^\infty - \int_0^\infty  p \partial_w e^{-wz} \; dw = 0 + z \int_0^\infty  p e^{-wz} = z \hat{p}
+    \end{split}
+\end{equation}
+and using $k=1$, we have
+\begin{equation}
+    -\partial_t \hat{p}(z,T|t) = -(b+d+z) \hat{p}(z,T|t) + b \hat{p}^2(z,T|t) + d
+\end{equation}
+This simplifies further to if we substitute $\phi(z,T|t) = 1 - \hat{p}(z,T|t)$.
+\begin{equation}
+    \begin{split}
+        \partial_t \phi(z,T|t) & = -(b+d+z) (1-\phi(z,T|t)) + b (1-\phi(z,T|t))^2 + d \\
+         & = -z - (b-d-z) \phi(z,T|t) + b \phi(z,T|t)^2
+    \end{split}
+\end{equation}
+where it is important to note that the derivative is with respect to the first time point and the interval $T-t$ is shrinking with increasing $t$.
+
+\subsection*{Constant birth and death rate}
+If the fitness effect of the mutation in question is detrimental and the overall population is constant (background $b_0=d_0$), all mutant lineages will eventually die out and we can consider large $T-t$ and $\partial_t \phi(z,T|t)$.
+Further define $b=b_0 - s$ and $d=d_0$ where $s$ is the fitness cost of the mutation (so larger values indicate a greater fitness cost).
+The steady state generating function is then
+\begin{equation}
+    0 = -z - (b-d-z) \phi(z) + b \phi(z)^2
+\end{equation}
+with solution
+\begin{equation}
+    \begin{split}
+        \phi(z) & = -\frac{s + z}{2(b_0 - s)} \pm \frac{\sqrt{(s+z)^2 + 4z(b_0-s)}}{2(b_0-s)} \\
+        &\approx -\frac{s + z}{2b_0} \pm \frac{\sqrt{(s+z)^2 + 4z b_0}}{2b_0} \\
+        & \approx \begin{cases}
+            \frac{z}{s+z} & (s+z)^2 \gg 4zb_0 \\
+            \sqrt{\frac{z}{b_0}}\left(1+\frac{(s+z)^2}{8zb_0}\right)-\frac{s + z}{2b_0}  & (s+z)^2 \ll 4zb_0 \\
+        \end{cases}
+    \end{split}
+\end{equation}
+Since $\phi(z) = 1 - \int e^{-wz}p(w) \; dw$, $\phi(\epsilon)$ is exactly the probability that a lineage is sampled when the entire population is sampled at rate $\epsilon$.
+We thus expect two regimes: if the square of the fitness cost exceeds the sampling intensity (typically at 1\% or less), the probability of sampling a lineage is essentially inversely proportional to the fitness cost.
+The sampling probability of lineages with smaller costs effects depends less strongly on $s$.
+Their sampling mostly comes down to stochasticity independent of the fitness cost.
+
+\subsection*{Growing populations}
+In many scenarios relevant for lineages that arise during a viral outbreak, the background population isn't constant but is undergoing a rapid exponential expansion.
+The background birth rate $b_0$ is bigger than $d_0$ in this case.
+Since the population is growing, deleterious mutations can increase in frequency deterministically and we can not send the $t$ to infinity as before.
+Instead, we need to integrate
+\begin{equation}
+    \begin{split}
+        \partial_t \phi(z,T|t) & = -z - (b-d-z) \phi(z,T|t) + b \phi(z,T|t)^2
+    \end{split}
+\end{equation}
+backwards in time starting from $\phi(z,T|T)=0$ at $t=T$.
+While $\phi(z,T|t)$ is small, this is approximately solved by
+\begin{equation}
+\begin{split}
+    \phi(z,T|t) & = z e^{\int_t^T (b-d-z)dt'} \int_t^T e^{-\int_\tau^T (b-d-z)dt'} d\tau \\
+    & = z e^{(b-d-z)(T-t)} \int_t^T e^{-(b-d-z)(T-\tau)} d\tau \\
+    & = z e^{(b-d-z)(T-t)}\left[1   - e^{-(b-d-z)(T-t)}\right]/(b-d-z) \\
+    & = \frac{z}{b-d-z}\left[e^{(b-d-z)(T-t)} - 1\right] = \frac{z}{\gamma_0 - s - z}\left[e^{\gamma_0 (T-t) - (s+z) (T-t)} - 1\right]
+\end{split}
+\end{equation}
+where $\gamma_0$ is the growth rate of the background population.
+
+At longer times when $z e^{\gamma_0 (T-t)}\sim 1$ and $\phi$ is no longer small, $\phi$ tends towards a constant value determined by the same quadratic equation as above.
+This limit is neither interesting or relevant for the present purpose, since there are very few lineages that emerged early enough to have saturated $\phi$.
+Instead, we need to average $\phi$ (the linear approximation) over all the time points when the lineage could have arisen.
+\begin{equation}
+    \begin{split}
+        \langle \phi \rangle &\sim \int_t^T dt' \; e^{-\gamma_0(T-t')} \frac{z (e^{\gamma_0(T-t') - (s+z)(T-t')}-1)}{(\gamma_0 - s - z)}\\
+        &= \int_t^T dt' \;  \frac{z (e^{-(s+z)(T-t')}-e^{-\gamma_0(T-t')})}{(\gamma_0 - s - z)}\\
+        &\approx \begin{cases}
+            \frac{z}{\gamma_0-s-z} [ \frac{1}{z+s} - \frac{1}{\gamma_0}] & s(T-t)\gg 1\\
+            \frac{z}{\gamma_0-s-z} [ (T-t) - \frac{(s+z)(T-t)^2}{2} - \frac{1}{\gamma_0}] & s(T-t)<1 \\
+        \end{cases}
+    \end{split}
+\end{equation}
+This derivation assumed that $\gamma_0(T-t)\gg1$, i.e.~that the overall population size has expanded substantially.
+The most relevant fitness effects will be those with $s(T-t)>1$ but $\gamma_0>s$ such that the mutant lineage has been amplified but its fitness difference to the background is a perturbation.
+In this case, the above simplifies to
+\begin{equation}
+    \langle \phi \rangle \approx \frac{z}{\gamma_0(z+s)}
+\end{equation}
+
+
+In a variant that has been growing with rate $\gamma_0$ for a time $\tau=T-t$ and sampled with $z=\epsilon$, we thus expect that the number of times we observe separate mutant lineages depends on $s$ as
+\begin{equation}
+    \langle \phi \rangle \approx \frac{\epsilon}{\gamma_0(\epsilon+s)}
+\end{equation}
+This has a very similar behavior as the solution for constant population size, which suggests that the overall dependence on $s$ is robust and we can assume that the number of times a mutation is observed is inversely proportional to its effect on fitness.
+In a constant population, this relationship breaks down for dense sampling $\epsilon > \sqrt{s}$.
+In growing population, the approximation fails if the product of fitness effect and the time over which the variant has grown, $s\tau$, is large, i.e., if the fitness cost is substantial on this time scale.
+Outside this parameter range, there is still a dependence on $s$, but it is weaker.
+
+\clearpage
+
+\section{Supplementary figures}
 
 \begin{figure*}[h]
 \includegraphics[width=\linewidth]{figs/ORF3a.pdf}
@@ -439,10 +591,13 @@ See \url{https://jbloomlab.github.io/SARS2-mut-fitness/ORF3a.html} for an intera
 \centering
 \includegraphics[width=0.75\linewidth]{figs/terminal.png}
 \caption{
-Relationship between fitness effects of mutations and ratio of counts on terminal (tip) branches versus non-terminal (internal) branches.
-Each point is an amino-acid mutation, and the orange text in the upper left give the number of mutations and the Pearson correlation coefficient.
+Relationship between fitness effects of mutations and two measures of the number of descendants.
+At top is shown the log ratio of counts of the mutation on non-terminal (internal) to terminal (tip) branches; larger values indicate mutations more likely to be found in viruses that leave descendants.
+At bottom is shown the mean log number of tip descendants that share all the mutations on each branch containing the mutation of interest; larger values again indicate mutations more likely to be found in viruses that leave more descendants.
+Each point is an amino-acid mutation, the orange line is a least-squares regression, and the orange text in the upper left give the number of mutations and the Pearson correlation coefficient.
 This plot shows only mutations with at least 10 expected counts and 5 actual counts.
 See \url{https://jbloomlab.github.io/SARS2-mut-fitness/fitness_vs_terminal.html} for an interactive version of this plot that allows filtering by the number of actual or expected counts, or by gene.
+The number of descendants is calculated using the ``leaves\_sharing\_mutations'' variable of the UShER mutation-annotated tree.
 \label{fig:terminal}
 }
 \end{figure*}
@@ -451,10 +606,8 @@ See \url{https://jbloomlab.github.io/SARS2-mut-fitness/fitness_vs_terminal.html}
 \centering
 \includegraphics[width=0.7\linewidth]{figs/fixed_dist.pdf}
 \caption{
-\jdbcomment{Right now this figure is not reference in text; should we keep it somehow?}
-Distribution of fitness effects of all amino-acid mutations relative to Wuhan-Hu-1, and all mutations that fixed in at least one clade of SARS-CoV-2 (using the Nextstrain clade definitions).
+Distribution of fitness effects of all amino-acid mutations relative to Wuhan-Hu-1, and just those mutations that fixed in at least one clade of SARS-CoV-2 (using the Nextstrain clade definitions).
 The vertical dashed line at zero indicates the effect of a neutral mutation.
-Estimates are only shown for mutations with expected counts of at least 10.
 See \url{https://jbloomlab.github.io/SARS2-mut-fitness/clade_fixed_muts_hist.html} for an interactive version of this plot that allows adjustment of the minimum expected count threshold.
 \label{fig:fixed_dist}
 }
@@ -463,10 +616,10 @@ See \url{https://jbloomlab.github.io/SARS2-mut-fitness/clade_fixed_muts_hist.htm
 \begin{figure*}[b]
 \includegraphics[width=\linewidth]{figs/fixed.pdf}
 \caption{
-\jdbcomment{Right now this figure is not reference in text; should we keep it somehow?}
 Effects of individual mutations that fixed in at least one clade of SARS-CoV-2, faceted by whether they are in spike or another protein.
-Plots show estimates of effects of mutations made across all clades (including those that have fixed the mutation) and just from direct forward occurrences of the mutation in clades in which it has not yet fixed.
-Estimates are only shown for mutations with expected counts of at least 10.
+``Mutation polarity'' indicates if the point shows the effect of the mutation estimated using all viral clades (including those that have fixed the mutation), or just from direct forward occurrences of the mutation in clades in which it has not yet fixed.
+Some mutations are estimated to be more favorable when including clades in which they have fixed (blue circles) in addition to just clades in which it has not yet fixed (orange squares)---when this occurs, it suggests epistatic entrenchment of the mutations~\citep{shah2015contingency, starr2018pervasive}.
+Note that clades in which a mutation has already fixed contribute to estimates of its fitness via estimates of the effect of its reversion and via estimates of the effects of mutations to other amino acids at the same site.
 See \url{https://jbloomlab.github.io/SARS2-mut-fitness/clade_fixed_muts.html} for an interactive version of this plot.
 \label{fig:fixed}
 }
