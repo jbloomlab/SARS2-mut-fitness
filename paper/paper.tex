@@ -52,8 +52,8 @@
 
 \begin{abstract}
 Knowledge of the fitness effects of mutations to SARS-CoV-2 can inform assessment of new variants, design of therapeutics resistant to escape, and understanding of the functions of viral proteins.
-However, experimentally determining effects of mutations is challenging: we lack tractable lab assays for many SARS-CoV-2 proteins, and comprehensive deep mutational scanning has been applied to only two SARS-CoV-2 proteins.
-Here we develop an approach that leverages millions of publicly available SARS-CoV-2 sequences to estimate the effects of mutations.
+However, experimentally measuring effects of mutations is challenging: we lack tractable lab assays for many SARS-CoV-2 proteins, and comprehensive deep mutational scanning has been applied to only two SARS-CoV-2 proteins.
+Here we develop an approach that leverages millions of publicly available SARS-CoV-2 sequences to estimate effects of mutations.
 We first calculate how many independent occurrences of each mutation are expected to be observed along the SARS-CoV-2 phylogeny in the absence of selection.
 We then compare these expected observations to the actual observations to estimate the effect of each mutation.
 These estimates correlate well with deep mutational scanning measurements.
@@ -77,7 +77,7 @@ The framework we describe is applicable to any virus for which the number of ava
 To anticipate and mitigate this evolution, the scientific community has launched major efforts to assess the risk of new viral variants~\citep{degrace2022defining} and create therapeutics that target constrained regions of the virus where resistance is less likely to evolve~\citep{moghadasi2022,iketani2022multiple,hiscox2021shutting}.
 Both efforts require determining how specific mutations affect the fitness of the virus.
 
-Unfortunately, experimentally determining the effects of mutations remains challenging for most SARS-CoV-2 proteins.
+Unfortunately, experimentally measuring the effects of mutations remains challenging for most SARS-CoV-2 proteins.
 For spike, tractable laboratory assays have identified key functional and antigenic mutations~\citep{weisblum2020escape,harvey2021sars}, and enabled deep mutational scanning measurements of how most mutations affect receptor binding, cellular infection, and antibody recognition~\citep{starr2020deep,dadonaite2022pseudovirus,greaney2021complete,cao2022imprinted}.
 These experimental data are valuable for assessing new spike variants~\citep{degrace2022defining,greaney2022antibody,tzou2022coronavirus} and informing development of antibody therapeutics with greater resistance to escape~\citep{starr2021sars,rappazzo2021broad,cao2022rational}.
 But most other SARS-CoV-2 proteins lack comparably tractable laboratory assays, despite clearly contributing to viral fitness~\citep{thorne2022evolution,syed2021rapid,mcgrath2022sars} and being the targets of efforts to develop anti-viral drugs~\citep{tao2021sars}.
@@ -89,7 +89,7 @@ So far analyses of these sequences have focused on analyzing expanding viral cla
 The basic idea is that mutations that repeatedly appear near the base of clades that increase in relative frequency are likely beneficial to the virus.
 However, only a small minority of all possible mutations are beneficial, with most being nearly neutral or deleterious.
 For purposes such as identifying functionally constrained drug targets or understanding the function of viral proteins, it is important to accurately estimate the effects of neutral or deleterious mutations as well as beneficial ones.
-Other studies have analyzed broader alignments that include coronaviruses substantially diverged from SARS-CoV-2~\citep{rodriguez2022epistatic, thadani2022learning}, but the resulting estimates are inherently limited by the sparse sampling of related coronaviruses.
+Other studies have analyzed broader alignments that include coronaviruses substantially diverged from SARS-CoV-2~\citep{rodriguez2022epistatic, thadani2022learning}, but the resulting estimates are limited by the sparse sampling of SARS-related coronaviruses.
 
 We previously estimated fitness costs of mutations in the HIV-1 genomes from deep sequencing data of within host diversity, where the frequency of a deleterious mutation in the viral quasi-species is determined by a balance between repeated mutation and purifying selection \citep{zanini2017vivo}.
 But in SARS-CoV-2, mutation frequency is a poor predictor of its fitness effect since moderately deleterious mutations can hitch-hike on emerging variants.
@@ -220,6 +220,7 @@ Correlation of mutation-effect estimates with experimental deep mutational scann
 Each point is an amino-acid mutation, the orange line is a least-squares regression, and orange text in the upper left shows the number of mutations and Pearson correlation coefficient.
 Each sub-panel shows a different set of mutations (depending on which mutations were measured in that experiment).
 See \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_S_corr.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_nsp5_corr.html} for plots that enable subsetting on just mutations shared across all datasets and other interactive options such as mousing over points to see mutation identities.
+The experiments in \cite{starr2022deep, flynn2022} measure multiple phenotypes and these plots show the effect of each mutation averaged across these phenotypes; see \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_S_all_corr.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_nsp5_all_corr.html} for plots that show each phenotype separately.
 \label{fig:dms}
 }
 \end{figure*}
@@ -412,6 +413,13 @@ The protein annotations are taken from the associated GTF at \url{http://hgdownl
 Those protein annotations refer to the polyproteins encoding the non-structural proteins as ORF1a and ORF1ab.
 To convert to from ORF1ab numbering/naming to the nsp-based naming (eg, nsp1, nsp2, etc) we use the conversions specified under ``orf1ab\_to\_nsps'' in \url{https://github.com/jbloomlab/SARS2-mut-fitness/blob/main/config.yaml}, which are in turn taken from Theo Sanderson's annotations at \url{https://github.com/theosanderson/Codon2Nucleotide/blob/main/src/App.js}.
 
+\subsection{Comparison to deep mutational scanning}
+Deep mutational scanning data were taken from published studies~\citep{dadonaite2022pseudovirus,starr2022deep,flynn2022,iketani2022functional}, using the data at the links specified under the ``dms\_datasets'' key in \url{https://github.com/jbloomlab/SARS2-mut-fitness/blob/main/config.yaml}.
+For the spike deep mutational scanning~\citep{dadonaite2022pseudovirus} we only included mutations with ``times seen'' values of at least three in the deep mutational scanning.
+The RBD data~\citep{starr2022deep} include measurements for two phenotypes (ACE2 affinity and RBD expression), and one of the Mpro studies~\citep{flynn2022} includes measurements for three different phenotypes in yeast (growth, FRET, and transcription factor activity).
+In both cases, Figure~\ref{fig:dms} shows the effect averaged across all phenotypes measured by the study.
+For plots that break the correlations out by phenotype, see \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_S_all_corr.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_nsp5_all_corr.html}.
+
 \subsection{Derivation of relationship between actual to expected count ratio and viral fitness}
 The ratio of actual to expected counts that we calculate in this paper is related to the probability that we observe a viral lineage containing an occurrence of a specific mutation among sequenced human SARS-CoV-2.
 This probability depends on three factors: the fitness effect of the mutation, the fraction of all SARS-CoV-2 viruses that are sequenced (sampling intensity), and the growth dynamics of the viral population.
@@ -433,9 +441,8 @@ However, such a derivation (if possible at all) is beyond the scope of this stud
 The key point of the derivations for our current study is simply that our approach should be sensitive to detecting the effects of mutations with fitness costs greater than a few percent.
 
 \section{Acknowledgments}
-We thank Angie Hinrichs for assistance with questions related to use of the UShER package and its pre-built mutation-annotated tree \jdbcomment{check with her to make sure acknowledging is OK}.
+We thank Angie Hinrichs for assistance with questions related to use of the UShER package and its pre-built mutation-annotated tree.
 The work of JDB was supported in part by the NIH/NIAID under grants U19AI171399 and R01AI141707, and contract 75N93021C00015.
-\jdbcomment{Jesse needs to confirm permission of Chodera and Hensley to cite U19 and CEIRR contract.}
 JDB is an Investigator of the Howard Hughes Medical Institute.
 
 \section{Competing interests}
