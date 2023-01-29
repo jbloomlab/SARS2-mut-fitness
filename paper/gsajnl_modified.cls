@@ -109,8 +109,10 @@
 % color2 defined by the specific article type style file
 
 % Bibliography
-\usepackage{natbib} \bibpunct{(}{)}{;}{author-year}{}{,}
-\bibliographystyle{genetics}
+%\usepackage{natbib} \bibpunct{(}{)}{;}{author-year}{}{,}
+%\bibliographystyle{genetics}
+\usepackage[square,numbers]{natbib}
+\bibliographystyle{plos2015}
 \addto{\captionsenglish}{\renewcommand{\refname}{Literature Cited}}
 \setlength{\bibsep}{0.0pt}
 
