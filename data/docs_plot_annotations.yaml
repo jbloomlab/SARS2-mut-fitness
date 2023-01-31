@@ -9,7 +9,7 @@ legend_suffix: |
 # some information for the index page
 index_title: Interactive plots of estimated fitness effects of SARS-CoV-2 amino-acid mutations
 index_abstract: |
-  Fitness effects estimated from expected versus observed counts of mutations.
+  Fitness effects estimated from observed versus expected counts of mutations.
 
   Analysis by Jesse D. Bloom and Richard A. Neher.
 
@@ -213,7 +213,7 @@ plots:
     section: heatmap
     legend: |
       Interactive plot of fitnesses amino acids at each site estimated from the observed versus
-      actual counts of the amino acids among natural sequences.
+      expected counts of the amino acids among natural sequences.
 
       The black area plot at top shows the mean fitness for all non-stop amino acids at each
       site, with more negative values
