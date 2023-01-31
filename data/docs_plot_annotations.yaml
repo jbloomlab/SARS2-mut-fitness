@@ -2,6 +2,8 @@
 
 # suffix added to all legends
 legend_suffix: |
+  See [Bloom and Neher (2023)](https://www.biorxiv.org/content/10.1101/2023.01.30.526314v1) for a paper describing the work.
+
   See [https://github.com/jbloomlab/SARS2-mut-fitness](https://github.com/jbloomlab/SARS2-mut-fitness) for full computer code and data.
 
   See [https://jbloomlab.github.io/SARS2-mut-fitness/](https://jbloomlab.github.io/SARS2-mut-fitness/) for links to all interactive plots.
@@ -11,7 +13,7 @@ index_title: Interactive plots of estimated fitness effects of SARS-CoV-2 amino-
 index_abstract: |
   Fitness effects estimated from observed versus expected counts of mutations.
 
-  Analysis by Jesse D. Bloom and Richard A. Neher.
+  Analysis described in [Bloom and Neher (2023)](https://www.biorxiv.org/content/10.1101/2023.01.30.526314v1).
 
 # ordering of plots into sections
 sections:
