@@ -6,6 +6,11 @@ mat_tree: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/202
 ref_fasta: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/bigZips/wuhCor1.fa.gz
 ref_gtf: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/bigZips/genes/ncbiGenes.gtf.gz
 
+# gene annotations to add to the reference GTF, which is missing ORF9b, see:
+# https://github.com/jbloomlab/SARS2-mut-fitness/issues/21
+add_to_ref_gtf:
+  ORF9b: [28284, 28577]
+
 # Only keep nextstrain clades with at least this many samples in mutation-annotated tree
 min_clade_samples: 10000
 
