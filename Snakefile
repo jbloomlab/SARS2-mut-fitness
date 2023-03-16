@@ -363,6 +363,7 @@ rule aamut_fitness:
     params:
         orf1ab_to_nsps=config["orf1ab_to_nsps"],
         fitness_pseudocount=config["fitness_pseudocount"],
+        gene_overlaps=config["gene_overlaps"],
     log:
         notebook="results/aa_fitness/aamut_fitness.ipynb",
     notebook:
