@@ -127,7 +127,7 @@ We compute these expected numbers of mutations versus the actual numbers of muta
 The expected and actual number of nucleotide mutation counts at each site are in [results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv](results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv).
 
 ### Computation of amino-acid mutation fitness effects
-We then collapse the expected and actual counts for each amino-acid mutation, excluding the small number of sites that are in overlapping reading frames.
+We then collapse the expected and actual counts for each amino-acid mutation, excluding the small number of sites that are in overlapping reading frames and are specified to exclude in [config.yaml](config.yaml) under the `gene_overlaps` key.
 Note that in this aggregation, we exclude any amino acids with a codon for which at least one constituent nucleotide site is masked in `UShER`.
 
 We estimate the fitness effect $\Delta f$ of each mutation as
