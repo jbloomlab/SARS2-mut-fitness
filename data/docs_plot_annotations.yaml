@@ -87,6 +87,9 @@ plots:
       rectangles span the interquartile range. Mutations with negative fitness
       effects are deleterious.
 
+      Note that ORF9b is encoded by an alternative overlapping reading frame  with N,
+      which complicates interpretation of selection on mutations in this gene.
+
       You can mouseover the bars for details.
 
       You can click on the *mutation type* legend to just highlight mutations of
@@ -306,6 +309,9 @@ plots:
   ORF8:
     <<: *heatmap_template
     title: ORF8 amino-acid fitnesses
+  ORF9b:
+    <<: *heatmap_template
+    title: ORF9b amino-acid fitnesses
   N:
     <<: *heatmap_template
     title: N (nucleocapsid) amino-acid fitnesses

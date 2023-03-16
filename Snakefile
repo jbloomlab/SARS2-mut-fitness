@@ -48,13 +48,25 @@ rule get_ref_fasta:
 
 
 rule get_ref_gtf:
-    """Get the reference FASTA."""
+    """Get the reference GTF."""
     params:
         url=config["ref_gtf"],
     output:
-        ref_gtf="results/ref/ref.gtf",
+        ref_gtf="results/ref/original_ref.gtf",
     shell:
         "wget -O - {params.url} | gunzip -c > {output.ref_gtf}"
+
+
+rule edit_ref_gtf:
+    """Edit the reference GTF with manual additions."""
+    input:
+        gtf=rules.get_ref_gtf.output.ref_gtf
+    output:
+        gtf="results/ref/edited_ref.gtf",
+    params:
+        edits=config["add_to_ref_gtf"], 
+    notebook:
+        "notebooks/edit_ref_gtf.py.ipynb"
 
 
 rule get_dca_data:
@@ -70,7 +82,7 @@ rule get_dca_data:
 rule ref_coding_sites:
     """Get all sites in reference that are part of a coding sequence."""
     input:
-        gtf=rules.get_ref_gtf.output.ref_gtf
+        gtf=rules.edit_ref_gtf.output.gtf
     output:
         csv="results/ref/coding_sites.csv",
     script:
@@ -142,7 +154,7 @@ rule translate_mat:
     input:
         mat=rules.mat_clade_subset.output.mat,
         ref_fasta=rules.get_ref_fasta.output.ref_fasta,
-        ref_gtf=rules.get_ref_gtf.output.ref_gtf,
+        ref_gtf=rules.edit_ref_gtf.output.gtf,
     output:
         tsv="results/mat_by_clade_subset/{clade}_{subset}_mutations.tsv",
     shell:
@@ -351,6 +363,7 @@ rule aamut_fitness:
     params:
         orf1ab_to_nsps=config["orf1ab_to_nsps"],
         fitness_pseudocount=config["fitness_pseudocount"],
+        gene_overlaps=config["gene_overlaps"],
     log:
         notebook="results/aa_fitness/aamut_fitness.ipynb",
     notebook:
