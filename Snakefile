@@ -17,22 +17,31 @@ with open(config["docs_plot_annotations"]) as f:
 rule all:
     """Target rule with desired output files."""
     input:
-        "results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv",
-        "results/aa_fitness/aamut_fitness_all.csv",
-        "results/aa_fitness/aamut_fitness_by_clade.csv",
-        "results/aa_fitness/aamut_fitness_by_subset.csv",
-        "results/aa_fitness/aa_fitness.csv",
-        expand("docs/{plot}.html", plot=docs_plot_annotations["plots"]),
-        "docs/index.html",
-        "results/dca/dca_corr.pdf",
+        expand(
+            [
+                "results/expected_vs_actual_mut_counts/{mat}/expected_vs_actual_mut_counts.csv",
+                "results/aa_fitness/{mat}/aamut_fitness_all.csv",
+                "results/aa_fitness/{mat}/aamut_fitness_by_clade.csv",
+                "results/aa_fitness/{mat}/aamut_fitness_by_subset.csv",
+                "results/aa_fitness/{mat}/aa_fitness.csv",
+                "docs/{mat}/index.html",
+                "results/dca/{mat}/dca_corr.pdf",
+            ],
+            mat=config["mat_trees"],
+        ),
+        expand(
+            "docs/{mat}/{plot}.html",
+            plot=docs_plot_annotations["plots"],
+            mat=config["mat_trees"],
+        ),
 
 
 rule get_mat_tree:
     """Get the pre-built mutation-annotated tree."""
     params:
-        url=config["mat_tree"],
+        url=lambda wc: config["mat_trees"][wc.mat],
     output:
-        mat="results/mat/mat_tree.pb.gz"
+        mat="results/mat/{mat}/mat_tree.pb.gz"
     shell:
         "curl {params.url} > {output.mat}"
 
@@ -94,8 +103,8 @@ checkpoint mat_samples:
     input:
         mat=rules.get_mat_tree.output.mat,
     output:
-        csv="results/mat/samples.csv",
-        clade_counts="results/mat/sample_clade_counts.csv",
+        csv="results/mat/{mat}/samples.csv",
+        clade_counts="results/mat/{mat}/sample_clade_counts.csv",
     params:
         min_clade_samples=config["min_clade_samples"],
     script:
@@ -117,7 +126,7 @@ rule samples_by_clade_subset:
     input:
         csv=rules.mat_samples.output.csv,
     output:
-        txt="results/mat_by_clade_subset/{clade}_{subset}.txt",
+        txt="results/mat_by_clade_subset/{mat}/{clade}_{subset}.txt",
     params:
         match_regex=lambda wc: config["sample_subsets"][wc.subset]
     run:
@@ -136,7 +145,7 @@ rule mat_clade_subset:
         mat=rules.get_mat_tree.output.mat,
         samples=rules.samples_by_clade_subset.output.txt,
     output:
-        mat="results/mat_by_clade_subset/{clade}_{subset}.pb",
+        mat="results/mat_by_clade_subset/{mat}/{clade}_{subset}.pb",
     shell:
         """
         if [ -s {input.samples} ]; then
@@ -156,7 +165,7 @@ rule translate_mat:
         ref_fasta=rules.get_ref_fasta.output.ref_fasta,
         ref_gtf=rules.edit_ref_gtf.output.gtf,
     output:
-        tsv="results/mat_by_clade_subset/{clade}_{subset}_mutations.tsv",
+        tsv="results/mat_by_clade_subset/{mat}/{clade}_{subset}_mutations.tsv",
     shell:
         """
         matUtils summary \
@@ -219,7 +228,7 @@ rule count_mutations:
         usher_masked_sites=config["usher_masked_sites"],
         site_mask=rules.site_mask.output.csv,
     output:
-        csv="results/mutation_counts/{clade}_{subset}.csv",
+        csv="results/mutation_counts/{mat}/{clade}_{subset}.csv",
     params:
         max_nt_mutations=config["max_nt_mutations"],
         max_reversions_to_ref=config["max_reversions_to_ref"],
@@ -227,7 +236,7 @@ rule count_mutations:
         exclude_ref_to_founder_muts=config["exclude_ref_to_founder_muts"],
         sites_to_exclude=config["sites_to_exclude"],
     log:
-        notebook="results/mutation_counts/{clade}_{subset}_count_mutations.ipynb",
+        notebook="results/mutation_counts/{mat}/{clade}_{subset}_count_mutations.ipynb",
     notebook:
         "notebooks/count_mutations.py.ipynb"
 
@@ -241,7 +250,7 @@ rule clade_founder_nts:
             for clade in clades_w_adequate_counts(wc)
         ],
     output:
-        csv="results/clade_founder_nts/clade_founder_nts.csv",
+        csv="results/clade_founder_nts/{mat}/clade_founder_nts.csv",
     script:
         "scripts/clade_founder_nts.py"
 
@@ -251,12 +260,12 @@ rule aggregate_mutation_counts:
     input:
         clade_founder_nts=rules.clade_founder_nts.output.csv,
         counts=lambda wc: [
-            f"results/mutation_counts/{clade}_{subset}.csv"
+            f"results/mutation_counts/{wc.mat}/{clade}_{subset}.csv"
             for clade in clades_w_adequate_counts(wc)
             for subset in config["sample_subsets"]
         ],
     output:
-        csv="results/mutation_counts/aggregated.csv",
+        csv="results/mutation_counts/{mat}/aggregated.csv",
     script:
         "scripts/aggregate_mutation_counts.py"
 
@@ -266,25 +275,17 @@ rule synonymous_mut_rates:
     input:
         mutation_counts_csv=rules.aggregate_mutation_counts.output.csv,
         clade_founder_nts_csv=rules.clade_founder_nts.output.csv,
-        nb="notebooks/synonymous_mut_rates.ipynb",
     output:
-        rates_by_clade="results/synonymous_mut_rates/rates_by_clade.csv",
-        nb="results/synonymous_mut_rates/synonymous_mut_rates.ipynb",
-        nb_html="results/synonymous_mut_rates/synonymous_mut_rates.html",
-        rates_plot="results/synonymous_mut_rates/mut_rates.html",
+        rates_by_clade="results/synonymous_mut_rates/{mat}/rates_by_clade.csv",
+        rates_plot="results/synonymous_mut_rates/{mat}/mut_rates.html",
     params:
-        config["synonymous_spectra_min_counts"],
-        config['sample_subsets'],
-        config["clade_synonyms"],
-    shell:
-        """
-        papermill {input.nb} {output.nb} \
-            -p mutation_counts_csv {input.mutation_counts_csv} \
-            -p clade_founder_nts_csv {input.clade_founder_nts_csv} \
-            -p rates_by_clade_csv {output.rates_by_clade} \
-            -p rates_plot {output.rates_plot}
-        jupyter nbconvert {output.nb} --to html
-        """
+        synonymous_spectra_min_counts=config["synonymous_spectra_min_counts"],
+        sample_subsets=config["sample_subsets"],
+        clade_synonyms=config["clade_synonyms"],
+    log:
+        notebook="results/synonymous_mut_rates/{mat}/synonymous_mut_rates.ipynb",
+    notebook:
+        "notebooks/synonymous_mut_rates.ipynb"
 
 
 rule expected_mut_counts:
@@ -292,19 +293,12 @@ rule expected_mut_counts:
     input:
         rates_by_clade=rules.synonymous_mut_rates.output.rates_by_clade,
         clade_founder_nts_csv=rules.clade_founder_nts.output.csv,
-        nb="notebooks/expected_mut_counts.ipynb",
     output:
-        expected_counts="results/expected_mut_counts/expected_mut_counts.csv",
-        nb="results/expected_mut_counts/expected_mut_counts.ipynb",
-        nb_html="results/expected_mut_counts/expected_mut_counts.html",
-    shell:
-        """
-        papermill {input.nb} {output.nb} \
-            -p clade_founder_nts_csv {input.clade_founder_nts_csv} \
-            -p rates_by_clade_csv {input.rates_by_clade} \
-            -p expected_counts_csv {output.expected_counts}
-        jupyter nbconvert {output.nb} --to html
-        """
+        expected_counts="results/expected_mut_counts/{mat}/expected_mut_counts.csv",
+    log:
+        notebook="results/expected_mut_counts/{mat}/expected_mut_counts.ipynb",
+    notebook:
+        "notebooks/expected_mut_counts.ipynb"
 
 
 rule aggregate_mutations_to_exclude:
@@ -317,7 +311,7 @@ rule aggregate_mutations_to_exclude:
         usher_masked_sites=config["usher_masked_sites"],
         site_mask=rules.site_mask.output.csv,
     output:
-        csv="results/expected_vs_actual_mut_counts/mutations_to_exclude.csv",
+        csv="results/expected_vs_actual_mut_counts/{mat}/mutations_to_exclude.csv",
     params:
         clades=lambda wc: clades_w_adequate_counts(wc),
         sites_to_exclude=config["sites_to_exclude"],
@@ -333,9 +327,9 @@ rule merge_expected_and_actual_counts:
         actual=rules.aggregate_mutation_counts.output.csv,
         muts_to_exclude=rules.aggregate_mutations_to_exclude.output.csv,
     output:
-        csv="results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv",
+        csv="results/expected_vs_actual_mut_counts/{mat}/expected_vs_actual_mut_counts.csv",
     log:
-        notebook="results/expected_vs_actual_mut_counts/merge_expected_and_actual_counts.ipynb",
+        notebook="results/expected_vs_actual_mut_counts/{mat}/merge_expected_and_actual_counts.ipynb",
     notebook:
         "notebooks/merge_expected_and_actual_counts.py.ipynb"
 
@@ -345,9 +339,9 @@ rule summarize_expected_vs_actual:
     input:
         csv=rules.merge_expected_and_actual_counts.output.csv,
     output:
-        chart="results/expected_vs_actual_mut_counts/avg_counts.html",
+        chart="results/expected_vs_actual_mut_counts/{mat}/avg_counts.html",
     log:
-        notebook="results/expected_vs_actual_mut_counts/summarize_expected_vs_actual.ipynb",
+        notebook="results/expected_vs_actual_mut_counts/{mat}/summarize_expected_vs_actual.ipynb",
     notebook:
         "notebooks/summarize_expected_vs_actual.py.ipynb"
 
@@ -357,15 +351,15 @@ rule aamut_fitness:
     input:
         csv=rules.merge_expected_and_actual_counts.output.csv,
     output:
-        aamut_all="results/aa_fitness/aamut_fitness_all.csv",
-        aamut_by_clade="results/aa_fitness/aamut_fitness_by_clade.csv",
-        aamut_by_subset="results/aa_fitness/aamut_fitness_by_subset.csv",
+        aamut_all="results/aa_fitness/{mat}/aamut_fitness_all.csv",
+        aamut_by_clade="results/aa_fitness/{mat}/aamut_fitness_by_clade.csv",
+        aamut_by_subset="results/aa_fitness/{mat}/aamut_fitness_by_subset.csv",
     params:
         orf1ab_to_nsps=config["orf1ab_to_nsps"],
         fitness_pseudocount=config["fitness_pseudocount"],
         gene_overlaps=config["gene_overlaps"],
     log:
-        notebook="results/aa_fitness/aamut_fitness.ipynb",
+        notebook="results/aa_fitness/{mat}/aamut_fitness.ipynb",
     notebook:
         "notebooks/aamut_fitness.py.ipynb"
 
@@ -375,9 +369,9 @@ rule aa_fitness:
     input:
         aamut_fitness=rules.aamut_fitness.output.aamut_all,
     output:
-        aa_fitness="results/aa_fitness/aa_fitness.csv",
+        aa_fitness="results/aa_fitness/{mat}/aa_fitness.csv",
     log:
-        notebook="results/aa_fitness/aa_fitness.ipynb",
+        notebook="results/aa_fitness/{mat}/aa_fitness.ipynb",
     notebook:
         "notebooks/aa_fitness.py.ipynb"
 
@@ -398,11 +392,21 @@ rule analyze_aa_fitness:
         heatmap_minimal_domain=config["aa_fitness_heatmap_minimal_domain"],
         orf1ab_to_nsps=config["orf1ab_to_nsps"],
     output:
-        outdir=directory("results/aa_fitness/plots"),
+        outdir=directory("results/aa_fitness/{mat}/plots"),
     log:
-        notebook="results/aa_fitness/analyze_aa_fitness.ipynb",
+        notebook="results/aa_fitness/{mat}/analyze_aa_fitness.ipynb",
     notebook:
         "notebooks/analyze_aa_fitness.py.ipynb"
+
+
+rule get_dms_dataset:
+    """Get a deep mutational scanning dataset."""
+    params:
+        url=lambda wc: config["dms_datasets"][wc.dms_dataset]["url"],
+    output:
+        raw_data="results/dms/{dms_dataset}/raw.csv",
+    shell:
+        "curl {params.url} > {output.raw_data}"
 
 
 rule process_dms_dataset:
@@ -415,28 +419,14 @@ rule process_dms_dataset:
                 else {}
             )
         ),
-        nb="notebooks/process_{dms_dataset}.ipynb",
+        raw_data=rules.get_dms_dataset.output.raw_data,
     output:
-        raw_data="results/dms/{dms_dataset}/raw.csv",
         processed="results/dms/{dms_dataset}/processed.csv",
-        nb="results/dms/{dms_dataset}/process_{dms_dataset}.ipynb",
-        html="results/dms/{dms_dataset}/process_{dms_dataset}.html",
-    params:
-        url=lambda wc: config["dms_datasets"][wc.dms_dataset]["url"],
-        wt_seq_param=lambda wc, input: (
-            f"-p wt_seq_fasta {input.wt_seq}"
-            if "wt_seq" in config["dms_datasets"][wc.dms_dataset]
-            else ""
-        ),
-    shell:
-        """
-        curl {params.url} > {output.raw_data}
-        papermill {input.nb} {output.nb} \
-            -p raw_data_csv {output.raw_data} \
-            {params.wt_seq_param} \
-            -p processed_csv {output.processed}
-        jupyter nbconvert {output.nb} --to html
-        """
+    log:
+        notebook="results/dms/{dms_dataset}/process_{dms_dataset}.ipynb",
+    notebook:
+        "notebooks/process_{wildcards.dms_dataset}.ipynb"
+
 
 rule compare_dca_fitness:
     """Compare to DCA mutability estimates."""
@@ -444,7 +434,7 @@ rule compare_dca_fitness:
         dca=rules.get_dca_data.output.csv,
         fitness=rules.aamut_fitness.output.aamut_all,
     output:
-        plot="results/dca/dca_corr.pdf",
+        plot="results/dca/{mat}/dca_corr.pdf",
     script:
         "scripts/compare_dca_fitness.py"
 
@@ -459,12 +449,12 @@ rule fitness_dms_corr:
             for dms_dataset in config["dms_datasets"]
         },
     output:
-        plotsdir=directory("results/fitness_dms_corr/plots")
+        plotsdir=directory("results/fitness_dms_corr/{mat}/plots")
     params:
         min_expected_count=config["min_expected_count"],
         dms_datasets=config["dms_datasets"],
     log:
-        notebook="results/fitness_dms_corr/fitness_dms_corr.ipynb",
+        notebook="results/fitness_dms_corr/{mat}/fitness_dms_corr.ipynb",
     notebook:
         "notebooks/fitness_dms_corr.py.ipynb"
 
@@ -476,14 +466,14 @@ rule clade_fixed_muts:
         aamut_by_clade=rules.aamut_fitness.output.aamut_by_clade,
         clade_founder_nts_csv=rules.clade_founder_nts.output.csv,
     output:
-        fixed_muts_chart="results/clade_fixed_muts/clade_fixed_muts.html",
-        fixed_muts_hist="results/clade_fixed_muts/clade_fixed_muts_hist.html",
+        fixed_muts_chart="results/clade_fixed_muts/{mat}/clade_fixed_muts.html",
+        fixed_muts_hist="results/clade_fixed_muts/{mat}/clade_fixed_muts_hist.html",
     params:
         min_expected_count=config["min_expected_count"],
         ref=config["clade_fixed_muts_ref"],
         orf1ab_to_nsps=config["orf1ab_to_nsps"],
     log:
-        notebook="results/clade_fixed_muts/clade_fixed_muts.ipynb",
+        notebook="results/clade_fixed_muts/{mat}/clade_fixed_muts.ipynb",
     notebook:
         "notebooks/clade_fixed_muts.py.ipynb"
 
@@ -493,13 +483,13 @@ rule fitness_vs_terminal:
     input:
         aamut_all=rules.aamut_fitness.output.aamut_all,
     output:
-        chart="results/fitness_vs_terminal/fitness_vs_terminal.html",
+        chart="results/fitness_vs_terminal/{mat}/fitness_vs_terminal.html",
     params:
         min_expected_count=config["min_expected_count"],
         min_actual_count=config["terminal_min_actual_count"],
         pseudocount=config["terminal_pseudocount"],
     log:
-        notebook="results/fitness_vs_terminal/fitness_vs_terminal.ipynb",
+        notebook="results/fitness_vs_terminal/{mat}/fitness_vs_terminal.ipynb",
     notebook:
         "notebooks/fitness_vs_terminal.py.ipynb"
 
@@ -516,11 +506,11 @@ rule aggregate_plots_for_docs:
         avg_counts=rules.summarize_expected_vs_actual.output.chart
     output:
         expand(
-            os.path.join("results/plots_for_docs/{plot}.html"),
+            os.path.join("results/plots_for_docs/{{mat}}/{plot}.html"),
             plot=docs_plot_annotations["plots"],
         ),
     params:
-        plotsdir="results/plots_for_docs",
+        plotsdir="results/plots_for_docs/{mat}",
     shell:
         """
         mkdir -p {params.plotsdir}
@@ -541,11 +531,11 @@ rule format_plot_for_docs:
         plot=os.path.join(rules.aggregate_plots_for_docs.params.plotsdir, "{plot}.html"),
         script="scripts/format_altair_html.py",
     output:
-        plot="docs/{plot}.html",
-        markdown=temp("results/plots_for_docs/{plot}.md"),
+        plot="docs/{mat}/{plot}.html",
+        markdown=temp("results/plots_for_docs/{mat}/{plot}.md"),
     params:
         annotations=lambda wc: docs_plot_annotations["plots"][wc.plot],
-        url=os.path.join(config["docs_url"], "{plot}.html"),
+        url=os.path.join(config["docs_url"], "{mat}/{plot}.html"),
         legend_suffix=docs_plot_annotations["legend_suffix"]
     shell:
         """
@@ -565,9 +555,9 @@ rule format_plot_for_docs:
 rule docs_index:
     """Write index for GitHub Pages docs that re-directs to main repo."""
     output:
-        html="docs/index.html",
+        html="docs/{mat}/index.html",
     params:
-        docs_url=config["docs_url"],
+        docs_url=os.path.join(config['docs_url'], "{mat}"),
         plot_annotations=docs_plot_annotations,
     script:
         "scripts/docs_index.py"
