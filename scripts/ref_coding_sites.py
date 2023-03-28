@@ -64,4 +64,4 @@ sites = (
     )
 )
 
-sites.to_csv("results/ref/coding_sites.csv", index=False)
+sites.to_csv(snakemake.output.csv, index=False)
