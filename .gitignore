@@ -6,30 +6,30 @@ _*
 
 !.nojekyll
 
-results/*
+results*/*
 
-!results/synonymous_mut_rates
-results/synonymous_mut_rates/*
-!results/synonymous_mut_rates/rates_by_clade.csv
+!results*/synonymous_mut_rates
+results*/synonymous_mut_rates/*
+!results*/synonymous_mut_rates/rates_by_clade.csv
 
-!results/mutation_counts
-results/mutation_counts/*
-!results/mutation_counts/aggregated.csv
+!results*/mutation_counts
+results*/mutation_counts/*
+!results*/mutation_counts/aggregated.csv
 
-!results/clade_founder_nts
-results/clade_founder_nts/*
-!results/clade_founder_nts/clade_founder_nts.csv
+!results*/clade_founder_nts
+results*/clade_founder_nts/*
+!results*/clade_founder_nts/clade_founder_nts.csv
 
-!results/expected_vs_actual_mut_counts
-results/expected_vs_actual_mut_counts/*
-!results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv
+!results*/expected_vs_actual_mut_counts
+results*/expected_vs_actual_mut_counts/*
+!results*/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv
 
-!results/aa_fitness
-results/aa_fitness/*
-!results/aa_fitness/aamut_fitness_all.csv
-!results/aa_fitness/aamut_fitness_by_clade.csv
-!results/aa_fitness/aamut_fitness_by_subset.csv
-!results/aa_fitness/aa_fitness.csv
+!results*/aa_fitness
+results*/aa_fitness/*
+!results*/aa_fitness/aamut_fitness_all.csv
+!results*/aa_fitness/aamut_fitness_by_clade.csv
+!results*/aa_fitness/aamut_fitness_by_subset.csv
+!results*/aa_fitness/aa_fitness.csv
 
 !results/dms
 results/dms/*/*
