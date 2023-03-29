@@ -27,6 +27,11 @@ Here are links to files with major numerical results:
  - The nucleotide identities at each position in the "founder" sequence for each viral clade are [here](results/clade_founder_nts/clade_founder_nts.csv). This file also indicates which sites are four-fold degenerate.
  - The deep mutational scanning results processed and aggregated from published experimental studies are in [this subdirectory](results/dms/).
 
+## Different dataset versions
+You can run the pipeline for multiple mutation-annotated tree datasets.
+Specify the dataset to show by default in the interactive plots and to store results in [./results/](results) for as the `current_mat` in [config.yaml](config.yaml).
+Other datasets specifies under the `mat_trees` key in [config.yaml](config.yaml) will also be analyzed, and their results go in subdirectories called `./results_{mat}/` and their interactive plots are available via the GitHub pages interactive rendering at [https://jbloomlab.github.io/SARS2-mut-fitness](https://jbloomlab.github.io/SARS2-mut-fitness) in a list at the bottom of the page.
+
 ## Structure of repository and running the analysis
 The analysis is entirely reproducible from the code provided in this GitHub repository.
 
