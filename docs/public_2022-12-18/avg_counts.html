@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <style>
+   .error {
+        color: red;
+    }
+   #vis {margin-left: 2.5%; margin-left: 2.5%; width: 95vw; overflow-x: auto;}
+   #markdown {margin-left: 2.5%; margin-right: 2.5%; margin-top: 10px; }
+   #vis input, #vis label, #vis span {font-size: 14px; margin: 0px 3px 1px 0px;}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm//vega@5" type="text/javascript">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm//vega-lite@4.17.0" type="text/javascript">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm//vega-embed@6" type="text/javascript">
+  </script>
+  <meta content="summary" name="twitter:card"/>
+  <meta content="https://jbloomlab.github.io/SARS2-mut-fitness" name="twitter:site"/>
+  <meta content="average per-site counts of each nucleotide mutation type" name="twitter:title"/>
+  <meta content="average per-site counts of each nucleotide mutation type" name="twitter:description"/>
+  <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" rel="stylesheet"/>
+ </head>
+ <body>
+  <div id="vis">
+  </div>
+  <script>
+   (function(vegaEmbed) {
+      var spec = {"config": {"view": {"continuousWidth": 400, "continuousHeight": 300, "stroke": null}, "axis": {"grid": false}}, "data": {"name": "data-d0bf9393dbe6bf72074d43c8ee6397dd"}, "mark": "bar", "encoding": {"color": {"field": "mut_type", "legend": {"orient": "bottom", "titleOrient": "left"}, "scale": {"range": ["#999999", "#009E73", "#56B4E9", "#E69F00"]}, "sort": ["expected (4-fold degenerate)", "synonymous", "nonsynonymous", "stop"], "title": "type of count", "type": "nominal"}, "column": {"field": "mut", "header": {"labelAlign": "right", "labelAngle": -90, "labelBaseline": "middle", "labelOrient": "bottom", "labelPadding": 128}, "spacing": 0, "title": null, "type": "nominal"}, "opacity": {"condition": {"value": 1, "selection": "selector001"}, "value": 0.25}, "tooltip": [{"field": "mut_type", "title": "type of count", "type": "nominal"}, {"field": "mut", "title": "mutation type", "type": "nominal"}, {"field": "counts", "format": ".2f", "title": "average counts", "type": "quantitative"}], "x": {"axis": {"labels": false, "ticks": true, "values": ["synonymous"]}, "field": "mut_type", "scale": {"domain": ["dummy", "expected (4-fold degenerate)", "synonymous", "nonsynonymous", "stop"]}, "title": null, "type": "nominal"}, "y": {"field": "counts", "title": "average counts per site", "type": "quantitative"}}, "height": 120, "selection": {"selector001": {"type": "multi", "fields": ["mut_type"], "bind": "legend"}}, "width": 38, "$schema": "https://vega.github.io/schema/vega-lite/v4.17.0.json", "datasets": {"data-d0bf9393dbe6bf72074d43c8ee6397dd": [{"mut_type": "expected (4-fold degenerate)", "mut": "A to C", "counts": 8.134541300079398}, {"mut_type": "expected (4-fold degenerate)", "mut": "A to G", "counts": 64.94277319991639}, {"mut_type": "expected (4-fold degenerate)", "mut": "A to T", "counts": 18.127214802418603}, {"mut_type": "expected (4-fold degenerate)", "mut": "C to A", "counts": 34.06398464323935}, {"mut_type": "expected (4-fold degenerate)", "mut": "C to G", "counts": 11.446257043605454}, {"mut_type": "expected (4-fold degenerate)", "mut": "C to T", "counts": 510.78821668100403}, {"mut_type": "expected (4-fold degenerate)", "mut": "G to A", "counts": 138.67456353798647}, {"mut_type": "expected (4-fold degenerate)", "mut": "G to C", "counts": 16.243087983986655}, {"mut_type": "expected (4-fold degenerate)", "mut": "G to T", "counts": 309.7376163693112}, {"mut_type": "expected (4-fold degenerate)", "mut": "T to A", "counts": 12.263258827018197}, {"mut_type": "expected (4-fold degenerate)", "mut": "T to C", "counts": 58.04481318785402}, {"mut_type": "expected (4-fold degenerate)", "mut": "T to G", "counts": 7.791389608803026}, {"mut_type": "nonsynonymous", "mut": "A to C", "counts": 7.597566093159882}, {"mut_type": "nonsynonymous", "mut": "A to G", "counts": 40.36664503569111}, {"mut_type": "nonsynonymous", "mut": "A to T", "counts": 6.26597879048438}, {"mut_type": "nonsynonymous", "mut": "C to A", "counts": 18.580383314543404}, {"mut_type": "nonsynonymous", "mut": "C to G", "counts": 2.8776041666666665}, {"mut_type": "nonsynonymous", "mut": "C to T", "counts": 286.3837142857143}, {"mut_type": "nonsynonymous", "mut": "G to A", "counts": 53.62513357555033}, {"mut_type": "nonsynonymous", "mut": "G to C", "counts": 8.331926605504588}, {"mut_type": "nonsynonymous", "mut": "G to T", "counts": 86.11768115942029}, {"mut_type": "nonsynonymous", "mut": "T to A", "counts": 3.324529447480267}, {"mut_type": "nonsynonymous", "mut": "T to C", "counts": 26.577703409328592}, {"mut_type": "nonsynonymous", "mut": "T to G", "counts": 4.831604376865141}, {"mut_type": "stop", "mut": "A to T", "counts": 1.5891472868217054}, {"mut_type": "stop", "mut": "C to A", "counts": 2.610169491525424}, {"mut_type": "stop", "mut": "C to G", "counts": 1.032085561497326}, {"mut_type": "stop", "mut": "C to T", "counts": 44.06132075471698}, {"mut_type": "stop", "mut": "G to A", "counts": 3.763779527559055}, {"mut_type": "stop", "mut": "G to T", "counts": 28.50735294117647}, {"mut_type": "stop", "mut": "T to A", "counts": 0.8363273453093812}, {"mut_type": "stop", "mut": "T to G", "counts": 0.5409836065573771}, {"mut_type": "synonymous", "mut": "A to C", "counts": 8.417777777777777}, {"mut_type": "synonymous", "mut": "A to G", "counts": 60.9626572327044}, {"mut_type": "synonymous", "mut": "A to T", "counts": 16.624817518248175}, {"mut_type": "synonymous", "mut": "C to A", "counts": 32.03453237410072}, {"mut_type": "synonymous", "mut": "C to G", "counts": 11.362521891418563}, {"mut_type": "synonymous", "mut": "C to T", "counts": 549.5647416413374}, {"mut_type": "synonymous", "mut": "G to A", "counts": 101.77643171806167}, {"mut_type": "synonymous", "mut": "G to C", "counts": 15.814545454545454}, {"mut_type": "synonymous", "mut": "G to T", "counts": 307.6109090909091}, {"mut_type": "synonymous", "mut": "T to A", "counts": 12.41905950894715}, {"mut_type": "synonymous", "mut": "T to C", "counts": 66.53759723422645}, {"mut_type": "synonymous", "mut": "T to G", "counts": 7.3814625058220775}]}};
+      var embedOpt = {"mode": "vega-lite"};
+
+      function showError(el, error){
+          el.innerHTML = ('<div class="error" style="color:red;">'
+                          + '<p>JavaScript Error: ' + error.message + '</p>'
+                          + "<p>This usually means there's a typo in your chart specification. "
+                          + "See the javascript console for the full traceback.</p>"
+                          + '</div>');
+          throw error;
+      }
+      const el = document.getElementById('vis');
+      vegaEmbed("#vis", spec, embedOpt)
+        .catch(error => showError(el, error));
+    })(vegaEmbed);
+  </script>
+  <div id="markdown">
+   <hr/>
+   <h2>
+    average per-site counts of each nucleotide mutation type
+   </h2>
+   <p>
+    Interactive plot of average counts per nucleotide site averaged over all clades and
+sites. Counts are reported separately for the expected counts (estimated from
+4-fold degenerate sites) and the counts for all synonymous mutations (including 4-fold
+degenerate sites), nonsynonymous mutations, and stop mutations. Counts are stratified
+by the type of nucleotide change in the mutation.
+   </p>
+   <p>
+    You can mouseover points for details and click/shift-click the legend to highlight
+specific types of counts.
+   </p>
+   <p>
+    See
+    <a href="https://www.biorxiv.org/content/10.1101/2023.01.30.526314v1">
+     Bloom and Neher (2023)
+    </a>
+    for a paper describing the work.
+   </p>
+   <p>
+    See
+    <a href="https://github.com/jbloomlab/SARS2-mut-fitness">
+     https://github.com/jbloomlab/SARS2-mut-fitness
+    </a>
+    for full computer code and data.
+   </p>
+   <p>
+    See
+    <a href="https://jbloomlab.github.io/SARS2-mut-fitness/">
+     https://jbloomlab.github.io/SARS2-mut-fitness/
+    </a>
+    for links to all interactive plots.
+   </p>
+   <p>
+    This plot is for the public_2022-12-18 dataset.
+    <a href="index.html">
+     Here
+    </a>
+    are all plots for that dataset.
+   </p>
+  </div>
+ </body>
+</html>

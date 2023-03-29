@@ -42,6 +42,11 @@ rule all:
             plot=list(docs_plot_annotations["plots"]) + ["index"],
             mat=config["mat_trees"],
         ),
+        expand(
+            "docs/{plot}.html",
+            plot=list(docs_plot_annotations["plots"]) + ["index"],
+            mat=config["mat_trees"],
+        ),
 
 
 rule get_mat_tree:
@@ -543,13 +548,15 @@ rule format_plot_for_docs:
         markdown=temp("results_{mat}/plots_for_docs/{plot}.md"),
     params:
         annotations=lambda wc: docs_plot_annotations["plots"][wc.plot],
-        url=os.path.join(config["docs_url"], "{mat}/{plot}.html"),
+        url=config["docs_url"],
         legend_suffix=docs_plot_annotations["legend_suffix"]
     shell:
         """
         echo "## {params.annotations[title]}\n" > {output.markdown}
         echo "{params.annotations[legend]}\n\n" >> {output.markdown}
         echo "{params.legend_suffix}" >> {output.markdown}
+        echo "\nThis plot is for the {wildcards.mat} dataset." >> {output.markdown}
+        echo "[Here](index.html) are all plots for that dataset." >> {output.markdown}
         python {input.script} \
             --chart {input.plot} \
             --markdown {output.markdown} \
@@ -561,18 +568,30 @@ rule format_plot_for_docs:
 
 
 rule docs_index:
-    """Write index for GitHub Pages docs that re-directs to main repo."""
+    """Write index for GitHub Pages docs for each MAT."""
     output:
         html="docs/{mat}/index.html",
     params:
-        docs_url=os.path.join(config['docs_url'], "{mat}"),
         plot_annotations=docs_plot_annotations,
+        mat_trees=list(config["mat_trees"]),
     script:
         "scripts/docs_index.py"
 
 
-rule cp_current_mat:
-    """Copy the current MAT to base `./results/` and `./docs/` for default display."""
+rule current_docs_index:
+    """Write index for GitHub Pages docs for current MAT."""
+    output:
+        html="docs/index.html",
+    params:
+        plot_annotations=docs_plot_annotations,
+        mat_trees=list(config["mat_trees"]),
+        current_mat=config["current_mat"],
+    script:
+        "scripts/docs_index.py"
+
+
+rule cp_current_mat_results:
+    """Copy the current MAT results to `./results/`."""
     input:
         [os.path.join(f"results_{config['current_mat']}", f) for f in results_files],
     output:
@@ -585,3 +604,19 @@ rule cp_current_mat:
         rm -rf {output.subdir}
         cp -r {params.input_subdir} {output.subdir}
         """
+
+
+rule cp_current_mat_docs:
+    """Copy the current MAT docs to `./docs/` for default GitHub pages display."""
+    input:
+        expand(
+            os.path.join("docs", config["current_mat"], "{plot}.html"),
+            plot=list(docs_plot_annotations["plots"]),
+        ),
+    output:
+        expand(
+            os.path.join("docs", "{plot}.html"),
+            plot=list(docs_plot_annotations["plots"]),
+        ),
+    shell:
+        "cp {input} docs"
