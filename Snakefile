@@ -14,25 +14,32 @@ configfile: "config.yaml"
 with open(config["docs_plot_annotations"]) as f:
     docs_plot_annotations = yaml.safe_load(f)
 
+# paths with results subdirectory for key tracked output files
+results_files = [
+    "synonymous_mut_rates/rates_by_clade.csv",
+    "mutation_counts/aggregated.csv",
+    "expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv",
+    "aa_fitness/aamut_fitness_all.csv",
+    "aa_fitness/aamut_fitness_by_clade.csv",
+    "aa_fitness/aamut_fitness_by_subset.csv",
+    "aa_fitness/aa_fitness.csv",
+    "clade_founder_nts/clade_founder_nts.csv",
+]
 
 rule all:
     """Target rule with desired output files."""
     input:
         expand(
-            [
-                "results_{mat}/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv",
-                "results_{mat}/aa_fitness/aamut_fitness_all.csv",
-                "results_{mat}/aa_fitness/aamut_fitness_by_clade.csv",
-                "results_{mat}/aa_fitness/aamut_fitness_by_subset.csv",
-                "results_{mat}/aa_fitness/aa_fitness.csv",
-                "docs/{mat}/index.html",
-                "results_{mat}/dca/dca_corr.pdf",
-            ],
+            [os.path.join("results_{mat}", f) for f in results_files],
+            mat=config["mat_trees"],
+        ),
+        expand(
+            [os.path.join("results", f) for f in results_files],
             mat=config["mat_trees"],
         ),
         expand(
             "docs/{mat}/{plot}.html",
-            plot=docs_plot_annotations["plots"],
+            plot=list(docs_plot_annotations["plots"]) + ["index"],
             mat=config["mat_trees"],
         ),
 
@@ -562,3 +569,19 @@ rule docs_index:
         plot_annotations=docs_plot_annotations,
     script:
         "scripts/docs_index.py"
+
+
+rule cp_current_mat:
+    """Copy the current MAT to base `./results/` and `./docs/` for default display."""
+    input:
+        [os.path.join(f"results_{config['current_mat']}", f) for f in results_files],
+    output:
+        [os.path.join("results", f) for f in results_files],
+        subdir=directory("results"),
+    params:
+        input_subdir=f"results_{config['current_mat']}",
+    shell:
+        """
+        rm -rf {output.subdir}
+        cp -r {params.input_subdir} {output.subdir}
+        """
