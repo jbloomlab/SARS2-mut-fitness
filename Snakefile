@@ -47,6 +47,7 @@ rule all:
             plot=list(docs_plot_annotations["plots"]) + ["index"],
             mat=config["mat_trees"],
         ),
+        expand("_temp_{mat}", mat=config["mat_trees"]),  # dummy for temp aggregation
 
 
 rule get_mat_tree:
@@ -187,6 +188,47 @@ rule translate_mat:
             -f {input.ref_fasta} \
             -t {output.tsv}
         """
+
+
+rule mat_sample_path:
+    """Get sample paths on MAT for clade. Use for nucleotide mutations."""
+    # for explanation of why we need this rule in addition to `translate_mat`:
+    # https://github.com/yatisht/usher/issues/336#issuecomment-1490764515
+    input:
+        mat=rules.mat_clade_subset.output.mat,
+    output:
+        tsv=temp("results_{mat}/mat_by_clade_subset/{clade}_{subset}_sample_paths.tsv"),
+    shell:
+        "matUtils extract -i {input.mat} --sample-paths {output.tsv}"
+
+
+rule sample_path_to_nt_mutations:
+    """Get all nucleotide mutations on tree from sample paths."""
+    # for explanation of why we need this rule in addition to `translate_mat`:
+    # https://github.com/yatisht/usher/issues/336#issuecomment-1490764515
+    input:
+        tsv=rules.mat_sample_path.output.tsv,
+    output:
+        csv="results_{mat}/mat_by_clade_subset/{clade}_{subset}_nt_mutations.csv",
+    script:
+        "scripts/sample_path_to_nt_mutations.py"
+
+
+rule _temp_agg_nt_mutations:
+    """Temporary dummy rule to enable running upstream rules to get nt mutations."""
+    input:
+        lambda wc: [
+            os.path.join(
+                "results_{mat}/mat_by_clade_subset",
+                f"{clade}_{subset}_nt_mutations.csv",
+            )
+            for clade in clades_w_adequate_counts(wc)
+            for subset in config["sample_subsets"]
+        ],
+    output:
+        "_temp_{mat}",
+    shell:
+        "echo not_implemented"
 
 
 rule clade_founder_json:
