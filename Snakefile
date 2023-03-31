@@ -47,7 +47,6 @@ rule all:
             plot=list(docs_plot_annotations["plots"]) + ["index"],
             mat=config["mat_trees"],
         ),
-        expand("_temp_{mat}", mat=config["mat_trees"]),  # dummy for temp aggregation
 
 
 rule get_mat_tree:
@@ -105,7 +104,8 @@ rule get_dca_data:
 rule ref_coding_sites:
     """Get all sites in reference that are part of a coding sequence."""
     input:
-        gtf=rules.edit_ref_gtf.output.gtf
+        gtf=rules.edit_ref_gtf.output.gtf,
+        fasta=rules.get_ref_fasta.output.ref_fasta,
     output:
         csv="results_{mat}/ref/coding_sites.csv",
     script:
@@ -214,23 +214,6 @@ rule sample_path_to_nt_mutations:
         "scripts/sample_path_to_nt_mutations.py"
 
 
-rule _temp_agg_nt_mutations:
-    """Temporary dummy rule to enable running upstream rules to get nt mutations."""
-    input:
-        lambda wc: [
-            os.path.join(
-                "results_{mat}/mat_by_clade_subset",
-                f"{clade}_{subset}_nt_mutations.csv",
-            )
-            for clade in clades_w_adequate_counts(wc)
-            for subset in config["sample_subsets"]
-        ],
-    output:
-        "_temp_{mat}",
-    shell:
-        "echo not_implemented"
-
-
 rule clade_founder_json:
     """Get JSON with nexstrain clade founders (indels not included)."""
     params:
@@ -277,6 +260,7 @@ rule count_mutations:
     """Count mutations, excluding branches with too many mutations or reversions."""
     input:
         tsv=rules.translate_mat.output.tsv,
+        nt_mut_csv=rules.sample_path_to_nt_mutations.output.csv,
         ref_fasta=rules.get_ref_fasta.output.ref_fasta,
         clade_founder_fasta=rules.clade_founder_fasta_and_muts.output.fasta,
         ref_to_founder_muts=rules.clade_founder_fasta_and_muts.output.muts,

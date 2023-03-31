@@ -34,7 +34,8 @@ sample_subsets:
 clade_founder_json: https://raw.githubusercontent.com/neherlab/SC2_variant_rates/7e738194a8c6592082f1caa9a6ca70cb68289790/data/clade_gts.json
 
 # For counting mutations, exclude any branches with more than this many nucleotide
-# mutations or more than this many reversions to reference or clade founder
+# mutations or more than this many reversions to reference or clade founder. These
+# filters are applied only on the coding nucleotide changes, not any non-coding ones.
 max_nt_mutations: 4
 max_reversions_to_ref: 1
 max_reversions_to_clade_founder: 1

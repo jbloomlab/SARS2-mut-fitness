@@ -25,7 +25,7 @@ merge_check = (
     .drop_duplicates()
     .merge(clade_founder_nts, validate="one_to_one", how="left")
 )
-assert merge_check.notnull().all().all()
+assert merge_check.notnull().all().all(), merge_check.notnull().all()
 
 counts_and_info = counts.merge(
     clade_founder_nts,
