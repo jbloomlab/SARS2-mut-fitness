@@ -1,6 +1,8 @@
 """Get all sites in the GTF that correspond to a coding sequence."""
 
 
+import Bio.SeqIO
+
 import pandas as pd
 
 
@@ -63,5 +65,21 @@ sites = (
         gene=pd.NamedAgg("gene", lambda s: ";".join(s)),
     )
 )
+
+# add any non-coding sites
+length = len(Bio.SeqIO.read(snakemake.input.fasta, "fasta"))
+noncoding_sites = sorted(set(range(1, length + 1)) - set(sites["site"]))
+
+sites = pd.concat([
+    sites,
+    pd.DataFrame(
+        {
+            "site": noncoding_sites,
+            "codon_position": "noncoding",
+            "codon_site": "noncoding",
+            "gene": "noncoding",
+        }
+    ),
+]).sort_values("site")
 
 sites.to_csv(snakemake.output.csv, index=False)

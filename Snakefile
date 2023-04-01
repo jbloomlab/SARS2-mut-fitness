@@ -104,7 +104,8 @@ rule get_dca_data:
 rule ref_coding_sites:
     """Get all sites in reference that are part of a coding sequence."""
     input:
-        gtf=rules.edit_ref_gtf.output.gtf
+        gtf=rules.edit_ref_gtf.output.gtf,
+        fasta=rules.get_ref_fasta.output.ref_fasta,
     output:
         csv="results_{mat}/ref/coding_sites.csv",
     script:
@@ -189,6 +190,30 @@ rule translate_mat:
         """
 
 
+rule mat_sample_path:
+    """Get sample paths on MAT for clade. Use for nucleotide mutations."""
+    # for explanation of why we need this rule in addition to `translate_mat`:
+    # https://github.com/yatisht/usher/issues/336#issuecomment-1490764515
+    input:
+        mat=rules.mat_clade_subset.output.mat,
+    output:
+        tsv=temp("results_{mat}/mat_by_clade_subset/{clade}_{subset}_sample_paths.tsv"),
+    shell:
+        "matUtils extract -i {input.mat} --sample-paths {output.tsv}"
+
+
+rule sample_path_to_nt_mutations:
+    """Get all nucleotide mutations on tree from sample paths."""
+    # for explanation of why we need this rule in addition to `translate_mat`:
+    # https://github.com/yatisht/usher/issues/336#issuecomment-1490764515
+    input:
+        tsv=rules.mat_sample_path.output.tsv,
+    output:
+        csv="results_{mat}/mat_by_clade_subset/{clade}_{subset}_nt_mutations.csv",
+    script:
+        "scripts/sample_path_to_nt_mutations.py"
+
+
 rule clade_founder_json:
     """Get JSON with nexstrain clade founders (indels not included)."""
     params:
@@ -235,6 +260,7 @@ rule count_mutations:
     """Count mutations, excluding branches with too many mutations or reversions."""
     input:
         tsv=rules.translate_mat.output.tsv,
+        nt_mut_csv=rules.sample_path_to_nt_mutations.output.csv,
         ref_fasta=rules.get_ref_fasta.output.ref_fasta,
         clade_founder_fasta=rules.clade_founder_fasta_and_muts.output.fasta,
         ref_to_founder_muts=rules.clade_founder_fasta_and_muts.output.muts,
