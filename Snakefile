@@ -27,7 +27,7 @@ results_files = [
     "nt_fitness/ntmut_fitness_all.csv",
     "nt_fitness/ntmut_fitness_by_clade.csv",
     "nt_fitness/ntmut_fitness_by_subset.csv",
-#    "nt_fitness/nt_fitness.csv",
+    "nt_fitness/nt_fitness.csv",
 ]
 
 rule all:
