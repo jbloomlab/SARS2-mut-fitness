@@ -19,11 +19,14 @@ results_files = [
     "synonymous_mut_rates/rates_by_clade.csv",
     "mutation_counts/aggregated.csv",
     "expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv",
+    "clade_founder_nts/clade_founder_nts.csv",
     "aa_fitness/aamut_fitness_all.csv",
     "aa_fitness/aamut_fitness_by_clade.csv",
     "aa_fitness/aamut_fitness_by_subset.csv",
     "aa_fitness/aa_fitness.csv",
-    "clade_founder_nts/clade_founder_nts.csv",
+    "nt_fitness/ntmut_fitness_all.csv",
+    "nt_fitness/ntmut_fitness_by_clade.csv",
+    "nt_fitness/ntmut_fitness_by_subset.csv",
 ]
 
 rule all:
@@ -401,6 +404,22 @@ rule aamut_fitness:
         notebook="results_{mat}/aa_fitness/aamut_fitness.ipynb",
     notebook:
         "notebooks/aamut_fitness.py.ipynb"
+
+
+rule ntmut_fitness:
+    """Fitness effects from expected vs actual counts for nucleotide mutations."""
+    input:
+        csv=rules.merge_expected_and_actual_counts.output.csv,
+    output:
+        ntmut_all="results_{mat}/nt_fitness/ntmut_fitness_all.csv",
+        ntmut_by_clade="results_{mat}/nt_fitness/ntmut_fitness_by_clade.csv",
+        ntmut_by_subset="results_{mat}/nt_fitness/ntmut_fitness_by_subset.csv",
+    params:
+        fitness_pseudocount=config["fitness_pseudocount"],
+    log:
+        notebook="results_{mat}/nt_fitness/ntmut_fitness.ipynb",
+    notebook:
+        "notebooks/ntmut_fitness.py.ipynb"
 
 
 rule aa_fitness:
