@@ -35,17 +35,17 @@ def get_conserved_regions():
 
 
 if __name__=="__main__":
-    import polars as pl
+    import pandas as pd
 
     fname = 'results/nt_fitness/ntmut_fitness_all.csv'
     min_expected_count = 20
-    fitness = pl.read_csv(fname, separator=',')
+    fitness = pd.read_csv(fname, sep=',')
     known_conserved_regions = get_conserved_regions()
-    fitness = fitness.with_columns([pl.col('nt_site').apply(lambda x:bool(known_conserved_regions[x-1])).alias('conserved_syn')])
+    fitness['conserved_syn'] = fitness['nt_site'].apply(lambda x:bool(known_conserved_regions[x-1]))
 
-    all_ffold = fitness.filter(pl.col('four_fold_degenerate')&(pl.col('expected_count')>min_expected_count))
-    conserved_ffold = fitness.filter(pl.col('four_fold_degenerate')&(pl.col('conserved_syn'))&(pl.col('expected_count')>min_expected_count))
-    other_ffold = fitness.filter(pl.col('four_fold_degenerate')&(~pl.col('conserved_syn'))&(pl.col('expected_count')>min_expected_count))
+    all_ffold = fitness.loc[fitness['four_fold_degenerate']&(fitness['expected_count']>min_expected_count)]
+    conserved_ffold = fitness.loc[fitness['four_fold_degenerate']&fitness['conserved_syn']&(fitness['expected_count']>min_expected_count)]
+    other_ffold = fitness.loc[fitness['four_fold_degenerate']&(~fitness['conserved_syn'])&(fitness['expected_count']>min_expected_count)]
     fitness_measure = 'delta_fitness'
 
     ## cumulative distribution of fitness effect of four-fold synonymous sites at known conserved regions vs other
