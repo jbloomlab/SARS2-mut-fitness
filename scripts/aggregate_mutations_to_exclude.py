@@ -1,10 +1,30 @@
 import itertools
 
+import Bio.SeqIO
+
 import pandas as pd
 
 import yaml
 
 nts = ["A", "C", "G", "T"]
+
+seqlength = len(Bio.SeqIO.read(snakemake.input.ref_fasta, "fasta"))
+
+sites_out_of_range = pd.DataFrame(
+    [
+        (clade, site, f"{nt1}{site}{nt2}", False)
+        for nt1, site, nt2, clade in itertools.product(
+            nts,
+            (
+                list(range(1, snakemake.params.site_include_range["start"]))
+                + list(range(snakemake.params.site_include_range["end"] + 1, seqlength))
+            ),
+            nts,
+            snakemake.params.clades,
+        )
+    ],
+    columns=["clade", "site", "mutation", "masked_in_usher"],
+)
 
 sites_to_exclude = pd.DataFrame(
     [
@@ -32,6 +52,8 @@ sites_masked = pd.DataFrame(
     columns=["clade", "site", "mutation", "masked_in_usher"],
 )
 
+to_exclude = pd.concat([sites_out_of_range, sites_to_exclude, sites_masked])
+
 if snakemake.params.exclude_ref_to_founder_muts:
     muts_to_exclude = pd.concat(
         [
@@ -41,9 +63,7 @@ if snakemake.params.exclude_ref_to_founder_muts:
             )
         ]
     ).assign(masked_in_usher=False)
-    to_exclude = pd.concat([sites_to_exclude, sites_masked, muts_to_exclude])
-else:
-    to_exclude = pd.concat([sites_to_exclude, sites_masked])
+    to_exclude = pd.concat([to_exclude, muts_to_exclude])
 
 with open(snakemake.input.usher_masked_sites) as f:
     usher_masked_sites = yaml.safe_load(f)

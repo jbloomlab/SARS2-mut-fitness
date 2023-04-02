@@ -44,6 +44,12 @@ max_reversions_to_clade_founder: 1
 # These sites have higher than normal errors due to calling of missing bases to reference.
 exclude_ref_to_founder_muts: true
 
+# Only include sites in this range (inclusive). Currently set to exclude sites in the UTRs
+# before/after coding sequences as these may not be well covered in UShER tree:
+site_include_range:
+  start: 266  # start of ORF1ab
+  end: 29674  # end of ORF10
+
 # exclude the following sites for all clades (set to null for no exclusions)
 sites_to_exclude:
   # Sites in Table S1 of https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1009175

@@ -80,6 +80,7 @@ if __name__=="__main__":
     add_genes(axs[0], 0.5, 0.8)
     add_genes(axs[1], 0.5, 0.8)
     axs[1].set_xlim(25000, 29700)
+    plt.savefig("_noncoding_conservation.pdf")
     # plt.savefig(f"results/figures/conservation_profile_{clade}.pdf")
     # d = pl.DataFrame(data)
     # d.write_csv(f"results/conservation_profile_{clade}.tsv", sep='\t')

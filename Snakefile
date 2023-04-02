@@ -278,6 +278,7 @@ rule count_mutations:
         max_reversions_to_clade_founder=config["max_reversions_to_clade_founder"],
         exclude_ref_to_founder_muts=config["exclude_ref_to_founder_muts"],
         sites_to_exclude=config["sites_to_exclude"],
+        site_include_range=config["site_include_range"],
     log:
         notebook="results_{mat}/mutation_counts/{clade}_{subset}_count_mutations.ipynb",
     notebook:
@@ -353,11 +354,13 @@ rule aggregate_mutations_to_exclude:
         ],
         usher_masked_sites=config["usher_masked_sites"],
         site_mask=rules.site_mask.output.csv,
+        ref_fasta=rules.get_ref_fasta.output.ref_fasta,
     output:
         csv="results_{mat}/expected_vs_actual_mut_counts/mutations_to_exclude.csv",
     params:
         clades=lambda wc: clades_w_adequate_counts(wc),
         sites_to_exclude=config["sites_to_exclude"],
+        site_include_range=config["site_include_range"],
         exclude_ref_to_founder_muts=config["exclude_ref_to_founder_muts"],
     script:
         "scripts/aggregate_mutations_to_exclude.py"
