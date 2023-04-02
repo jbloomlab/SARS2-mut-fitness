@@ -27,6 +27,7 @@ results_files = [
     "nt_fitness/ntmut_fitness_all.csv",
     "nt_fitness/ntmut_fitness_by_clade.csv",
     "nt_fitness/ntmut_fitness_by_subset.csv",
+    "nt_fitness/nt_fitness.csv",
 ]
 
 rule all:
@@ -432,6 +433,18 @@ rule aa_fitness:
         notebook="results_{mat}/aa_fitness/aa_fitness.ipynb",
     notebook:
         "notebooks/aa_fitness.py.ipynb"
+
+
+rule nt_fitness:
+    """Fitnesses of different nucleotides across clades."""
+    input:
+        ntmut_fitness=rules.ntmut_fitness.output.ntmut_all,
+    output:
+        nt_fitness="results_{mat}/nt_fitness/nt_fitness.csv",
+    log:
+        notebook="results_{mat}/nt_fitness/nt_fitness.ipynb",
+    notebook:
+        "notebooks/nt_fitness.py.ipynb"
 
 
 rule analyze_aa_fitness:
