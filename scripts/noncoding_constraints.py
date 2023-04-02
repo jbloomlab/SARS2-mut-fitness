@@ -1,4 +1,4 @@
-import polars as pl
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import argparse
@@ -38,17 +38,7 @@ if __name__=="__main__":
     parser.add_argument("--output", type=str, help="output file")
     args = parser.parse_args()
 
-    fitness = pl.read_csv(args.fitness, separator=',',
-                    dtypes={"nt_site":int, "nt_mutation":str, "gene": str, "aa_mutation":str,"synonymous":bool,
-                            "noncoding":bool, "four_fold_degenerate": bool, "expected_count":float,
-                            "actual_count": int, "count_terminal":int , "count_non_terminal":int,
-                            "mean_log_size":float,"delta_fitness":float
-                            })
-
-    fitness = fitness.with_columns(
-        pl.col('nt_mutation').apply(lambda x:x[0]).alias('from'),
-        pl.col('nt_mutation').apply(lambda x:x[-1]).alias('to')
-    )
+    fitness = pd.read_csv(args.fitness, sep=',')
 
     expected_count_cutoff = 20
 
@@ -63,21 +53,22 @@ if __name__=="__main__":
     rois = {}
     fig, axs = plt.subplots(2,1,figsize=(18,6))
     ws0 = windows[0]
-    cfit_by_pos = fitness.filter((pl.col('synonymous')|(pl.col('noncoding')))
-                                &(pl.col('expected_count')>expected_count_cutoff)
-                                ).groupby('nt_site').mean().sort(by='nt_site')
+    cfit_by_pos = fitness.loc[(fitness['synonymous']|fitness['noncoding'])
+                               &(fitness['expected_count']>expected_count_cutoff)
+                            ].groupby('nt_site').mean().sort_index()
 
 
     values = cfit_by_pos['delta_fitness']
     data['position'] = np.arange(29903)
     data['raw'] = np.nan*np.ones_like(data['position'])
-    data['raw'][cfit_by_pos['nt_site']] = values #[values[p] if p in values else np.nan for p in data['position']]
-    x0,y0 = convolve_func(cfit_by_pos['nt_site'], values,  ws0, mode='same')
+    positions = cfit_by_pos.index
+    data['raw'][positions] = values #[values[p] if p in values else np.nan for p in data['position']]
+    x0,y0 = convolve_func(positions, values,  ws0, mode='same')
     clade = 'all'
     for ws in windows[1:]:
         # ws_o_2 = int((ws0-ws)/2)
         ws_o_2 = int(ws/2)
-        x,y = convolve_func(cfit_by_pos['nt_site'], values, ws)
+        x,y = convolve_func(positions, values, ws)
         interpolator = interp1d(x,y,kind='linear', bounds_error=False)
 
         data[f'smooth_{ws}'] = [interpolator(p) for p in data['position']]
