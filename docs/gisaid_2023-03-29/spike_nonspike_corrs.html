@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <style>
+   .error {
+        color: red;
+    }
+   #vis {margin-left: 2.5%; margin-left: 2.5%; width: 95vw; overflow-x: auto;}
+   #markdown {margin-left: 2.5%; margin-right: 2.5%; margin-top: 10px; }
+   #vis input, #vis label, #vis span {font-size: 14px; margin: 0px 3px 1px 0px;}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm//vega@5" type="text/javascript">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm//vega-lite@4.17.0" type="text/javascript">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm//vega-embed@6" type="text/javascript">
+  </script>
+  <meta content="summary" name="twitter:card"/>
+  <meta content="https://jbloomlab.github.io/SARS2-mut-fitness" name="twitter:site"/>
+  <meta content="average correlation of fitness estimates for spike and non-spike proteins" name="twitter:title"/>
+  <meta content="average correlation of fitness estimates for spike and non-spike proteins" name="twitter:description"/>
+  <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" rel="stylesheet"/>
+ </head>
+ <body>
+  <div id="vis">
+  </div>
+  <script>
+   (function(vegaEmbed) {
+      var spec = {"config": {"view": {"continuousWidth": 400, "continuousHeight": 300}}, "data": {"name": "data-501d1f1f3bd9f1a76bca7d32921aaf76"}, "mark": {"type": "point", "size": 50}, "encoding": {"color": {"field": "protein", "scale": {"range": ["#999999", "#D55E00"]}, "type": "nominal"}, "column": {"field": "subset_type", "header": {"labelFontSize": 11, "labelFontWeight": "bold"}, "spacing": 20, "title": null, "type": "nominal"}, "fill": {"field": "protein", "scale": {"range": ["#999999", "white"]}, "type": "nominal"}, "fillOpacity": {"field": "protein", "scale": {"range": [0.6, 0]}, "type": "nominal"}, "shape": {"field": "protein", "type": "nominal"}, "tooltip": [{"field": "subset_type", "type": "nominal"}, {"field": "count_threshold", "type": "quantitative"}, {"field": "protein", "type": "nominal"}, {"field": "correlation", "format": ".3f", "type": "quantitative"}], "x": {"field": "count_threshold", "title": "min expected counts", "type": "nominal"}, "y": {"field": "correlation", "scale": {"domain": [0, 1]}, "title": "average correlation among subsets", "type": "quantitative"}}, "height": 190, "width": {"step": 25}, "$schema": "https://vega.github.io/schema/vega-lite/v4.17.0.json", "datasets": {"data-501d1f1f3bd9f1a76bca7d32921aaf76": [{"subset_type": "subset by clade", "count_threshold": 5, "protein": "non-spike", "correlation": 0.8625674124286006}, {"subset_type": "subset by clade", "count_threshold": 5, "protein": "spike", "correlation": 0.799805332730806}, {"subset_type": "subset by clade", "count_threshold": 10, "protein": "non-spike", "correlation": 0.8849494048062866}, {"subset_type": "subset by clade", "count_threshold": 10, "protein": "spike", "correlation": 0.8186095467538113}, {"subset_type": "subset by clade", "count_threshold": 20, "protein": "non-spike", "correlation": 0.8989856005008295}, {"subset_type": "subset by clade", "count_threshold": 20, "protein": "spike", "correlation": 0.8413157729737278}, {"subset_type": "subset by clade", "count_threshold": 40, "protein": "non-spike", "correlation": 0.9024989440543226}, {"subset_type": "subset by clade", "count_threshold": 40, "protein": "spike", "correlation": 0.8485631123453873}, {"subset_type": "subset by geography", "count_threshold": 5, "protein": "non-spike", "correlation": 0.8667527667556587}, {"subset_type": "subset by geography", "count_threshold": 5, "protein": "spike", "correlation": 0.8775493625334487}, {"subset_type": "subset by geography", "count_threshold": 10, "protein": "non-spike", "correlation": 0.8671273413280101}, {"subset_type": "subset by geography", "count_threshold": 10, "protein": "spike", "correlation": 0.8775939261544409}, {"subset_type": "subset by geography", "count_threshold": 20, "protein": "non-spike", "correlation": 0.8764761613724726}, {"subset_type": "subset by geography", "count_threshold": 20, "protein": "spike", "correlation": 0.8896812783835973}, {"subset_type": "subset by geography", "count_threshold": 40, "protein": "non-spike", "correlation": 0.8961813426549405}, {"subset_type": "subset by geography", "count_threshold": 40, "protein": "spike", "correlation": 0.9064516032124293}]}};
+      var embedOpt = {"mode": "vega-lite"};
+
+      function showError(el, error){
+          el.innerHTML = ('<div class="error" style="color:red;">'
+                          + '<p>JavaScript Error: ' + error.message + '</p>'
+                          + "<p>This usually means there's a typo in your chart specification. "
+                          + "See the javascript console for the full traceback.</p>"
+                          + '</div>');
+          throw error;
+      }
+      const el = document.getElementById('vis');
+      vegaEmbed("#vis", spec, embedOpt)
+        .catch(error => showError(el, error));
+    })(vegaEmbed);
+  </script>
+  <div id="markdown">
+   <hr/>
+   <h2>
+    average correlation of fitness estimates for spike and non-spike proteins
+   </h2>
+   <p>
+    Pearson correlation coefficients for fitness estimates for amino-acid mutations
+made from subsets of sequences from different clades or different geographic regions.
+Correlations are calculated separately for spike and non-spike mutations, and the
+x-axis indicates the threshold for minimum expected counts for a mutation to be
+included in the correlations. The correlations
+include only mutations at the sites with the same wildtype identity in the clades.
+   </p>
+   <p>
+    You can mouseover points for details.
+   </p>
+   <p>
+    See
+    <a href="https://www.biorxiv.org/content/10.1101/2023.01.30.526314v1">
+     Bloom and Neher (2023)
+    </a>
+    for a paper describing the work.
+   </p>
+   <p>
+    See
+    <a href="https://github.com/jbloomlab/SARS2-mut-fitness">
+     https://github.com/jbloomlab/SARS2-mut-fitness
+    </a>
+    for full computer code and data.
+   </p>
+   <p>
+    See
+    <a href="https://jbloomlab.github.io/SARS2-mut-fitness/">
+     https://jbloomlab.github.io/SARS2-mut-fitness/
+    </a>
+    for links to all interactive plots.
+   </p>
+   <p>
+    This plot is for the gisaid_2023-03-29 dataset.
+    <a href="index.html">
+     Here
+    </a>
+    are all plots for that dataset.
+   </p>
+  </div>
+ </body>
+</html>

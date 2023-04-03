@@ -7,6 +7,7 @@
 mat_trees:
   public_2023-03-27: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2023/03/27/public-2023-03-27.all.masked.nextclade.pangolin.pb.gz
   public_2022-12-18: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2022/12/18/public-2022-12-18.all.masked.nextclade.pangolin.pb.gz
+  gisaid_2023-03-29: https://hgwdev.gi.ucsc.edu/~angie/2847b92/gisaidAndPublic.2023-03-29.masked.pb.gz
 
 # specify one of the mutation-annotated trees in `mat_trees` as the "current" one that is
 # linked to by default as the best current estimates.
@@ -32,6 +33,10 @@ sample_subsets:
 
 # Founder genotypes for nextstrain clades from Richard Neher
 clade_founder_json: https://raw.githubusercontent.com/neherlab/SC2_variant_rates/7e738194a8c6592082f1caa9a6ca70cb68289790/data/clade_gts.json
+
+# Exclude these clades, for instance if no clade founder defined for them
+clades_to_exclude:
+  - 21A
 
 # For counting mutations, exclude any branches with more than this many nucleotide
 # mutations or more than this many reversions to reference or clade founder. These

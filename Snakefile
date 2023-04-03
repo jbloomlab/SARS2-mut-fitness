@@ -131,12 +131,16 @@ checkpoint mat_samples:
 
 def clades_w_adequate_counts(wc):
     """Return list of all clades with adequate sample counts."""
-    return (
-        pd.read_csv(checkpoints.mat_samples.get(**wc).output.clade_counts)
-        .query("adequate_sample_counts")
-        ["nextstrain_clade"]
-        .tolist()
-    )
+    return [
+        clade for clade in
+        (
+            pd.read_csv(checkpoints.mat_samples.get(**wc).output.clade_counts)
+            .query("adequate_sample_counts")
+            ["nextstrain_clade"]
+            .tolist()
+        )
+        if clade not in config["clades_to_exclude"]
+    ]
 
 
 rule samples_by_clade_subset:
