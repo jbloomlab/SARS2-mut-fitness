@@ -127,6 +127,14 @@ FEATURES             Location/Qualifiers
                      /gene="ORF9b"
                      /codon_start=1
                      /product="Protein 9b"
+     gene            29558..29674
+                     /gene="ORF10"
+     CDS             29558..29674
+                     /gene="ORF10"
+                     /codon_start=1
+                     /product="ORF10 protein"
+                     /protein_id="QHI42199.1"
+                     /translation="MGYINVFAFPFTIYSLLLCRMNSRNYIAQVDVVNFNLT"
 ORIGIN
         1 attaaaggtt tataccttcc caggtaacaa accaaccaac tttcgatctc ttgtagatct
        61 gttctctaaa cgaactttaa aatctgtgtg gctgtcactc ggctgcatgc ttagtgcact
