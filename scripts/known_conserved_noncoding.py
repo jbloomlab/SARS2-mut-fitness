@@ -2,7 +2,7 @@ from Bio import SeqIO
 import numpy as np
 import matplotlib.pyplot as plt
 
-def get_conserved_regions():
+def get_conserved_regions(only_known=False):
     TRS_motif = "ACGAAC"
     margin = 0
     ref = SeqIO.read('data/reference.gb', 'genbank')
@@ -26,10 +26,11 @@ def get_conserved_regions():
     conserved_regions['slippery seq']=(ref.seq.find("TTTAAACG"), ref.seq.find("TTTAAACG")+7)
     ## 3 stem pseudoknot
     conserved_regions['3-stem-pseudoknot']=(ref.seq.find("GCGGTGT"), ref.seq.find("TTTTGA", 13474))
-    ## center of E
-    conserved_regions['E-center']=(26330,26360)
-    ## end of M
-    conserved_regions['M-end']=(27170,27200)
+    if not only_known:
+        ## center of E
+        conserved_regions['E-center']=(26330,26360)
+        ## end of M
+        conserved_regions['M-end']=(27170,27200)
 
     conserved_vector = np.zeros(len(ref.seq), dtype=bool)
     for r in conserved_regions.values():

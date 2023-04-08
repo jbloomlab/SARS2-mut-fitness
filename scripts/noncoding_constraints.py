@@ -86,8 +86,15 @@ if __name__=="__main__":
     # produce copies where ORFs that tolerate stop codons are marked as non-coding
     # give that aa substitutions don't matter there, we can use all sites to look for
     # non-coding constraints
+    # don't include E and M regions
+    known_conserved_positions, regions = get_conserved_regions(only_known=True)
+    fitness['conserved_noncoding_known'] = fitness['nt_site'].apply(lambda x:bool(known_conserved_positions[x-1]))
+
+    # include E and M regions
     conserved_noncoding_pos, regions = get_conserved_regions()
     fitness['conserved_noncoding'] = fitness["nt_site"].apply(lambda x: conserved_noncoding_pos[x-1])
+
+
     fitness_noORFs = erase_genes(fitness, ['ORF6', 'ORF7a', 'ORF7b','ORF8', 'ORF9b', 'ORF10'])
 
     expected_count_cutoff = 20
@@ -159,18 +166,24 @@ if __name__=="__main__":
     all_ffold = fitness.loc[fitness['four_fold_degenerate']&(fitness['expected_count']>expected_count_cutoff)]
     conserved_ffold = fitness.loc[fitness['four_fold_degenerate']&fitness['conserved_noncoding']&(fitness['expected_count']>expected_count_cutoff)]
     other_ffold = fitness.loc[fitness['four_fold_degenerate']&(~fitness['conserved_noncoding'])&(fitness['expected_count']>expected_count_cutoff)]
+    conserved_ffold_known = fitness.loc[fitness['four_fold_degenerate']&fitness['conserved_noncoding_known']&(fitness['expected_count']>expected_count_cutoff)]
+    other_ffold_known = fitness.loc[fitness['four_fold_degenerate']&(~fitness['conserved_noncoding_known'])&(fitness['expected_count']>expected_count_cutoff)]
 
-    ax3.hist(conserved_ffold[fitness_measure], bins = np.linspace(-6,2,16),
-             label=f'known regions, n={len(conserved_ffold)}', alpha=0.5, density=True)
-    ax3.hist(other_ffold[fitness_measure], bins = np.linspace(-6,2,16),
-             label=f'other regions, n={len(other_ffold)}', alpha=0.5, density=True)
+    ax3.hist(conserved_ffold_known[fitness_measure], bins = np.linspace(-6,2,20),
+             label=f'known regions, n={len(conserved_ffold_known)}', alpha=0.5, density=True)
+    ax3.hist(other_ffold_known[fitness_measure], bins = np.linspace(-6,2,20),
+             label=f'other regions, n={len(other_ffold_known)}', alpha=0.5, density=True)
     ax3.legend()
     ax3.set_xlabel('fitness')
     ax3.text(-0.1,0.9, 'C', fontsize=fs*1.5, transform=ax3.transAxes)
 
-    ax4.plot(sorted(all_ffold[fitness_measure]), np.arange(0,len(all_ffold)), label='all')
-    ax4.plot(sorted(conserved_ffold[fitness_measure]), np.arange(0,len(conserved_ffold)),  label=f'known regions, n={len(conserved_ffold)}')
-    ax4.plot(sorted(other_ffold[fitness_measure]), np.arange(0,len(other_ffold)), label=f'other regions, n={len(other_ffold)}')
+    ax4.plot(sorted(all_ffold[fitness_measure]), np.arange(1,len(all_ffold)+1), label='all', c='C0')
+
+    # ax4.plot(sorted(conserved_ffold[fitness_measure]), np.arange(1,len(conserved_ffold)+1),  label=f'known regions, n={len(conserved_ffold)}', c='C1', ls='--')
+    # ax4.plot(sorted(other_ffold[fitness_measure]), np.arange(1,len(other_ffold)+1), label=f'other regions, n={len(other_ffold)}', c='C2', ls='--')
+
+    ax4.plot(sorted(conserved_ffold_known[fitness_measure]), np.arange(1,len(conserved_ffold_known)+1),  label=f'known regions, n={len(conserved_ffold_known)}', c='C1')
+    ax4.plot(sorted(other_ffold_known[fitness_measure]), np.arange(1,len(other_ffold_known)+1), label=f'other regions, n={len(other_ffold_known)}', c='C2')
     ax4.set_xlabel('fitness')
     ax4.set_ylabel('cumulative counts')
     ax4.set_yscale('log')
