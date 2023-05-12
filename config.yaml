@@ -5,6 +5,7 @@
 # The most recent public trees are at
 # http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/
 mat_trees:
+  public_2023-05-11: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2023/05/11/public-2023-05-11.all.masked.nextclade.pangolin.pb.gz
   public_2023-03-27: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2023/03/27/public-2023-03-27.all.masked.nextclade.pangolin.pb.gz
   public_2022-12-18: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2022/12/18/public-2022-12-18.all.masked.nextclade.pangolin.pb.gz
   gisaid_2023-03-29: https://hgwdev.gi.ucsc.edu/~angie/2847b92/gisaidAndPublic.2023-03-29.masked.pb.gz
