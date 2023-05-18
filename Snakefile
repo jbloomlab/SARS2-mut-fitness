@@ -28,6 +28,7 @@ results_files = [
     "nt_fitness/ntmut_fitness_by_clade.csv",
     "nt_fitness/ntmut_fitness_by_subset.csv",
     "nt_fitness/nt_fitness.csv",
+    "nt_fitness/synonymous_constraint_figure.pdf",
 ]
 
 rule all:
@@ -572,6 +573,22 @@ rule fitness_vs_terminal:
         "notebooks/fitness_vs_terminal.py.ipynb"
 
 
+rule synonymous_figures:
+    """Plot of synonymous selection."""
+    input:
+        fitness=rules.ntmut_fitness.output.ntmut_all,
+    output:
+        synonymous_figure="results_{mat}/nt_fitness/synonymous_constraint_figure.pdf",
+    params:
+        min_expected_count=config["min_expected_count"],
+    shell:
+        """
+        python scripts/noncoding_constraints.py \
+            --fitness {input.fitness} \
+            --output {output.synonymous_figure} \
+            --min_expected_count {params.min_expected_count}
+        """
+
 rule aggregate_plots_for_docs:
     """Aggregate plots to include in GitHub pages docs."""
     input:
@@ -685,15 +702,3 @@ rule cp_current_mat_docs:
         ),
     shell:
         "cp {input} docs"
-
-rule synonymous_figures:
-    input:
-        fitness = "results/nt_fitness/ntmut_fitness_all.csv"
-    output:
-        synonymous_figure = "paper/figs/synonymous_figure.pdf"
-    shell:
-        """
-        python scripts/noncoding_constraints.py \
-            --fitness {input.fitness} \
-            --output {output.synonymous_figure}
-        """
