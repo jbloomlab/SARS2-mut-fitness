@@ -181,7 +181,7 @@ dms_datasets:
     gene: nsp5 (Mpro)
     url: https://raw.githubusercontent.com/alejandrochavezlab/3CL_protease_DMS/dc802ee3ea9d43005ca97a28af078767fd66777c/outputs/results/normalized_to_wt_and_stop/activity_scores.csv
     wt_seq: data/Mpro.fa
-  flynn_mpro:
+  flynn_mpro_2022:
     study: https://elifesciences.org/articles/77433
     description: Mpro (Flynn et al, 2022)
     gene: nsp5 (Mpro)
