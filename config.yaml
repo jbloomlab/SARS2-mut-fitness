@@ -12,7 +12,7 @@ mat_trees:
 
 # specify one of the mutation-annotated trees in `mat_trees` as the "current" one that is
 # linked to by default as the best current estimates.
-current_mat: public_2022-12-18
+current_mat: public_2023-05-11
 
 # Reference GTF and FASTA, and location of spike coding sequence
 ref_fasta: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/bigZips/wuhCor1.fa.gz
