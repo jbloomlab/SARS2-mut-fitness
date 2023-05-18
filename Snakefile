@@ -90,7 +90,7 @@ rule edit_ref_gtf:
     output:
         gtf="results_{mat}/ref/edited_ref.gtf",
     params:
-        edits=config["add_to_ref_gtf"], 
+        edits=config["add_to_ref_gtf"],
     notebook:
         "notebooks/edit_ref_gtf.py.ipynb"
 
@@ -685,3 +685,15 @@ rule cp_current_mat_docs:
         ),
     shell:
         "cp {input} docs"
+
+rule synonymous_figures:
+    input:
+        fitness = "results/nt_fitness/ntmut_fitness_all.csv"
+    output:
+        synonymous_figure = "paper/figs/synonymous_figure.pdf"
+    shell:
+        """
+        python scripts/noncoding_constraints.py \
+            --fitness {input.fitness} \
+            --output {output.synonymous_figure}
+        """

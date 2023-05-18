@@ -2,7 +2,7 @@ from Bio import SeqIO
 import numpy as np
 import matplotlib.pyplot as plt
 
-def get_conserved_regions():
+def get_conserved_regions(only_known=False):
     TRS_motif = "ACGAAC"
     margin = 0
     ref = SeqIO.read('data/reference.gb', 'genbank')
@@ -16,22 +16,27 @@ def get_conserved_regions():
             pos += 1
 
 
-    conserved_regions = []
-    for mpos in motifs:
-        conserved_regions.append((mpos-margin,mpos+len(TRS_motif)+margin))
+    conserved_regions = {}
+    for mi, mpos in enumerate(motifs):
+        conserved_regions[f'TRS {mi+1}'] = (mpos-margin,mpos+len(TRS_motif)+margin)
 
     ## attenuator hairpin
-    conserved_regions.append((ref.seq.find("ATGCTTCA"), ref.seq.find("CGTTTTT")))
+    conserved_regions['hairpin']=(ref.seq.find("ATGCTTCA"), ref.seq.find("CGTTTTT"))
+    ## attenuator hairpin
+    conserved_regions['slippery seq']=(ref.seq.find("TTTAAACG"), ref.seq.find("TTTAAACG")+7)
     ## 3 stem pseudoknot
-    conserved_regions.append((ref.seq.find("GCGGTGT"), ref.seq.find("TTTTGA", 13474)))
-    ## center of E
-    conserved_regions.append((26330,26360))
+    conserved_regions['3-stem-pseudoknot']=(ref.seq.find("GCGGTGT"), ref.seq.find("TTTTGA", 13474))
+    if not only_known:
+        ## center of E
+        conserved_regions['E-center']=(26330,26360)
+        ## end of M
+        conserved_regions['M-end']=(27170,27200)
 
     conserved_vector = np.zeros(len(ref.seq), dtype=bool)
-    for r in conserved_regions:
+    for r in conserved_regions.values():
         conserved_vector[r[0]:r[1]] = True
 
-    return conserved_vector
+    return conserved_vector, conserved_regions
 
 
 if __name__=="__main__":
@@ -40,8 +45,8 @@ if __name__=="__main__":
     fname = 'results/nt_fitness/ntmut_fitness_all.csv'
     min_expected_count = 20
     fitness = pd.read_csv(fname, sep=',')
-    known_conserved_regions = get_conserved_regions()
-    fitness['conserved_syn'] = fitness['nt_site'].apply(lambda x:bool(known_conserved_regions[x-1]))
+    known_conserved_positions, regions = get_conserved_regions()
+    fitness['conserved_syn'] = fitness['nt_site'].apply(lambda x:bool(known_conserved_positions[x-1]))
 
     all_ffold = fitness.loc[fitness['four_fold_degenerate']&(fitness['expected_count']>min_expected_count)]
     conserved_ffold = fitness.loc[fitness['four_fold_degenerate']&fitness['conserved_syn']&(fitness['expected_count']>min_expected_count)]
