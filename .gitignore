@@ -39,6 +39,6 @@ results*/nt_fitness/*
 !results*/nt_fitness/nt_fitness.csv
 !results*/nt_fitness/synonymous_constraint_figure.pdf
 
-!results/dms
-results/dms/*/*
-!results/dms/*/processed.csv
+!results*/dms
+results*/dms/*/*
+!results*/dms/*/processed.csv
