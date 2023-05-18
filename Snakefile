@@ -29,6 +29,7 @@ results_files = [
     "nt_fitness/ntmut_fitness_by_subset.csv",
     "nt_fitness/nt_fitness.csv",
     "nt_fitness/synonymous_constraint_figure.pdf",
+    *[f"dms/{dms_dataset}/processed.csv" for dms_dataset in config["dms_datasets"]],
 ]
 
 rule all:
