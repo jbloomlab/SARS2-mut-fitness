@@ -187,6 +187,11 @@ dms_datasets:
     gene: nsp5 (Mpro)
     url: https://cdn.elifesciences.org/articles/77433/elife-77433-fig2-data1-v2.xlsx
     wt_seq: data/Mpro.fa
+  flynn_mpro_2023:
+    study: https://doi.org/10.1101/2023.03.02.530652
+    description: Mpro (Flynn et al, 2023)
+    gene: nsp5 (Mpro)
+    url: https://www.biorxiv.org/content/biorxiv/early/2023/03/02/2023.03.02.530652/DC1/embed/media-1.xlsx
 
 # Spike fitness estimates from Richard Neher, based on approach in his paper:
 # https://academic.oup.com/ve/advance-article/doi/10.1093/ve/veac113/6887176
