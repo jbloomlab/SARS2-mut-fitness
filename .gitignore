@@ -37,6 +37,7 @@ results*/nt_fitness/*
 !results*/nt_fitness/ntmut_fitness_by_clade.csv
 !results*/nt_fitness/ntmut_fitness_by_subset.csv
 !results*/nt_fitness/nt_fitness.csv
+!results*/nt_fitness/synonymous_constraint_figure.pdf
 
 !results/dms
 results/dms/*/*

@@ -79,6 +79,7 @@ if __name__=="__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--fitness", type=str, help="fitness file")
     parser.add_argument("--output", type=str, help="output file")
+    parser.add_argument("--min_expected_count", type=int, help="min expected count")
     args = parser.parse_args()
 
     # read in tabular fitness file
@@ -97,7 +98,7 @@ if __name__=="__main__":
 
     fitness_noORFs = erase_genes(fitness, ['ORF6', 'ORF7a', 'ORF7b','ORF8', 'ORF9b', 'ORF10'])
 
-    expected_count_cutoff = 20
+    expected_count_cutoff = args.min_expected_count
     fitness_measure = "delta_fitness"
     fs = 16
 
@@ -190,5 +191,5 @@ if __name__=="__main__":
     ax4.legend()
     ax4.text(-0.1,0.9, 'D', fontsize=fs*1.5, transform=ax4.transAxes)
 
-    plt.savefig(args.output)
+    plt.savefig(args.output, metadata={"creationDate": None})
 
