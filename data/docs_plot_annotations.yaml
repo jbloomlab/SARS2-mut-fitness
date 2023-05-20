@@ -24,6 +24,7 @@ sections:
   dms: Correlations of estimates with deep mutational scanning
   fixed: Effects of fixed mutations
   terminal: Effects of mutations versus number of descendants
+  mats: Correlations among estimates from different sequence sets
 
 # List of all plots along with a *title* and markdown *legend*.
 # The keys should be the base name of the plot.
@@ -387,6 +388,23 @@ plots:
     legend: |
       The histograms show the effects of all mutations (to the reference genome)
       with fitness estimates, and just those mutations that have fixed in a clade.
+
+      The *minimum expected count* slider below the plot indicates how many expected counts of an
+      an amino acid we require before making a fitness estimate. Larger values yield more
+      accurate estimates but for fewer amino acids. So move the slider to the left to show
+      estimates for more amino acids at lower confidence, and move it to the right to show
+      estimates for fewer amino acids at higher confidence.
+
+  mat_aa_fitness_correlations:  
+    title: correlation of fitness effects estimated from different sequence sets
+    section: mats
+    legend: |
+      The scatter plots show the correlation of amino-acid fitness effects estimated using different
+      sets of sequences.
+
+      The line and orange text show the Pearson correlation.
+
+      Mouse over points for details on specific mutations.
 
       The *minimum expected count* slider below the plot indicates how many expected counts of an
       an amino acid we require before making a fitness estimate. Larger values yield more

@@ -590,6 +590,22 @@ rule synonymous_figures:
             --min_expected_count {params.min_expected_count}
         """
 
+
+rule correlate_mats:
+    """Correlate mutation effects for different MATs (sequence sets)."""
+    input:
+        aa_fitnesses=expand(rules.aa_fitness.output.aa_fitness, mat=config["mat_trees"])
+    output:
+        fitness_corrs_chart="results_{mat}/mat_corrs/mat_aa_fitness_correlations.html",
+    params:
+        mats=list(config["mat_trees"]),
+        min_expected_count=config["min_expected_count"],
+    log:
+        notebook="results_{mat}/mat_corrs/correlate_mats.ipynb",
+    notebook:
+        "notebooks/correlate_mats.py.ipynb"
+
+
 rule aggregate_plots_for_docs:
     """Aggregate plots to include in GitHub pages docs."""
     input:
@@ -599,7 +615,8 @@ rule aggregate_plots_for_docs:
         clade_fixed_muts=rules.clade_fixed_muts.output.fixed_muts_chart,
         clade_fixed_hist=rules.clade_fixed_muts.output.fixed_muts_hist,
         fitness_vs_terminal=rules.fitness_vs_terminal.output.chart,
-        avg_counts=rules.summarize_expected_vs_actual.output.chart
+        avg_counts=rules.summarize_expected_vs_actual.output.chart,
+        mat_corrs=rules.correlate_mats.output.fitness_corrs_chart,
     output:
         expand(
             "results_{{mat}}/plots_for_docs/{plot}.html",
@@ -618,6 +635,7 @@ rule aggregate_plots_for_docs:
         cp {input.clade_fixed_hist} {params.plotsdir}
         cp {input.fitness_vs_terminal} {params.plotsdir}
         cp {input.avg_counts} {params.plotsdir}
+        cp {input.mat_corrs} {params.plotsdir}
         """
 
 
