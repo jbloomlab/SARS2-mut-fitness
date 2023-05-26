@@ -102,6 +102,30 @@ plots:
       estimates for more mutations at lower confidence, and move it to the right to show
       estimates for fewer mutations at higher confidence.
 
+  effects_dist_position_order:
+    title: mutation fitness effects for each gene (ordered by genomic position)
+    section: distribution
+    legend: |
+      Interactive plot of the distribution of fitness effects of different types
+      of mutations for each viral gene. The dark squares show the median effect of
+      mutations of each type (stop, nonsynonymous, or synonymous), and the light
+      rectangles span the interquartile range. Mutations with negative fitness
+      effects are deleterious.
+
+      Note that ORF9b is encoded by an alternative overlapping reading frame  with N,
+      which complicates interpretation of selection on mutations in this gene.
+
+      You can mouseover the bars for details.
+
+      You can click on the *mutation type* legend to just highlight mutations of
+      a specific type.
+
+      The *minimum expected count* slider below the plot indicates how many expected counts
+      of a mutation we require before making a fitness estimate. Larger values yield more
+      accurate estimates but for fewer mutations. Move the slider to the left to show
+      estimates for more mutations at lower confidence, and move it to the right to show
+      estimates for fewer mutations at higher confidence.
+
   clade_corr_chart: &corr_template
     title: correlation of fitness estimates for different viral clades
     section: correlation
