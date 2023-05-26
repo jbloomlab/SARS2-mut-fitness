@@ -4,4 +4,5 @@
 *.synctex.gz
 *.bbl
 *.blg
+*(busy)
 paper.pdf
