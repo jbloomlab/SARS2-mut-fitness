@@ -464,7 +464,7 @@ rule analyze_aa_fitness:
         aamut_by_clade=rules.aamut_fitness.output.aamut_by_clade,
         aafitness=rules.aa_fitness.output.aa_fitness,
         clade_founder_nts=rules.clade_founder_nts.output.csv,
-        ref_coding_sites=ref_coding_sites.output.csv,
+        ref_coding_sites=rules.ref_coding_sites.output.csv,
     params:
         min_expected_count=config["min_expected_count"],
         clade_corr_min_count=config["clade_corr_min_count"],
