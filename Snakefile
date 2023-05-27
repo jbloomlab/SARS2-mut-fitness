@@ -29,6 +29,7 @@ results_files = [
     "nt_fitness/ntmut_fitness_by_subset.csv",
     "nt_fitness/nt_fitness.csv",
     "nt_fitness/synonymous_constraint_figure.pdf",
+    "positive_selection/positive_selection_corr.html",
     *[f"dms/{dms_dataset}/processed.csv" for dms_dataset in config["dms_datasets"]],
 ]
 
@@ -605,6 +606,31 @@ rule correlate_mats:
         notebook="results_{mat}/mat_corrs/correlate_mats.ipynb",
     notebook:
         "notebooks/correlate_mats.py.ipynb"
+
+
+rule get_positive_selection_data:
+    """Get data for positive selection analysis."""
+    params:
+        url=config["positive_selection"],
+    output:
+        csv="results_{mat}/positive_selection/positive_selection_data.csv",
+    shell:
+        "curl {params.url} > {output.csv}"
+
+
+rule analyze_positive_selection:
+    """Analyze positive selection versus amino-acid fitness."""
+    input:
+        positive_selection=rules.get_positive_selection_data.output.csv,
+        aa_fitness=rules.aa_fitness.output.aa_fitness,
+    output:
+        corr_html="results_{mat}/positive_selection/positive_selection_corr.html",
+    params:
+        min_expected_count=config["min_expected_count"],
+    log:
+        notebook="results_{mat}/positive_selection/analyze_positive_selection.ipynb",
+    notebook:
+        "notebooks/analyze_positive_selection.py.ipynb"
 
 
 rule aggregate_plots_for_docs:
