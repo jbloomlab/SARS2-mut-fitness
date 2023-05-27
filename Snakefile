@@ -29,7 +29,7 @@ results_files = [
     "nt_fitness/ntmut_fitness_by_subset.csv",
     "nt_fitness/nt_fitness.csv",
     "nt_fitness/synonymous_constraint_figure.pdf",
-    "positive_selection/positive_selection_corr.html",
+    "dnds/dnds_corr.html",
     *[f"dms/{dms_dataset}/processed.csv" for dms_dataset in config["dms_datasets"]],
 ]
 
@@ -608,29 +608,34 @@ rule correlate_mats:
         "notebooks/correlate_mats.py.ipynb"
 
 
-rule get_positive_selection_data:
-    """Get data for positive selection analysis."""
+rule get_dnds_data:
+    """Get data for dN/dS analysis."""
     params:
-        url=config["positive_selection"],
+        url=config["dnds"],
     output:
-        csv="results_{mat}/positive_selection/positive_selection_data.csv",
+        csv="results_{mat}/dnds/dnds_data.csv",
     shell:
         "curl {params.url} > {output.csv}"
 
 
-rule analyze_positive_selection:
-    """Analyze positive selection versus amino-acid fitness."""
+rule analyze_dnds:
+    """Analyze dN/dS versus amino-acid fitness and DMS data."""
     input:
-        positive_selection=rules.get_positive_selection_data.output.csv,
+        dnds=rules.get_dnds_data.output.csv,
         aa_fitness=rules.aa_fitness.output.aa_fitness,
+        **{
+            dms_dataset: os.path.join("results_{mat}", "dms", dms_dataset, "processed.csv")
+            for dms_dataset in config["dms_datasets"]
+        },
     output:
-        corr_html="results_{mat}/positive_selection/positive_selection_corr.html",
+        corr_html="results_{mat}/dnds/dnds_corr.html",
     params:
         min_expected_count=config["min_expected_count"],
+        dms_datasets=config["dms_datasets"],
     log:
-        notebook="results_{mat}/positive_selection/analyze_positive_selection.ipynb",
+        notebook="results_{mat}/dnds/analyze_dnds.ipynb",
     notebook:
-        "notebooks/analyze_positive_selection.py.ipynb"
+        "notebooks/analyze_dnds.py.ipynb"
 
 
 rule aggregate_plots_for_docs:
