@@ -25,6 +25,7 @@ sections:
   fixed: Effects of fixed mutations
   terminal: Effects of mutations versus number of descendants
   mats: Correlations among estimates from different sequence sets
+  dnds: Correlations of site-average fitness and dN/dS
 
 # List of all plots along with a *title* and markdown *legend*.
 # The keys should be the base name of the plot.
@@ -435,3 +436,16 @@ plots:
       accurate estimates but for fewer amino acids. So move the slider to the left to show
       estimates for more amino acids at lower confidence, and move it to the right to show
       estimates for fewer amino acids at higher confidence.
+
+  dnds_corr:
+    title: correlation of dN/dS with site-average fitness estimates and DMS data
+    section: dnds
+    legend: |
+      The top plot shows the correlation between log dN/dS estimates and the site-average mean
+      estimated fitness effects of mutations for each gene.
+
+      The bottom plot shows how well the site-average mutational effect measured in deep
+      mutational scanning (DMS) experiments correlates with the site-average mean
+      estimated fitness effects of mutations, or the log dN/dS values.
+
+      The plots are interactive and you can mouse over points for detail.

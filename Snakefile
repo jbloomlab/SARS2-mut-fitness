@@ -607,6 +607,36 @@ rule correlate_mats:
         "notebooks/correlate_mats.py.ipynb"
 
 
+rule get_dnds_data:
+    """Get data for dN/dS analysis."""
+    params:
+        url=config["dnds"],
+    output:
+        csv="results_{mat}/dnds/dnds_data.csv",
+    shell:
+        "curl {params.url} > {output.csv}"
+
+
+rule analyze_dnds:
+    """Analyze dN/dS versus amino-acid fitness and DMS data."""
+    input:
+        dnds=rules.get_dnds_data.output.csv,
+        aa_fitness=rules.aa_fitness.output.aa_fitness,
+        **{
+            dms_dataset: os.path.join("results_{mat}", "dms", dms_dataset, "processed.csv")
+            for dms_dataset in config["dms_datasets"]
+        },
+    output:
+        corr_html="results_{mat}/dnds/dnds_corr.html",
+    params:
+        min_expected_count=config["min_expected_count"],
+        dms_datasets=config["dms_datasets"],
+    log:
+        notebook="results_{mat}/dnds/analyze_dnds.ipynb",
+    notebook:
+        "notebooks/analyze_dnds.py.ipynb"
+
+
 rule aggregate_plots_for_docs:
     """Aggregate plots to include in GitHub pages docs."""
     input:
@@ -618,6 +648,7 @@ rule aggregate_plots_for_docs:
         fitness_vs_terminal=rules.fitness_vs_terminal.output.chart,
         avg_counts=rules.summarize_expected_vs_actual.output.chart,
         mat_corrs=rules.correlate_mats.output.fitness_corrs_chart,
+        dnds_corr=rules.analyze_dnds.output.corr_html,
     output:
         expand(
             "results_{{mat}}/plots_for_docs/{plot}.html",
@@ -637,6 +668,7 @@ rule aggregate_plots_for_docs:
         cp {input.fitness_vs_terminal} {params.plotsdir}
         cp {input.avg_counts} {params.plotsdir}
         cp {input.mat_corrs} {params.plotsdir}
+        cp {input.dnds_corr} {params.plotsdir}
         """
 
 

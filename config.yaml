@@ -207,6 +207,9 @@ clade_fixed_muts_ref: 19A  # this is Wuhan-Hu-1
 terminal_pseudocount: 0.5
 terminal_min_actual_count: 5
 
+# For dN/dS comparative analysis
+dnds: https://raw.githubusercontent.com/spond/SARS-CoV-2-variation/master/windowed-sites-fel-all.csv
+
 # For GitHub Pages docs of plots
 docs_url: https://jbloomlab.github.io/SARS2-mut-fitness  # base URL for GitHub pages site
 docs_plot_annotations: data/docs_plot_annotations.yaml  # lists plots and their annotations
