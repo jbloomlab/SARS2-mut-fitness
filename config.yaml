@@ -164,8 +164,8 @@ clade_synonyms:
 # Deep mutational scanning datasets to correlate fitness estimates with:
 dms_datasets:
   dadonaite_ba1_spike:
-    study: https://www.biorxiv.org/content/10.1101/2022.10.13.512056v1
-    description: spike (Dadonaite et al, 2022)
+    study: https://doi.org/10.1016/j.cell.2023.02.001
+    description: spike (Dadonaite et al, 2023)
     gene: S
     url: https://raw.githubusercontent.com/dms-vep/SARS-CoV-2_Omicron_BA.1_spike_DMS_mAbs/main/results/muteffects_functional/muteffects_observed.csv
     filter_cols:

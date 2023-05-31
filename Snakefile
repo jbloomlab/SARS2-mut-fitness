@@ -653,6 +653,7 @@ rule aggregate_plots_for_docs:
         avg_counts=rules.summarize_expected_vs_actual.output.chart,
         mat_corrs=rules.correlate_mats.output.fitness_corrs_chart,
         dnds_corr=rules.analyze_dnds.output.corr_html,
+        comparator_corr=rules.analyze_comparator_studies.output.corr_html,
     output:
         expand(
             "results_{{mat}}/plots_for_docs/{plot}.html",
@@ -673,6 +674,7 @@ rule aggregate_plots_for_docs:
         cp {input.avg_counts} {params.plotsdir}
         cp {input.mat_corrs} {params.plotsdir}
         cp {input.dnds_corr} {params.plotsdir}
+        cp {input.comparator_corr} {params.plotsdir}
         """
 
 
