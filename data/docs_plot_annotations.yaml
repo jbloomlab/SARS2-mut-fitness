@@ -25,7 +25,7 @@ sections:
   fixed: Effects of fixed mutations
   terminal: Effects of mutations versus number of descendants
   mats: Correlations among estimates from different sequence sets
-  dnds: Correlations of site-average fitness and dN/dS
+  comparisons: Comparisons to other methods of estimating mutation effects
 
 # List of all plots along with a *title* and markdown *legend*.
 # The keys should be the base name of the plot.
@@ -183,7 +183,7 @@ plots:
     legend: |
       Interactive plot correlating the fitness estimates for spike amino-acid mutations
       with experimental measurements of the effects of these mutations in deep mutational
-      scanning of the full spike ([Dadonaite et al (2022)](https://www.biorxiv.org/content/10.1101/2022.10.13.512056v1))
+      scanning of the full spike ([Dadonaite et al (2023)](https://doi.org/10.1016/j.cell.2023.02.001))
       or just the RBD ([Starr et al (2022)](https://journals.plos.org/plospathogens/article?id=10.1371/journal.ppat.1010951)).
       Each point represents an amino-acid mutation. The Pearson correlation coefficient and
       the number of mutations being correlated are shown in the upper left of the scatter plot.
@@ -439,13 +439,34 @@ plots:
 
   dnds_corr:
     title: correlation of dN/dS with site-average fitness estimates and DMS data
-    section: dnds
+    section: comparisons
     legend: |
       The top plot shows the correlation between log dN/dS estimates and the site-average mean
-      estimated fitness effects of mutations for each gene.
+      estimated fitness effects of amino-acid mutations for each gene.
 
       The bottom plot shows how well the site-average mutational effect measured in deep
       mutational scanning (DMS) experiments correlates with the site-average mean
       estimated fitness effects of mutations, or the log dN/dS values.
 
       The plots are interactive and you can mouse over points for detail.
+
+      The dN/dS values are taken from [here](https://github.com/spond/SARS-CoV-2-variation).
+
+  comparator_corr:
+    title: correlation of mutation effect estimates from other studies with fitness estimates and spike DMS data
+    section: comparisons
+    legend: |
+      This plot correlates the mutation effects estimated in three other studies with the fitness
+      effects estimated in the current study and full-spike deep mutational scanning from
+      [Dadonaite et al (2023)](https://doi.org/10.1016/j.cell.2023.02.001).
+
+      The mutation effects being used in the comparisons are from the following studies:
+
+        - [Maher et al (2022)](https://www.science.org/doi/suppl/10.1126/scitranslmed.abk3445)
+        - [Rodriguez-Rivas et al (2022)](https://www.pnas.org/doi/10.1073/pnas.2113118119)
+        - [Thadani et al (2023)](https://www.biorxiv.org/content/10.1101/2022.07.21.501023v2)
+
+      For Rodriguez-Rivas et al, only site estimates are provided so the correlation is with
+      the site-mean estimated fitness and measured DMS values. For the other studies,
+      the correlation is with the mutation effects. Each row only shows points for mutations/sites
+      measured by all three methods.

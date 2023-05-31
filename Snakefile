@@ -29,6 +29,7 @@ results_files = [
     "nt_fitness/ntmut_fitness_by_subset.csv",
     "nt_fitness/nt_fitness.csv",
     "nt_fitness/synonymous_constraint_figure.pdf",
+    "comparator_studies/comparator_corr.html",
     *[f"dms/{dms_dataset}/processed.csv" for dms_dataset in config["dms_datasets"]],
 ]
 
@@ -95,16 +96,6 @@ rule edit_ref_gtf:
         edits=config["add_to_ref_gtf"],
     notebook:
         "notebooks/edit_ref_gtf.py.ipynb"
-
-
-rule get_dca_data:
-    """Get DCA data to use as comparator."""
-    params:
-        url="https://raw.githubusercontent.com/GiancarloCroce/DCA_SARS-CoV-2/main/data/data_dca_proteome.csv"
-    output:
-        csv="results_{mat}/dca/dca_mutability.csv"
-    shell:
-        "curl {params.url} -o {output}"
 
 
 rule ref_coding_sites:
@@ -509,17 +500,6 @@ rule process_dms_dataset:
         "notebooks/process_{wildcards.dms_dataset}.ipynb"
 
 
-rule compare_dca_fitness:
-    """Compare to DCA mutability estimates."""
-    input:
-        dca=rules.get_dca_data.output.csv,
-        fitness=rules.aamut_fitness.output.aamut_all,
-    output:
-        plot="results_{mat}/dca/dca_corr.pdf",
-    script:
-        "scripts/compare_dca_fitness.py"
-
-
 rule fitness_dms_corr:
     """Correlate the fitness estimates with those from deep mutational scanning."""
     input:
@@ -637,6 +617,30 @@ rule analyze_dnds:
         "notebooks/analyze_dnds.py.ipynb"
 
 
+rule analyze_comparator_studies:
+    """Analyze comparator studies versus fitness estimates and DMS data."""
+    input:
+        aa_fitness=rules.aa_fitness.output.aa_fitness,
+        **{
+            study: f"data/comparator_studies/{study}.csv"
+            for study in config["comparator_studies"]
+        },
+        **{
+            dms_dataset: os.path.join("results_{mat}", "dms", dms_dataset, "processed.csv")
+            for dms_dataset in config["dms_datasets"]
+        },
+    output:
+        corr_html="results_{mat}/comparator_studies/comparator_corr.html",
+    params:
+        min_expected_count=config["min_expected_count"],
+        dms_datasets=config["dms_datasets"],
+        comparator_studies=config["comparator_studies"],
+    log:
+        notebook="results_{mat}/comparator_studies/analyze_comparator_studies.ipynb",
+    notebook:
+        "notebooks/analyze_comparator_studies.py.ipynb"
+
+
 rule aggregate_plots_for_docs:
     """Aggregate plots to include in GitHub pages docs."""
     input:
@@ -649,6 +653,7 @@ rule aggregate_plots_for_docs:
         avg_counts=rules.summarize_expected_vs_actual.output.chart,
         mat_corrs=rules.correlate_mats.output.fitness_corrs_chart,
         dnds_corr=rules.analyze_dnds.output.corr_html,
+        comparator_corr=rules.analyze_comparator_studies.output.corr_html,
     output:
         expand(
             "results_{{mat}}/plots_for_docs/{plot}.html",
@@ -669,6 +674,7 @@ rule aggregate_plots_for_docs:
         cp {input.avg_counts} {params.plotsdir}
         cp {input.mat_corrs} {params.plotsdir}
         cp {input.dnds_corr} {params.plotsdir}
+        cp {input.comparator_corr} {params.plotsdir}
         """
 
 

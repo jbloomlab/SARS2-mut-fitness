@@ -164,8 +164,8 @@ clade_synonyms:
 # Deep mutational scanning datasets to correlate fitness estimates with:
 dms_datasets:
   dadonaite_ba1_spike:
-    study: https://www.biorxiv.org/content/10.1101/2022.10.13.512056v1
-    description: spike (Dadonaite et al, 2022)
+    study: https://doi.org/10.1016/j.cell.2023.02.001
+    description: spike (Dadonaite et al, 2023)
     gene: S
     url: https://raw.githubusercontent.com/dms-vep/SARS-CoV-2_Omicron_BA.1_spike_DMS_mAbs/main/results/muteffects_functional/muteffects_observed.csv
     filter_cols:
@@ -209,6 +209,18 @@ terminal_min_actual_count: 5
 
 # For dN/dS comparative analysis
 dnds: https://raw.githubusercontent.com/spond/SARS-CoV-2-variation/master/windowed-sites-fel-all.csv
+
+# For comparison to other studies
+comparator_studies:
+  rodriguez_rivas_dca:
+    data: https://raw.githubusercontent.com/GiancarloCroce/DCA_SARS-CoV-2/main/data/data_dca_proteome.csv  
+    name: Rodriguez-Rivas et al (2022)
+  maher_drivers:
+    data: https://www.science.org/doi/suppl/10.1126/scitranslmed.abk3445
+    name: Maher et al (2022)
+  thadani_learning:
+    data: https://www.biorxiv.org/content/biorxiv/early/2023/04/12/2022.07.21.501023/DC4/embed/media-4.zip
+    name: Thadani et al (2023)
 
 # For GitHub Pages docs of plots
 docs_url: https://jbloomlab.github.io/SARS2-mut-fitness  # base URL for GitHub pages site
