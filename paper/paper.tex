@@ -121,13 +121,13 @@ See \url{https://jbloomlab.github.io/SARS2-mut-fitness/avg_counts.html} for an i
 }
 \end{figure*}
 
-To determine how many times each mutation is expected to be observed, we used the pre-built UShER tree~\citep{mcbroome2021daily,turakhia2021ultrafast,lanfear2020} of $\sim$6.5-million public SARS-CoV-2 sequences to count nucleotide mutations at four-fold degenerate sites~\citep[Figure~\ref{fig:expected_vs_actual}A;][]{bloom2022evolution}.
+To determine how many times each mutation is expected to be observed, we used the pre-built UShER tree~\citep{mcbroome2021daily,turakhia2021ultrafast,lanfear2020} of $\sim$7-million public SARS-CoV-2 sequences to count nucleotide mutations at four-fold degenerate sites~\citep[Figure~\ref{fig:expected_vs_actual}A;][]{bloom2022evolution}.
 Because mutations at such sites never alter the amino-acid sequence, these counts reflect the mutation process in the absence of protein-level selection (see Discussion for caveats about nucleotide-level selection).
 The expected counts of a mutation from nucleotide $x$ to $y$ is simply the average count of this type of mutation across all four-fold degenerate sites with parental identity $x$.
 Importantly, we count independent \emph{occurrences} of each mutation along the branches of the tree, not the sequences with the mutation in the final alignment (Figure~\ref{fig:expected_vs_actual}A.
 We also compute expected counts separately for each SARS-CoV-2 clade to account for shifts in mutation spectrum~\citep{bloom2022evolution,ruis2022mutational}, and apply quality-control steps to remove spurious mutations (see Methods).
 
-The expected counts per mutation (summed across all viral clades) vary with mutation type, ranging from $\sim$500 for \texttt{C$\rightarrow$T} to only $\sim$8 for \texttt{T$\rightarrow$G} mutations (Figure~\ref{fig:expected_vs_actual}B).
+The expected counts per mutation (summed across all viral clades) vary with mutation type, ranging from $\sim$565 for \texttt{C$\rightarrow$T} to only $\sim$9 for \texttt{T$\rightarrow$G} mutations (Figure~\ref{fig:expected_vs_actual}B).
 This variation is because the SARS-CoV-2 mutation spectrum is highly biased towards specific mutation types~\citep{bloom2022evolution,ruis2022mutational,de2021mutation,neher2022contributions}.
 
 We compared the expected counts to the actual observed counts of mutations averaged across sites (Figure~\ref{fig:expected_vs_actual}).
@@ -219,6 +219,7 @@ Each point is an amino-acid mutation, the orange line is a least-squares regress
 Each sub-panel shows a different set of mutations (depending on which mutations were measured in that experiment).
 See \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_S_corr.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_nsp5_corr.html} for plots that enable subsetting on just mutations shared across all datasets and other interactive options such as mousing over points to see mutation identities.
 The experiments in \cite{starr2022deep, flynn2022} measure multiple phenotypes and these plots show the effect of each mutation averaged across these phenotypes; see \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_S_all_corr.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_nsp5_all_corr.html} for plots that show each phenotype separately.
+{\color{red} Update citations and min counts}
 \label{fig:dms}
 }
 \end{figure*}
@@ -314,7 +315,7 @@ The pipeline is fully reproducible, and is run using \texttt{snakemake}~\citep{m
 The interactive plots are rendered at \url{https://jbloomlab.github.io/SARS2-mut-fitness} via GitHub pages.
 
 \subsection{Counting mutations along the phylogenetic tree}
-We counted occurrences of each mutation in each viral clade using the UShER pre-built mutation-annotated tree~\citep{mcbroome2021daily,turakhia2021ultrafast,lanfear2020} from Dec-18-2022 (\url{http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2022/12/18/public-2022-12-18.all.masked.nextclade.pangolin.pb.gz}), which contains all $\sim$6.5-million SARS-CoV-2 sequences that are available in public databases.
+We counted occurrences of each mutation in each viral clade using the UShER pre-built mutation-annotated tree~\citep{mcbroome2021daily,turakhia2021ultrafast,lanfear2020} from May-11-2023 (\url{http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2023/05/11/public-2023-05-11.all.masked.nextclade.pangolin.pb.gz}), which contains all $\sim$7-million SARS-CoV-2 sequences that are available in public databases.
 To make these counts at a per-clade level, we first subsetted the mutation-annotated tree on all sequences for each Nexstrain clade~\citep{aksamentov2021nextclade}, retained only clades with at least $10^4$ sequences, and then used the matUtils program distributed with UShER to extract the nucleotide mutations on every branch of the each clade-subsetted mutation-annotated tree.
 For the analyses by geographic location (Figure~\ref{fig:corr}), we subsetted on all sequences that began with ``USA'' or ``England'' as these were the two locations with the most publicly available sequences.
 
@@ -590,7 +591,6 @@ In these cases, there is still a dependence on $s$, but it is weaker.
 Effects of stop-codon and amino-acid mutations across ORF3a.
 The black area plot shows the mean effect of all amino-acid mutations at each site, and the purple points show the effects of stop codon mutations.
 There is strong selection against stop codons (negative effects) for all but the C-terminus of ORF3a, but only a few positions show strong selection against amino-acid substitutions.
-This plot shows only mutations with 20 expected counts.
 See \url{https://jbloomlab.github.io/SARS2-mut-fitness/ORF3a.html} for an interactive version of this plot along with zoomable heatmap of the effects of specific amino-acid substitutions.
 \label{fig:ORF3a}
 }
