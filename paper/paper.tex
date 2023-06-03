@@ -179,11 +179,11 @@ For the purposes of this paper, we deemed it preferable to have more accurate an
 However, the interactive version of Figure~\ref{fig:corr}A linked in the legend enables exploration of mutations with disparate estimates among clades.
 
 An important question is whether the mutation fitness estimates are affected by noise from limited statistical sampling of mutations even after aggregating across clades.
-To assess if this is the case, we repeated the entire fitness estimation using an even larger pre-built UShER mutation-annotated tree of all $\sim$14-million SARS-CoV-2 sequences in GISAID as of March-29-2023.
+To assess if this is the case, we repeated the entire fitness estimation using an even larger pre-built UShER mutation-annotated tree of all $\sim$14-million SARS-CoV-2 sequences in GISAID~\cite{shu2017gisaid} as of March-29-2023.
 There is an extremely high correlation between fitness estimates made using the $\sim$7-million publicly available sequences and the larger GISAID tree (Figure~\ref{fig:gisaid_corr}).
-This concordance indicates that the $\sim$7-million public sequence set is large enough that statistical sampling noise is low, and so throughout this paper we use that sequence set due to our preference for publicly available data.
-We also note that the fact that two trees (which have independently inferred topologies) give nearly identical estimates indicates that uncertainty in tree topology has minimal effect on our fitness estimates.
-The insensitivity of our fitness estimates to uncertainty in tree topology is expected: the main uncertainty in densely sampled viral phylogenies involves polytomies of closely related sequences, but our estimates only use the counts of mutations along tree branches, which are unaffected by uncertainty in the resolution of polytomies of closely related sequences.
+This concordance indicates that the set of $\sim$7-million public sequences is large enough that doubling the data does not appreciably shift the estimates, and so throughout this paper we use that sequence set due to our preference for publicly available data.
+%We also note that the fact that two trees (which have independently inferred topologies) give nearly identical fitness estimates indicates that uncertainty in tree topology has minimal effect.
+% The insensitivity of our fitness estimates to uncertainty in tree topology is expected: the main uncertainty in densely sampled viral phylogenies involves polytomies of closely related sequences, but our estimates only use the counts of mutations along tree branches, which are unaffected by uncertainty in the resolution of polytomies of closely related sequences.
 
 \subsection*{Structural and non-structural proteins are under strong purifying selection, but most accessory proteins are not}
 
@@ -198,6 +198,7 @@ Neutral mutations have effects of zero (dashed gray vertical lines), and deleter
 Effects of each class of mutation for each viral gene.
 Dark squares indicate the median effect, and the lighter rectangles span the interquartile range.
 Mutation types are color-coded as in panel A.
+The apparent constraint on synonymous mutation in ORF9b is probably because this gene is encoded in an overlapping reading frame with N~\cite{jungreis2021conflicting}.
 See \url{https://jbloomlab.github.io/SARS2-mut-fitness/effects_histogram.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/effects_dist.html} for plots that allow adjustment of the expected-count cutoff and other interactive options (such as separate histograms for each gene).
 \label{fig:dist}
 }
@@ -205,8 +206,9 @@ See \url{https://jbloomlab.github.io/SARS2-mut-fitness/effects_histogram.html} a
 
 The distributions of mutation effects concur with biological intuition about how different classes of mutations impact protein function.
 Most synonymous mutations are nearly neutral, most stop codons are highly deleterious, and amino-acid mutations range from slightly beneficial to highly deleterious (Figure~\ref{fig:dist}A).
+The handful of synonymous mutations with highly deleterious effects are in either regions of known non-coding constraint (e.g., the ORF1ab ribosomal slippage site~\cite{bhatt2021structural}) or two regions in the center of E and the end of M (Figure~\ref{fig:synonymous}).
 
-To investigate differences among viral proteins, we computed the distributions of effects separately for each gene (Figure~\ref{fig:dist}B).
+To investigate differences in functional constraint among viral proteins, we computed the distributions of mutation effects separately for each gene (Figure~\ref{fig:dist}B).
 SARS-CoV-2 proteins are grouped into three categories: nonstructural (or nsp) proteins, structural proteins (spike, M, N, and E), and accessory proteins (names prefixed with ``ORF'')~\citep{v2021coronavirus}.
 The nonstructural and structural proteins are essential, and these proteins show strong selection against stop codons and clear although variable purifying selection against amino-acid mutations (Figure~\ref{fig:dist}B; e.g., nsp13 is under stronger protein-level constraint than nsp1).
 
@@ -224,31 +226,45 @@ Observations such as these could help guide experimental studies to better under
 \centering
 \includegraphics[width=0.7\linewidth]{figs/dms.png}
 \caption{
-Correlation of mutation-effect estimates with experimental deep mutational scanning measurements for {\bf (A)} the full spike~\citep{dadonaite2023pseudovirus} or its RBD~\citep{starr2022deep}, and {\bf (B)} Mpro~\citep{flynn2022,iketani2022functional}.
+Correlation of mutation-effect estimates with experimental deep mutational scanning measurements for {\bf (A)} the full spike~\citep{dadonaite2023pseudovirus} or its RBD~\citep{starr2022deep}, and {\bf (B)} Mpro~\citep{flynn2023,iketani2022functional}.
 Each point is an amino-acid mutation, the orange line is a least-squares regression, and orange text in the upper left shows the number of mutations and Pearson correlation coefficient.
 Each sub-panel shows a different set of mutations (depending on which mutations were measured in that experiment).
-See \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_S_corr.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_nsp5_corr.html} for plots that enable subsetting on just mutations shared across all datasets and other interactive options such as mousing over points to see mutation identities.
-The experiments in \cite{starr2022deep, flynn2022} measure multiple phenotypes and these plots show the effect of each mutation averaged across these phenotypes; see \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_S_all_corr.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_nsp5_all_corr.html} for plots that show each phenotype separately.
-{\color{red} Update citations and min counts}
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_S_corr.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_nsp5_corr.html} for plots that also show the Mpro dataset from~\citep{flynn2022} and have various interactive options.
+The plots in this figure show the average of the multiple phenotypes measured in the deep mutational scanning of \cite{starr2022deep}; see \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_S_all_corr.html} for each phenotype separately.
+This figure only shows mutations with at least 20 expected counts, which is higher than the threshold of 10 used in most of the rest of this paper (this threshold can be adjusted in the interactive plots).
 \label{fig:dms}
 }
 \end{figure*}
 
 We examined how the mutation effects estimated using our approach compare with prior high-throughput deep mutational scanning measurements.
 For spike, two distinct experimental methodologies have been used to characterize large numbers of mutations: yeast display of the receptor-binding domain (RBD)~\citep{starr2020deep,starr2022deep} and spike pseudotyped lentiviruses~\citep{dadonaite2023pseudovirus}.
-For Mpro (also known as nsp5 or 3CLpro), two different labs have performed deep mutational scanning using the same basic methodology of assaying protease cleavage in yeast~\citep{flynn2022,iketani2022functional}.
+For Mpro (also known as nsp5 or 3CLpro), two different labs have performed deep mutational scanning using the same basic methodology of assaying protease cleavage in yeast~\citep{flynn2022,flynn2023,iketani2022functional}.
 
-For spike, our estimates from natural sequences correlate with each set of experiments almost as well as the two experimental methodologies correlate with each other (Figure~\ref{fig:dms}A).
-If we increase the minimum expected counts from 10 to 20 and subset only on mutations shared among all three data sets, then the correlations between the estimates and experiments ($r = 0.66$) become even closer to the cross-experiment correlations ($r = 0.72$; see interactive version of Figure~\ref{fig:dms}A linked in legend).
-Some of the mutations with the greatest divergence between our sequence-based estimates and the deep mutational scanning likely represent experimental artifacts.
+For spike, our estimates from natural sequences correlate with the experiments almost as well as the two experimental methodologies correlate with each other (Figure~\ref{fig:dms}A), with Pearson correlations of 0.66 between the fitness estimates and experiments versus 0.72 between the two types of experiments.
+Neither set of experimental measurements fully captures how mutations affect viral fitness, since both RBD yeast display and lentiviral pseudotyping are imperfect proxies for spike function during actual human infections.
+Therefore, it is unclear how much the differences between the fitness estimates and experiments are due to noise in the fitness estimates versus limitations of the experiments.
+However, the fact that the fitness estimates correlate with the experiments almost as well as experimental methodologies correlate with each (Figure~\ref{fig:dms}A) suggests estimates are of comparable quality to experimental measurements.
+At least some of the mutations with the greatest divergence between our fitness estimates and the deep mutational scanning likely represent experimental artifacts.
 For instance, P527L, which is favorable in the RBD deep mutational scan but deleterious in the sequence-based estimates and full-spike scan, is at the C-terminus of the yeast-displayed RBD~\citep{starr2020deep} where it may adopt a non-native conformation.
 
-The sequence-based estimates for Mpro also correlate with the deep mutational scans for that protein, although in this case the two experiments correlate substantially better with each other than with our estimates (Figure~\ref{fig:dms}B).
-Because both Mpro experiments use a similar yeast-based methodology~\citep{flynn2022,iketani2022functional} it is possible that the higher correlation of the experiments with each other than the sequence-based estimates reflects shared artifacts of the yeast experiments.
-In particular, some Mpro mutations estimated to have deleterious effects in natural sequences are well tolerated in the yeast experiments.
-This difference could arise if the yeast experiments only capture some of the constraints on Mpro in the context of actual virus.
-For instance, a stop codon at Q306 is well tolerated in both deep mutational scans but extremely disfavorable in our sequence-based estimates, and would be highly deleterious to actual virus as it would truncate the polyprotein.
-Similarly, K61N is well tolerated in the deep mutational scans but extremely disfavorable in our estimates, possibly because in the full viral polyprotein this residue mediates important interactions between Mpro and nsp7-10~\citep{yadav2022biochemical}
+The sequence-based fitness estimates for Mpro also correlate with the deep mutational scans for that protein, although in this case the experiments correlate substantially better with each other than with our estimates (Figure~\ref{fig:dms}B).
+However, the Mpro experiments all use a similar yeast-based methodology~\citep{flynn2022,flynn2023,iketani2022functional} that probably fails to capture significant aspects of Mpro's actual function during human infections.
+For instance, a stop codon at Q306 is well tolerated in the yeast-based Mpro deep mutational scans but extremely disfavorable in our sequence-based estimates, and such a mutation would clearly be highly deleterious to actual virus as it would truncate the polyprotein.
+Similarly, K61N is well tolerated in the deep mutational scans but extremely disfavorable in our estimates, probably because in the full viral polyprotein this residue mediates important interactions between Mpro and nsp7-10~\citep{yadav2022biochemical}
+
+\subsection*{Mutation-effect estimates better capture functional constraint than dN/dS ratios or predictions from other methods}
+A longstanding approach for analyzing protein constraint is to compare rates of nonsynonymous (dN) and synonymous (dS) substitutions at each site~\citep{nielsen1998likelihood,kosakovsky2005not}.
+These dN/dS ratios can be calculated by counting mutations or using phylogenetic substitution models~\citep{kosakovsky2005not}.
+A known limitation of dN/dS ratios is they cannot be interpreted in terms of the fitness effects, since they simply represent the relative rate of amino-acid substitution rather than the effects of specific mutations~\citep{spielman2015relationship,kryazhimskiy2008population}.
+Nonetheless, we can compare dN/dS ratios to our mutation-effect estimates as measures of the average constraint at each site.
+The mutation-effect estimates greatly outperform dN/dS ratios as a measure of site-level constraint as assessed by correlation with deep mutational scanning experiments (Figure~\ref{fig:dnds}).
+The reason is in part because some aspects of functional constraint cannot be captured by a dN/dS ratio. 
+For instance, the ACE2-affinity enhancing spike mutation N501Y arose in several SARS-CoV-2 variants early in the pandemic, and has since remained fixed due its importance for receptor binding~\citep{starr2022deep}.
+Our mutation-effect estimates correctly reflect that site 501 is strongly prefers tyrosine, but the site has a high dN/dS ratio due to the early convergent evolution of this site to that preferred amino acid.
+
+Our mutation-effect estimates also correlate substantially better with deep mutational scanning experiments than predictions from two methods trained to learn mutation effects and epistatic interactions from phylogenetically broader but more sparsely sampled sequence data~\cite{thadani2022learning,rodriguez2022epistatic} (Figure~\ref{fig:comparator}).
+Our estimates also correlate better with experiments than predictions of a machine-learning method that integrates a wide range of sequence and epidemiological data~\cite{maher2022predicting} (Figure~\ref{fig:comparator}).
+These results suggest that our relatively straightforward approach of directly reading out the effects of mutations from their actual versus expected counts can outperform much more complex models when millions of sequences are available. 
 
 \subsection*{Fixed mutations tend to have beneficial or neutral effects}
 Amino-acid mutations that have fixed in at least one viral clade are estimated to mostly have neutral or beneficial effects, whereas most other mutations are deleterious (Figure~\ref{fig:fixed_dist}).
@@ -608,23 +624,57 @@ See \url{https://jbloomlab.github.io/SARS2-mut-fitness/mat_aa_fitness_correlatio
 }
 \end{figure*}
 
+
+\begin{figure*}
+\centering
+\includegraphics[width=\linewidth]{figs/synonymous_constraint_figure.pdf}
+\caption{
+{\bf Non-coding constraint is concentrated in a few isolated regions in SARS-CoV-2 genome.}
+{\bf (A), (B)} The average fitness cost of synonymous mutations (do not change amino acids) in ORF1ab, S, E, M, N, and ORF3a, non-coding regions between ORFs, and all positions in ORF6, ORF7a, ORF7b, ORF8, ORF10 (as these ORFs tolerate stop codons, see Figure~\ref{fig:dist}B).
+Panel A shows the entire genome, panel B zooms into the 3' end of the genome.
+Fitness effects are averaged in sliding windows of size 25 and 50.
+With the exception of a small number of well defined regions, in most of the genome these averages fluctuate around zero.
+Regions with large fitness costs for non-coding mutations correspond to the ribosomal slippage site at the end of ORF1a, the transcription regulatory sites of S, ORF3a, E, M, and N, as well as two regions in the center of E and the end of M (see red bars in the top part of each panel) \citep{markov2023evolution}.
+Notably, TRS sites of ORF6, ORF7a and ORF8 don't show strong signal of conservation, consistent with their tolerance of stop codons.
+{\bf (C), (D)} The distribution of inferred fitness cost of four-fold degenerate sites at regions of known non-coding constraint within the protein coding genes (the ribosomal slippage and TRS sites) versus all other four-fold degenerate sites.
+In total, 25 four-fold degenerate sites are in these regions of known constraint, whereas 4844 four-fold degenerate sites are outside these regions.
+Panel C shows that a large fraction of mutations in these known regions of constraint are deleterious, while the distribution for the remaining four-fold degenerate sites is centered around 0 between -2 and +1.
+Furthermore, strongly deleterious mutations with fitness estimate below -3 predominantly fall in the 25 sites of known non-coding constraint.
+If the two additional conserved regions in E and M are included, all but one mutation outside these regions has a fitness cost estimate above -3.
+\label{fig:synonymous}
+}
+\end{figure*}
+
 \begin{figure*}[h]
 \centering
 \includegraphics[width=\linewidth]{figs/dnds.png}
 \caption{
-\jdbcomment{write}
-\url{https://jbloomlab.github.io/SARS2-mut-fitness/dnds_corr.html}
+The site-mean of the estimated fitness effects outperforms dN/dS ratios as an indicator of functional constraint as assessed by correlation with deep mutational scanning measurements.
+{\bf (A)}
+Pearson correlation of log dN/dS ratio at each site with the mean estimated fitness of all amino acid mutations at each site from the current study.
+For most genes, the log dN/dS ratio is correlated with the mean fitness effect, but the correlations are only modest (always substantially less than one).
+The exception is the accessory proteins which are mostly under minimal amino-acid level selection (Figure~\ref{fig:dist}B) and only show a weak correlation. 
+{\bf (B)}
+Correlation of the log dN/dS ratio or the mean estimated fitness effect at each site with the mean impact of amino-acid mutations at that site as experimentally measured by deep mutational scanning.
+The numbers in the upper right of each panel give the Pearson correlation.
+In every case, the mean estimated fitness effect (top row) is much better correlated with the experimental measurements than the log dN/dS (bottom row).
+The dN/dS ratios are taken from \url{https://github.com/spond/SARS-CoV-2-variation}.
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness/dnds_corr.html} for an interactive version of this plot.
 \label{fig:dnds}
 }
 \end{figure*}
-
 
 \begin{figure*}[h]
 \centering
 \includegraphics[width=0.75\linewidth]{figs/comparator_corr.png}
 \caption{
-\jdbcomment{write}
-\url{https://jbloomlab.github.io/SARS2-mut-fitness/comparator_corr.html}
+The mutation effect estimates from the current study are substantially better correlated with deep mutational scanning measurements for spike than predicted mutation effects made using three other approaches.
+Each row shows the correlation of the fitness estimates from the current study and full-spike deep mutational scanning measurements versus values from another study.
+The Maher et al (2022) and Thadani et (2023) studies make predictions for individual amino-acids, so those correlations are with the mutation-level fitness estimates and deep mutational scanning measurements.
+The Rodriguez-Rivas et al (2022) study only reports site-level predictions, so those correlations are with the site mean fitness estimates and deep mutational scanning measurements.
+Each row only shows mutations or sites with a reported value from all three approaches.
+The numbers in the upper right give the Pearson correlation.
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness/comparator_corr.html} for an interactive version of this plot.
 \label{fig:comparator}
 }
 \end{figure*}
@@ -678,25 +728,5 @@ The number of descendants is calculated using the ``leaves\_sharing\_mutations''
 }
 \end{figure*}
 
-
-\begin{figure*}
-\centering
-\includegraphics[width=\linewidth]{figs/synonymous_constraint_figure.pdf}
-\caption{
-{\bf Non-coding constraint is concentrated in a few isolated regions in SARS-CoV-2 genome.}
-Panels A and B show the average fitness cost of mutations that do not change amino acids in ORF1ab, S, E, M, N, and ORF3a, non-coding regions between ORFs, and all positions in ORF6, ORF7a, ORF7b, ORF8, ORF10 (as these ORFs that tolerate stop codons) with an expected count exceeding 20.
-Panel A shows the entire genome, panel B zooms into the 3' end of the genome.
-Fitness effects are averaged in sliding windows of size 25 and 50.
-With the exception of a small number of well defined regions, in most of the genome these average fluctuate around 0.
-Regions for which we infer large fitness costs correspond to the ribosomal slippage site at the end of ORF1a, the transcription regulatory sites of S, ORF3a, E, M, and N, as well as two regions in the center of E and the end of M (see red bars in the top part of each panel) \citep{markov2023evolution}.
-Notably, TRS sites of ORF6, ORF7a and ORF8 don't show strong signal of conservation, consistent with their tolerance of stop codons.
-Panels C and D show the distribution of inferred fitness cost of four-fold degenerate sites at the a priori defined slippage and TRS sites.
-In total, 25 positions in these regions are four-fold degenerate compared to 4844 outside these regions.
-Panel C shows that a large fraction of mutations in these a priori known regions are deleterious, while the distribution at the remaining sites is centered around 0 between -2 and +1.
-Furthermore, strongly deleterious mutations with fitness estimate below -3 predominantly fall in these 25 sites.
-If the two additional conserved regions in E and M are included, all but one mutation outside these regions has a fitness cost estimate above -3.
-\label{fig:synonymous}
-}
-\end{figure*}
 
 \end{document}
