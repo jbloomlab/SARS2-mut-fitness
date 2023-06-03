@@ -172,6 +172,7 @@ To test for statistical noise, we computed correlations with different threshold
 Correlations increased with this count threshold, consistent with reduced statistical noise for larger mutation counts.
 But the correlation for spike mutations was consistently lower for cross-clade but not cross-geography comparisons (Figure~\ref{fig:corr}C).
 The lower cross-clade correlation for spike appears due to epistatic shifts in mutation effects~\citep{starr2022shifting, moulana2022compensatory, pollock2012amino, shah2015contingency, lee2018deep} or changes in the selective landscape~\citep{sun2023rapidly} between SARS-CoV-2 clades, since the correlation is lower between clades with higher spike divergence (Figure~\ref{fig:corr}D).
+In particular, the interactive version of Figure~\ref{fig:corr}A shows that mutations that are more beneficial in Omicron BA.5 than Delta are often antibody-escape mutations (eg, K444N or G446S in spike~\citep{greaney2022antibody})---a result that makes sense, since newer variants like Omicron BA.5 are evolving under increased immune selection compared to earlier variants like Delta that circulated in a more immunologically naive population.  
 
 Despite evidence for some shifts in mutation effects in spike, for the rest of this paper we aggregate counts across viral clades to make a single estimate for each amino-acid mutation.
 The reason is that the accuracy of the estimates increases with the number of counts (Figure~\ref{fig:corr}C), and several mutation types only have enough counts for reasonable estimates when aggregating across clades (Figure~\ref{fig:expected_vs_actual}B).
@@ -182,8 +183,6 @@ An important question is whether the mutation fitness estimates are affected by 
 To assess if this is the case, we repeated the entire fitness estimation using an even larger pre-built UShER mutation-annotated tree of all $\sim$14-million SARS-CoV-2 sequences in GISAID~\cite{shu2017gisaid} as of March-29-2023.
 There is an extremely high correlation between fitness estimates made using the $\sim$7-million publicly available sequences and the larger GISAID tree (Figure~\ref{fig:gisaid_corr}).
 This concordance indicates that the set of $\sim$7-million public sequences is large enough that doubling the data does not appreciably shift the estimates, and so throughout this paper we use that sequence set due to our preference for publicly available data.
-%We also note that the fact that two trees (which have independently inferred topologies) give nearly identical fitness estimates indicates that uncertainty in tree topology has minimal effect.
-% The insensitivity of our fitness estimates to uncertainty in tree topology is expected: the main uncertainty in densely sampled viral phylogenies involves polytomies of closely related sequences, but our estimates only use the counts of mutations along tree branches, which are unaffected by uncertainty in the resolution of polytomies of closely related sequences.
 
 \subsection*{Structural and non-structural proteins are under strong purifying selection, but most accessory proteins are not}
 
@@ -200,6 +199,7 @@ Dark squares indicate the median effect, and the lighter rectangles span the int
 Mutation types are color-coded as in panel A.
 The apparent constraint on synonymous mutation in ORF9b is probably because this gene is encoded in an overlapping reading frame with N~\cite{jungreis2021conflicting}.
 See \url{https://jbloomlab.github.io/SARS2-mut-fitness/effects_histogram.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/effects_dist.html} for plots that allow adjustment of the expected-count cutoff and other interactive options (such as separate histograms for each gene).
+See Figure~\ref{fig:effects_dist_position_order} for a version of panel B with genes ordered by genomic position rather than constraint on nonsynonymous mutations.
 \label{fig:dist}
 }
 \end{figure*}
@@ -208,13 +208,14 @@ The distributions of mutation effects concur with biological intuition about how
 Most synonymous mutations are nearly neutral, most stop codons are highly deleterious, and amino-acid mutations range from slightly beneficial to highly deleterious (Figure~\ref{fig:dist}A).
 The handful of synonymous mutations with highly deleterious effects are in either regions of known non-coding constraint (e.g., the ORF1ab ribosomal slippage site~\cite{bhatt2021structural}) or two regions in the center of E and the end of M (Figure~\ref{fig:synonymous}).
 
-To investigate differences in functional constraint among viral proteins, we computed the distributions of mutation effects separately for each gene (Figure~\ref{fig:dist}B).
+To investigate differences in functional constraint among viral proteins, we computed the distributions of mutation effects separately for each gene (Figure~\ref{fig:dist}B and \ref{fig:effects_dist_position_order}).
 SARS-CoV-2 proteins are grouped into three categories: nonstructural (or nsp) proteins, structural proteins (spike, M, N, and E), and accessory proteins (names prefixed with ``ORF'')~\citep{v2021coronavirus}.
-The nonstructural and structural proteins are essential, and these proteins show strong selection against stop codons and clear although variable purifying selection against amino-acid mutations (Figure~\ref{fig:dist}B; e.g., nsp13 is under stronger protein-level constraint than nsp1).
+The nonstructural and structural proteins are essential, and these proteins show strong selection against stop codons and clear although variable purifying selection against amino-acid mutations (Figure~\ref{fig:dist}B and \ref{fig:effects_dist_positon_order}; e.g., nsp13 is under stronger protein-level constraint than nsp1).
 
-However, most accessory proteins are under little constraint (Figure~\ref{fig:dist}B).
+However, most accessory proteins are under little constraint (Figure~\ref{fig:dist}B and \ref{fig:effects_dist_positon_order}).
 Stop-codon and amino-acid mutations to ORF7a and ORF8 are not more deleterious than synonymous mutations (although recall that our estimates are only sensitive to fitness costs greater than a few percent).
 The lack of deleterious mutations to ORF8 is consistent with the fact that viruses with deletions in this gene have spread in humans~\citep{su2020discovery} and that major variants had stop codons early in ORF8.
+Indeed, the loss of accessory proteins such as ORF8 appears to occur with some regularity during the early evolution of non-human viruses in humans~\citep{rochman2022molecular}. 
 The only accessory protein under strong purifying selection against stop codons is ORF3a (Figure~\ref{fig:dist}B), for which stop codons in the first ~240 residues are clearly deleterious (Figure~\ref{fig:ORF3a}).
 These observations concur with experiments showing SARS-CoV-2 is attenuated by deletion of ORF3a but there is little effect of deleting ORF6, ORF7a, or ORF8~\citep{mcgrath2022sars,silvas2021contribution,liu2022live}.
 However, ORF3a's function must be relatively insensitive to its protein sequence, since other than selection against stop codons there is only amino-acid level constraint at a few sites like 135 and 138 (Figure~\ref{fig:ORF3a}).
@@ -254,7 +255,7 @@ Similarly, K61N is well tolerated in the deep mutational scans but extremely dis
 
 \subsection*{Mutation-effect estimates better capture functional constraint than dN/dS ratios or predictions from other methods}
 A longstanding approach for analyzing protein constraint is to compare rates of nonsynonymous (dN) and synonymous (dS) substitutions at each site~\citep{nielsen1998likelihood,kosakovsky2005not}.
-These dN/dS ratios can be calculated by counting mutations or using phylogenetic substitution models~\citep{kosakovsky2005not}.
+These dN/dS ratios can be calculated by counting mutations or using phylogenetic substitution models~\citep{kosakovsky2005not,yang2000estimating}.
 A limitation of dN/dS ratios is they cannot be interpreted in terms of the fitness effects, since they simply represent the relative rate of amino-acid substitution rather than the effects of specific mutations~\citep{spielman2015relationship,kryazhimskiy2008population}.
 Nonetheless, we can compare dN/dS ratios to our mutation-effect estimates as measures of the average constraint at each site.
 The mutation-effect estimates greatly outperform dN/dS ratios as a measure of site-level constraint as assessed by correlation with deep mutational scanning experiments (Figure~\ref{fig:dnds}).
@@ -673,6 +674,27 @@ If the two additional conserved regions in E and M are included, all but one mut
 }
 \end{figure*}
 
+\begin{figure*}
+\includegraphics[width=\linewidth]{figs/effects_dist_position_order.pdf}
+\caption{
+A version of Figure~\ref{fig:dist}B but with genes ordered by position in the genome rather than extent of constraint on nonsynonymous mutations.
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness/effects_dist_position_order.html} for an interactive version of this plot.
+\label{fig:effects_dist_position_order}
+}
+\end{figure*}
+
+
+\begin{figure*}[h]
+\includegraphics[width=\linewidth]{figs/ORF3a.pdf}
+\caption{
+Effects of stop-codon and amino-acid mutations across ORF3a.
+The black area plot shows the mean effect of all amino-acid mutations at each site, and the purple points show the effects of stop codon mutations.
+There is strong selection against stop codons (negative effects) for all but the C-terminus of ORF3a, but only a few positions show strong selection against amino-acid substitutions.
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness/ORF3a.html} for an interactive version of this plot along with zoomable heatmap of the effects of specific amino-acid substitutions.
+\label{fig:ORF3a}
+}
+\end{figure*}
+
 \begin{figure*}[h]
 \centering
 \includegraphics[width=\linewidth]{figs/dnds.png}
@@ -704,17 +726,6 @@ Each row only shows mutations or sites with a reported value from all three appr
 The numbers in the upper right give the Pearson correlation.
 See \url{https://jbloomlab.github.io/SARS2-mut-fitness/comparator_corr.html} for an interactive version of this plot.
 \label{fig:comparator}
-}
-\end{figure*}
-
-\begin{figure*}[h]
-\includegraphics[width=\linewidth]{figs/ORF3a.pdf}
-\caption{
-Effects of stop-codon and amino-acid mutations across ORF3a.
-The black area plot shows the mean effect of all amino-acid mutations at each site, and the purple points show the effects of stop codon mutations.
-There is strong selection against stop codons (negative effects) for all but the C-terminus of ORF3a, but only a few positions show strong selection against amino-acid substitutions.
-See \url{https://jbloomlab.github.io/SARS2-mut-fitness/ORF3a.html} for an interactive version of this plot along with zoomable heatmap of the effects of specific amino-acid substitutions.
-\label{fig:ORF3a}
 }
 \end{figure*}
 
