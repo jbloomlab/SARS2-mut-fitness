@@ -156,6 +156,7 @@ Correlations of mutation fitness effect estimates made using subsets of natural 
 Correlations between estimates made {\bf (A)} just using sequences from the Delta or Omicron BA.5 clades or {\bf (B)} just from the USA or England.
 Each point is an amino-acid mutation, the orange line is a least-squares regression, and orange text at upper left shows the number of mutations and Pearson correlation coefficient.
 Only mutations with at least 10 expected counts are shown, which is why panels have different numbers of mutations shown (sequence subsets vary in size).
+Different subset size are also the reason why the regression line in (A) deviates from the identity $x=y$.
 {\bf (C)} Correlations between clade or geography subsets become higher with an increasingly large threshold for minimum expected counts.
 Spike mutations have a worse correlation when subsetting by viral clade (plot shows average correlation over all pairwise combinations of Delta, BA.1, BA.2, and BA.5), but not when subsetting by geography (USA or England).
 {\bf (D)} Correlations in estimated mutation effects decline for clades with higher protein divergence, with the effect most noticeable for spike since spike is more diverged among SARS-CoV-2 clades than other viral proteins.
@@ -179,10 +180,12 @@ The reason is that the accuracy of the estimates increases with the number of co
 For the purposes of this paper, we deemed it preferable to have more accurate and comprehensive pan-SARS-CoV-2 estimates than noisier clade-specific estimates for fewer mutations.
 However, the interactive version of Figure~\ref{fig:corr}A linked in the legend enables exploration of mutations with disparate estimates among clades.
 
-An important question is whether the mutation fitness estimates are affected by noise from limited statistical sampling of mutations even after aggregating across clades.
+An important question is whether the mutation fitness estimates are affected by noise from limited statistical sampling of mutations or whether sequencing errors and bioinformatic artefacts distort the estimates.
 To assess if this is the case, we repeated the entire fitness estimation using an even larger pre-built UShER mutation-annotated tree of all $\sim$14-million SARS-CoV-2 sequences in GISAID~\cite{shu2017gisaid} as of March-29-2023.
 There is an extremely high correlation between fitness estimates made using the $\sim$7-million publicly available sequences and the larger GISAID tree (Figure~\ref{fig:gisaid_corr}).
 This concordance indicates that the set of $\sim$7-million public sequences is large enough that doubling the data does not appreciably shift the estimates, and so throughout this paper we use that sequence set due to our preference for publicly available data.
+Furthermore, fitness estimates using sequences from specific countries (USA and England, Figure~\ref{fig:corr}B) are also highly concordant, suggesting that sequencing and bioinformatic workflows are not driving the signal.
+Lastly, positions known to be under strong constraint {\it a priori} (e.g.~start codons, the ribosomal slippage site) typically have no or only few mutations, suggesting that sequencing errors in consensus sequences are rare.
 
 \subsection*{Structural and non-structural proteins are under strong purifying selection, but most accessory proteins are not}
 
