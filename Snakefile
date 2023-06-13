@@ -20,6 +20,7 @@ results_files = [
     "mutation_counts/aggregated.csv",
     "expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv",
     "clade_founder_nts/clade_founder_nts.csv",
+    "clade_founder_nts/clade_founder_aas.csv",
     "aa_fitness/aamut_fitness_all.csv",
     "aa_fitness/aamut_fitness_by_clade.csv",
     "aa_fitness/aamut_fitness_by_subset.csv",
@@ -446,6 +447,19 @@ rule nt_fitness:
         notebook="results_{mat}/nt_fitness/nt_fitness.ipynb",
     notebook:
         "notebooks/nt_fitness.py.ipynb"
+
+
+rule clade_founder_aas:
+    """Get clade-founder amino acids."""
+    input:
+        clade_founder_nts=rules.clade_founder_nts.output.csv,
+    params:
+        orf1ab_to_nsps=config["orf1ab_to_nsps"],
+        clade_synonyms=config["clade_synonyms"],
+    output:
+        clade_founder_aas="results_{mat}/clade_founder_nts/clade_founder_aas.csv",
+    notebook:
+        "notebooks/clade_founder_aas.py.ipynb"
 
 
 rule analyze_aa_fitness:
