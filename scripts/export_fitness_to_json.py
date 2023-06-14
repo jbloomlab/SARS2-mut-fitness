@@ -2,6 +2,8 @@
 
 import pandas as pd
 import json
+import gzip
+
 
 # Metadata for this dataset
 citation = snakemake.params.citation
@@ -61,3 +63,8 @@ json_formatted_dict = {
 # Dump the dictionary into a JSON file
 with open(snakemake.output.aa_fitness_json, "w") as f:
     json.dump(json_formatted_dict, f, indent=4)
+
+# Compress the JSON file
+with open(snakemake.output.aa_fitness_json, "rb") as f_in:
+    with gzip.open(snakemake.output.aa_fitness_json_gz, "wb") as f_out:
+        f_out.writelines(f_in)

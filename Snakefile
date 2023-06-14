@@ -26,6 +26,7 @@ results_files = [
     "aa_fitness/aamut_fitness_by_subset.csv",
     "aa_fitness/aa_fitness.csv",
     "aa_fitness/aa_fitness.json",
+    "aa_fitness/aa_fitness.json.gz",
     "nt_fitness/ntmut_fitness_all.csv",
     "nt_fitness/ntmut_fitness_by_clade.csv",
     "nt_fitness/ntmut_fitness_by_subset.csv",
@@ -784,6 +785,7 @@ rule export_fitness_to_json:
         clade_founder_aas=rules.clade_founder_aas.output.clade_founder_aas,
     output:
         aa_fitness_json="results_{mat}/aa_fitness/aa_fitness.json",
+        aa_fitness_json_gz="results_{mat}/aa_fitness/aa_fitness.json.gz",
     params:
         min_expected_count=config["min_expected_count"],
         citation=config["citation"],
