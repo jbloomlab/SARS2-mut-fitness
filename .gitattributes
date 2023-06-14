@@ -4,3 +4,4 @@ results*/aa_fitness/aamut_fitness_by_clade.csv filter=lfs diff=lfs merge=lfs -te
 results*/aa_fitness/aamut_fitness_by_subset.csv filter=lfs diff=lfs merge=lfs -text
 results*/nt_fitness/ntmut_fitness_by_clade.csv filter=lfs diff=lfs merge=lfs -text
 results*/nt_fitness/ntmut_fitness_by_subset.csv filter=lfs diff=lfs merge=lfs -text
+results*/aa_fitness/aa_fitness.json.gz filter=lfs diff=lfs merge=lfs -text

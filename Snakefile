@@ -25,6 +25,8 @@ results_files = [
     "aa_fitness/aamut_fitness_by_clade.csv",
     "aa_fitness/aamut_fitness_by_subset.csv",
     "aa_fitness/aa_fitness.csv",
+    "aa_fitness/aa_fitness.json",
+    "aa_fitness/aa_fitness.json.gz",
     "nt_fitness/ntmut_fitness_all.csv",
     "nt_fitness/ntmut_fitness_by_clade.csv",
     "nt_fitness/ntmut_fitness_by_subset.csv",
@@ -774,3 +776,21 @@ rule cp_current_mat_docs:
         ),
     shell:
         "cp {input} docs"
+
+
+rule export_fitness_to_json:
+    """Export amino-acid fitness to JSON with metadata"""
+    input:
+        aa_fitness=rules.aa_fitness.output.aa_fitness,
+        clade_founder_aas=rules.clade_founder_aas.output.clade_founder_aas,
+    output:
+        aa_fitness_json="results_{mat}/aa_fitness/aa_fitness.json",
+        aa_fitness_json_gz="results_{mat}/aa_fitness/aa_fitness.json.gz",
+    params:
+        min_expected_count=config["min_expected_count"],
+        citation=config["citation"],
+        authors=config["authors"],
+        source=config["source"],
+        description=config["description"]
+    script:
+        "scripts/export_fitness_to_json.py"
