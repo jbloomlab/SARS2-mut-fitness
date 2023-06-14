@@ -230,4 +230,4 @@ docs_plot_annotations: data/docs_plot_annotations.yaml  # lists plots and their 
 citation: https://doi.org/10.1101/2023.01.30.526314
 authors: [Jesse Bloom, Richard Neher]
 source: https://github.com/jbloomlab/SARS2-mut-fitness/tree/main
-description: Estimated fitness for amino acid mutations in each SARS-CoV-2 gene using natural sequences.
+description: Estimated fitness for amino acid mutations in each SARS-CoV-2 gene from natural occurrences.

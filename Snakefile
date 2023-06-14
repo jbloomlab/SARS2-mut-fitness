@@ -780,9 +780,10 @@ rule cp_current_mat_docs:
 rule export_fitness_to_json:
     """Export amino-acid fitness to JSON with metadata"""
     input:
-        fitness=rules.aa_fitness.output.aa_fitness,
+        aa_fitness=rules.aa_fitness.output.aa_fitness,
+        clade_founder_aas=rules.clade_founder_aas.output.clade_founder_aas,
     output:
-        json="results_{mat}/aa_fitness/aa_fitness.json",
+        aa_fitness_json="results_{mat}/aa_fitness/aa_fitness.json",
     params:
         min_expected_count=config["min_expected_count"],
         citation=config["citation"],
