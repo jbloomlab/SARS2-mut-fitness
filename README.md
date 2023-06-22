@@ -80,7 +80,7 @@ This tree contains all public access SARS-CoV-2 sequences, with mutations annota
 For the specific version of the tree used here, see the [config.yaml](config.yaml) file.
 
 We analyze mutations grouping sequences at the level of [Nextstrain clades](https://clades.nextstrain.org/), which are already annotated on the pre-built mutation-annotated tree.
-For each Nextstrain clade, we use the clade founder genotype manually defined by [Neher (2022)](https://doi.org/10.1093/ve/veac113) and available at the URL indicated in [config.yaml](config.yaml).
+For each Nextstrain clade, we use the clade founder genotype manually defined by [Neher (2022)](https://doi.org/10.1093/ve/veac113) and available at the URL indicated in [config.yaml](config.yaml), or for newer clades the sequences from Cornelius Roemer [here](https://github.com/corneliusroemer/pango-sequences/blob/main/data/pango-consensus-sequences_summary.json).
 
 We perform some crucial filtering to remove spurious mutations as can arise from bad sequencing, base calling to reference, etc:
 

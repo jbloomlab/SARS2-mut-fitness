@@ -218,21 +218,28 @@ rule sample_path_to_nt_mutations:
         "scripts/sample_path_to_nt_mutations.py"
 
 
-rule clade_founder_json:
-    """Get JSON with nexstrain clade founders (indels not included)."""
+rule clade_founder_jsons:
+    """Get JSONs with nexstrain clade founders (indels not included)."""
     params:
-        url=config["clade_founder_json"],
+        **config["clade_founders"],
     output:
-        json="results_{mat}/clade_founders_no_indels/clade_founders.json",
+        neher_json="results_{mat}/clade_founders_no_indels/clade_founders_neher.json",
+        roemer_json="results_{mat}/clade_founders_no_indels/clade_founders_roemer.json",
     shell:
-        "curl {params.url} > {output.json}"
+        """
+        curl {params.neher_json} > {output.neher_json}
+        curl {params.roemer_json} > {output.roemer_json}
+        """
 
 
 rule clade_founder_fasta_and_muts:
     """Get FASTA and mutations for nextstrain clade founder (indels not included)."""
     input:
-        json=rules.clade_founder_json.output.json,
+        neher_json=rules.clade_founder_jsons.output.neher_json,
+        roemer_json=rules.clade_founder_jsons.output.roemer_json,
         ref_fasta=rules.get_ref_fasta.output.ref_fasta,
+    params:
+        roemer_nextstrain_to_pango=config["roemer_nextstrain_to_pango"],
     output:
         fasta="results_{mat}/clade_founders_no_indels/{clade}.fa",
         muts="results_{mat}/clade_founders_no_indels/{clade}_ref_to_founder_muts.csv",

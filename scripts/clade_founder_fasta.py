@@ -8,17 +8,31 @@ import Bio.SeqIO
 import pandas as pd
 
 
-input_json = snakemake.input.json
+input_neher_json = snakemake.input.neher_json
+input_roemer_json = snakemake.input.roemer_json
+roemer_nextstrain_to_pango = snakemake.params.roemer_nextstrain_to_pango
 ref_fasta = snakemake.input.ref_fasta
 clade = snakemake.wildcards.clade
 
 
 print(f"Getting founder fasta for {clade=}")
 
-with open(input_json) as f:
-    founder_muts = json.load(f)
+with open(input_neher_json) as f:
+    neher_founder_muts = json.load(f)
+with open(input_roemer_json) as f:
+    roemer_founder_muts = json.load(f)
 
-muts = founder_muts[clade]["nuc"]
+if clade in neher_founder_muts:
+    muts = neher_founder_muts[clade]["nuc"]
+    assert clade not in roemer_nextstrain_to_pango, f"{clade=} in Neher and Roemer"
+
+elif clade in roemer_nextstrain_to_pango:
+    pango = roemer_nextstrain_to_pango[clade]
+    muts = roemer_founder_muts[pango]["nucSubstitutions"]
+    assert roemer_founder_muts[pango]["nextstrainClade"] == clade
+
+else:
+    raise ValueError(f"no founder for {clade=}")
 
 print(f"Clade has the following {len(muts)} nucleotide mutations:\n{muts}")
 
