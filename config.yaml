@@ -5,6 +5,7 @@
 # The most recent public trees are at
 # http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/
 mat_trees:
+  public_2023-06-21: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2023/06/21/public-2023-06-21.all.masked.nextclade.pangolin.pb.gz
   public_2023-05-11: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2023/05/11/public-2023-05-11.all.masked.nextclade.pangolin.pb.gz
   public_2023-03-27: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2023/03/27/public-2023-03-27.all.masked.nextclade.pangolin.pb.gz
   public_2022-12-18: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2022/12/18/public-2022-12-18.all.masked.nextclade.pangolin.pb.gz
@@ -12,7 +13,7 @@ mat_trees:
 
 # specify one of the mutation-annotated trees in `mat_trees` as the "current" one that is
 # linked to by default as the best current estimates.
-current_mat: public_2023-05-11
+current_mat: public_2023-06-21
 
 # Reference GTF and FASTA, and location of spike coding sequence
 ref_fasta: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/bigZips/wuhCor1.fa.gz
@@ -32,8 +33,17 @@ sample_subsets:
   USA: USA
   England: England
 
-# Founder genotypes for nextstrain clades from Richard Neher
-clade_founder_json: https://raw.githubusercontent.com/neherlab/SC2_variant_rates/7e738194a8c6592082f1caa9a6ca70cb68289790/data/clade_gts.json
+# Clade founder genotypes. For backwards-compatibility, we use the ones from Richard Neher
+# when available, and those from Cornelius Roemer when the Neher file does not have a
+# founder for a clade, which is the case for newer clades as he is not updating that file.
+clade_founders:
+  neher_json: https://raw.githubusercontent.com/neherlab/SC2_variant_rates/7e738194a8c6592082f1caa9a6ca70cb68289790/data/clade_gts.json
+  roemer_json: https://raw.githubusercontent.com/corneliusroemer/pango-sequences/main/data/pango-consensus-sequences_summary.json
+# map Pango clades in `roemer_json` to NextStrain clades, from here:
+# https://github.com/nextstrain/ncov/blob/master/defaults/clade_display_names.yml
+roemer_nextstrain_to_pango:
+  23A: XBB.1.5
+  23B: XBB.1.16
 
 # Exclude these clades, for instance if no clade founder defined for them
 clades_to_exclude:
@@ -160,6 +170,9 @@ clade_synonyms:
   22C: Omicron BA.2.12.1
   22D: Omicron BA.2.75
   22E: Omicron BQ.1
+  22F: Omicron XBB
+  23A: Omicron XBB.1.5
+  23B: Omicron XBB.1.16
 
 # Deep mutational scanning datasets to correlate fitness estimates with:
 dms_datasets:
