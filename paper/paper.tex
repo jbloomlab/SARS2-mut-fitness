@@ -209,7 +209,7 @@ See Figure~\ref{fig:effects_dist_position_order} for a version of panel B with g
 
 The distributions of mutation effects concur with biological intuition about how different classes of mutations impact protein function.
 Most synonymous mutations are nearly neutral, most stop codons are highly deleterious, and amino-acid mutations range from slightly beneficial to highly deleterious (Figure~\ref{fig:dist}A).
-The handful of synonymous mutations with highly deleterious effects are in either regions of known non-coding constraint (e.g., the ORF1ab ribosomal slippage site~\cite{bhatt2021structural}) or two regions in the center of E and the end of M (Figure~\ref{fig:synonymous}).
+The handful of synonymous or noncoding mutations with highly deleterious effects are in either regions of known non-coding constraint (e.g., the ORF1ab ribosomal slippage site~\cite{bhatt2021structural}) or two regions in the center of E and the end of M (Figure~\ref{fig:synonymous}).
 
 To investigate differences in functional constraint among viral proteins, we computed the distributions of mutation effects separately for each gene (Figure~\ref{fig:dist}B and \ref{fig:effects_dist_position_order}).
 SARS-CoV-2 proteins are grouped into three categories: nonstructural (or nsp) proteins, structural proteins (spike, M, N, and E), and accessory proteins (names prefixed with ``ORF'')~\citep{v2021coronavirus}.
@@ -468,6 +468,11 @@ For plots that break the correlations out by phenotype, see \url{https://jblooml
 
 \subsection{Comparison to dN/dS and other mutation-effect prediction algorithms}
 For the comparison to the dN/dS approaches shown in Figure~\ref{fig:dnds}, we used the dN/dS values available at \url{https://github.com/spond/SARS-CoV-2-variation}~\cite{martin2021emergence} for all SARS-CoV-2 sequences, which were calculated using the FEL approach~\cite{kosakovsky2005not}.
+Specifically, the file \url{https://raw.githubusercontent.com/spond/SARS-CoV-2-variation/master/windowed-sites-fel-all.csv} contains dN/dS estimates made using large-scale sequence sets from GISAID in three-month windows starting with the earliest sequences from December 2019 and continuing up until Jan-31-2022.
+We averaged the dN/dS values for each site over all three month windows, and analyzed those time-window averaged dN/dS values.
+In order to ensure comparability in the sequence sets used, for the comparisons in Figure~\ref{fig:dnds}, we used fitness estimates from our approach made using only sequences in the mutation-annotated tree as of Jan-31-2022.
+We restricted our analysis to this timeframe because the large-scale dN/dS analyses at \url{https://github.com/spond/SARS-CoV-2-variation} (which use state-of-the-art methods) were only available for that range of dates.
+
 The dN/dS ratios only provide a single number for each site, which cannot be directly compared to either the mutation-effect estimates or the deep mutational scanning, which estimate the effects of individual amino-acid mutations.
 We therefore computed site-summary metrics of the mutation-effect estimates and the deep mutational scanning as the average effect of all measured amino-acid mutations at each site, excluding stop codons.
 The correlations in Figure~\ref{fig:dnds} are with those site-summary metrics.
@@ -717,7 +722,8 @@ The numbers in the upper right of each panel give the Pearson correlation.
 In every case, the mean estimated fitness effect (top row) is much better correlated with the experimental measurements than the log dN/dS (bottom row).
 The dN/dS ratios are taken from \url{https://github.com/spond/SARS-CoV-2-variation}.
 Note that the y-axis in each panel is extended so that it fully contains the trend line over the entire x-axis domain, explaining why the y-axis limits vary across the rows even though the range of the data are the same on the y-axis for each row.
-See \url{https://jbloomlab.github.io/SARS2-mut-fitness/dnds_corr.html} for an interactive version of this plot.
+Both the fitness estimates and dN/dS values shown here are calculated using only sequences available as of Jan-31-2022 (see Methods).
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness/public_2022-01-31/dnds_corr.html} for an interactive version of this plot, and \url{https://jbloomlab.github.io/SARS2-mut-fitness/dnds_corr.html} for an interactive version that uses fitness estimates from all SARS-CoV-2 sequences including more recent ones.
 \label{fig:dnds}
 }
 \end{figure*}
