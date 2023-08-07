@@ -366,7 +366,7 @@ We then performed quality control by ignoring any branch that met any of the fol
 \item it contained more than one nucleotide mutation that was a reversion to the founder sequence for that clade as provided at \url{https://raw.githubusercontent.com/neherlab/SC2_variant_rates/7e738194a8c6592082f1caa9a6ca70cb68289790/data/clade_gts.json} by \cite{neher2022contributions};
 \item it contained more than one nucleotide mutation to the same codon.
 \end{itemize}
-The rationale for the first exclusion is that highly mutated branches are often indicative of sequencing errors of viral evolution in chronically infected humans, neither of which correspond to the pattern of typical SARS-CoV-2 transmission in acute infections.
+The rationale for the first exclusion is that highly mutated branches are often indicative of sequencing errors or viral evolution in chronically infected humans, neither of which correspond to the pattern of typical SARS-CoV-2 transmission in acute infections.
 Because the virus's evolution is very densely sampled, only a small fraction of branches have more than four mutations (Figure~\ref{fig:nmut_counts}).
 The rationale for the second and third exclusions is that excess reversions can arise from base-calling pipelines that erroneously call low-coverage sites as reference.
 We ignore branches with multiple nucleotide mutations to the same codon (this is very rare) because as detailed below our method is only designed to make estimates for mutations that represent single-nucleotide changes from the clade founder.
