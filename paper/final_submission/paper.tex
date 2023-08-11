@@ -1,0 +1,1006 @@
+\documentclass[9pt,twocolumn,twoside]{gsajnl_modified}
+% Use the documentclass option 'lineno' to view line numbers
+
+\usepackage[htt]{hyphenat}  % https://tex.stackexchange.com/a/543
+\usepackage[export]{adjustbox}
+\usepackage{xurl}
+\usepackage{stfloats}
+\usepackage[leftcaption]{sidecap}
+\sidecaptionvpos{figure}{t}
+
+\renewcommand{\topfraction}{0.9}	% max fraction of floats at top
+    \renewcommand{\bottomfraction}{0.8}	% max fraction of floats at bottom
+    %   Parameters for TEXT pages (not float pages):
+    \setcounter{topnumber}{2}
+    \setcounter{bottomnumber}{2}
+    \setcounter{totalnumber}{4}     % 2 may work better
+    \setcounter{dbltopnumber}{2}    % for 2-column pages
+    \renewcommand{\dbltopfraction}{0.9}	% fit big float above 2-col. text
+    \renewcommand{\textfraction}{0.07}	% allow minimal text w. figs
+    %   Parameters for FLOAT pages (not text pages):
+    \renewcommand{\floatpagefraction}{0.7}	% require fuller float pages
+	% N.B.: floatpagefraction MUST be less than topfraction !!
+    \renewcommand{\dblfloatpagefraction}{0.7}	% require fuller float pages
+
+\newcommand\jdbcomment[1]{\textcolor{red}{[#1]}}
+\newcommand\rancomment[1]{\textcolor{blue}{[#1]}}
+
+\title{Fitness effects of mutations to SARS-CoV-2 proteins}
+
+\author[*]{\Large Jesse D. Bloom$^{1,2,3^*}$ and Richard A. Neher$^{4,5}$}
+
+\affil[1]{Basic Sciences and Computational Biology, Fred Hutchinson Cancer Center
+
+}
+\affil[2]{Department of Genome Sciences, University of Washington
+
+}
+\affil[3]{Howard Hughes Medical Institute
+
+}
+\affil[4]{Biozentrum, University of Basel
+
+}
+\affil[5]{Swiss Institute of Bioinformatics
+
+}
+
+\keywords{}
+
+\runningtitle{} % For use in the footer
+\runningauthor{}
+
+\begin{abstract}
+Knowledge of the fitness effects of mutations to SARS-CoV-2 can inform assessment of new variants, design of therapeutics resistant to escape, and understanding of the functions of viral proteins.
+However, experimentally measuring effects of mutations is challenging: we lack tractable lab assays for many SARS-CoV-2 proteins, and comprehensive deep mutational scanning has been applied to only two SARS-CoV-2 proteins.
+Here we develop an approach that leverages millions of publicly available SARS-CoV-2 sequences to estimate effects of mutations.
+We first calculate how many independent occurrences of each mutation are expected to be observed along the SARS-CoV-2 phylogeny in the absence of selection.
+We then compare these expected observations to the actual observations to estimate the effect of each mutation.
+These estimates correlate well with deep mutational scanning measurements.
+For most genes, synonymous mutations are nearly neutral, stop-codon mutations are deleterious, and amino-acid mutations have a range of effects.
+However, some viral accessory proteins are under little to no selection.
+We provide interactive visualizations of effects of mutations to all SARS-CoV-2 proteins (\url{https://jbloomlab.github.io/SARS2-mut-fitness/}).
+The framework we describe is applicable to any virus for which the number of available sequences is sufficiently large that many independent occurrences of each neutral mutation are observed.
+\end{abstract}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{firststyle}
+%\marginmark
+\firstpagefootnote
+
+\correspondingauthoraffiliation{}{*\href{mailto:jbloom@fredhutch.org}{jbloom@fredhutch.org} or \href{mailto:richard.neher@unibas.ch}{richard.neher@unibas.ch}}
+\vspace{-33pt}% Only used for adjusting extra space in the left column of the first page
+
+\lettrine[lines=2]{\color{color2}T}{}he rapid evolution of SARS-CoV-2 has led to the emergence of viral variants with enhanced transmissibility, escape from therapeutics, or reduced recognition by immunity~\citep{harvey2021sars,abdool2021new}.
+To anticipate and mitigate this evolution, the scientific community has launched efforts to assess the risk of new viral variants~\citep{degrace2022defining} and create therapeutics that target constrained regions of the virus where resistance is less likely to evolve~\citep{moghadasi2023,iketani2022multiple,hiscox2021shutting}.
+Both efforts require determining how specific mutations affect viral fitness.
+
+Unfortunately, experimentally measuring the effects of mutations is challenging for most SARS-CoV-2 proteins.
+For spike, tractable lab assays have identified key functional and antigenic mutations~\citep{harvey2021sars,weisblum2020escape}, and enabled deep mutational scanning measurements of how most mutations affect receptor binding, cellular infection, and antibody recognition~\citep{starr2020deep,dadonaite2023pseudovirus,greaney2021complete,cao2022imprinted}.
+These experimental data are valuable for assessing new spike variants~\citep{degrace2022defining,greaney2022antibody,tzou2022coronavirus} and designing antibody therapeutics with greater resistance to escape~\citep{starr2021sars,rappazzo2021broad,cao2022rational}.
+But most SARS-CoV-2 proteins lack tractable lab assays, despite contributing to viral fitness~\citep{thorne2022evolution,syed2021rapid,mcgrath2022sars} and being targets of efforts to develop anti-viral drugs~\citep{tao2021sars}.
+The only non-spike SARS-CoV-2 protein with large-scale experimental measurements of mutation effects is Mpro~\citep{flynn2022,iketani2022functional}.
+
+An alternative to experiments is to estimate effects of mutations by analyzing natural viral sequences.
+The amount of data available for such analyses has increased dramatically over the last few years with the sequencing of SARS-CoV-2 from millions of human infections.
+So far analyses of these sequences have focused on analyzing expanding viral clades to identify mutations that mediate immune escape or increase transmissibility~\citep{obermeyer2022analysis,lee2022inferring,maher2022predicting}.
+The basic idea is that mutations that repeatedly appear near the base of clades that increase in relative frequency are likely beneficial to the virus.
+However, only a small minority of all possible mutations are beneficial, with most being nearly neutral or deleterious.
+For purposes such as identifying constrained drug targets or understanding the function of viral proteins, it is important to estimate the effects of neutral or deleterious mutations as well as beneficial ones.
+Other studies have analyzed broader alignments of coronaviruses substantially diverged from SARS-CoV-2~\citep{rodriguez2022epistatic, thadani2022learning}, but the resulting estimates are limited by sparse sampling and possible changes in the impacts of some mutations across divergent viruses.
+
+Here we develop a new approach that uses natural sequences to estimate the effects of mutations.
+Our basic insight is that there are now so many SARS-CoV-2 sequences that all non-deleterious single-nucleotide mutations are expected to independently occur many times along the observed phylogenetic tree.
+We therefore first calculate the number of expected observations of independent occurrences of each mutation based on the neutral mutation rate of SARS-CoV-2.
+We then compare these expected observations to the actual observations in the SARS-CoV-2 tree to estimate the effect of each mutation.
+The resulting estimates correlate well with existing deep mutational scanning data.
+Most viral proteins have regions under strong selective constraints.
+However some accessory proteins show only weak selection against amino-acid and even stop-codon mutations.
+Overall, our work demonstrates a new approach to determine the effects of mutations, and provides detailed maps of mutational effects across the SARS-CoV-2 proteome.
+
+\section{Results}
+
+\subsection{Mutation effects from actual versus expected counts}
+
+\begin{figure*}
+%\includegraphics[width=\linewidth]{fig1.tiff}
+\caption{
+Expected versus actual counts of mutations.
+{\bf (A)}
+The number of expected counts of each type of nucleotide mutation is computed from four-fold degenerate sites, and then compared the actual counts of each mutation.
+{\bf (B)}
+Expected versus actual counts for each nucleotide mutation type aggregated across all viral clades and averaged across all sites where the mutation is four-fold degenerate, synonymous (including four-fold degenerate), nonsynonymous, or introduces a stop codon.
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness/avg_counts.html} for an interactive version of panel B that enables mouseovers to read off specific values.
+\label{fig:expected_vs_actual}
+}
+\end{figure*}
+
+To determine how many times each mutation is expected to be observed, we used the pre-built UShER tree~\citep{mcbroome2021daily,turakhia2021ultrafast,lanfear2020} of $\sim$7-million public SARS-CoV-2 sequences to count nucleotide mutations at four-fold degenerate sites~\citep[Figure~\ref{fig:expected_vs_actual}A;][]{bloom2023evolution}.
+Because mutations at such sites never alter the amino-acid sequence, these counts reflect the mutation process in the absence of protein-level selection (see below for caveats about nucleotide-level selection).
+The expected counts of a mutation from nucleotide $x$ to $y$ is simply the average count of this type of mutation across all four-fold degenerate sites with parental identity $x$.
+Importantly, we count independent \emph{occurrences} of each mutation along the branches of the tree, not the sequences with the mutation in the final alignment (Figure~\ref{fig:expected_vs_actual}A.
+We also compute expected counts separately for each SARS-CoV-2 clade to account for shifts in mutation spectrum~\citep{bloom2023evolution,ruis2022mutational}, and apply quality-control steps to remove spurious mutations (see Methods).
+
+The expected counts per mutation vary with mutation type, ranging from $\sim$565 for \texttt{C$\rightarrow$T} to only $\sim$9 for \texttt{T$\rightarrow$G} mutations (Figure~\ref{fig:expected_vs_actual}B).
+This variation is because the SARS-CoV-2 mutation spectrum is highly biased towards specific mutation types~\citep{bloom2023evolution,ruis2022mutational,de2021mutation,neher2022contributions}.
+However, because there are so many SARS-CoV-2 sequences we are able to estimate the rate of even the rarest mutation types with high accuracy~\cite{bloom2023evolution}.
+For instance, there are $\sim 1.9\times 10^4$ observed occurrences of \texttt{T$\rightarrow$G} mutations across all $\sim$2,100 four-fold degenerate sites with a parental identity of \texttt{T}, which is enough to estimate the \texttt{T$\rightarrow$G} mutation rate (and therefore the expected counts of each mutation) with high accuracy.
+
+We compared the expected counts to the actual observed counts of mutations averaged across sites (Figure~\ref{fig:expected_vs_actual}).
+For synonymous mutations, the expected and actual counts are similar.
+But for nonsynonymous and especially stop-codon mutations, the actual counts are substantially lower than the expected counts, reflecting purifying selection for protein function.
+
+The ratio of actual to expected counts for each mutation is related to its effect on viral fitness.
+The intuition is straightforward: mutations arise at all sites, but viruses with deleterious mutations are less likely to transmit and be observed in sequencing of human SARS-CoV-2.
+Therefore, the ratio of actual to expected counts will be one for neutral mutations, and less than one for deleterious mutations.
+In the Methods and Appendix, we show that under plausible assumptions about SARS-CoV-2 evolution and sampling intensity (fraction of viruses sequenced), the fitness cost of a deleterious mutation scales roughly inversely with the ratio of actual to expected counts for mutations with costs greater than a few percent.
+A key result is the dependence on sampling intensity: if all human SARS-CoV-2 were sequenced even deleterious mutations would have a high chance of being sampled and we would need to study the subsequent spread of the mutations to assess their fitness.
+But the actual sampling intensity is $\sim$0.1\%, since there are $\sim$7-million publicly available SARS-CoV-2 sequences and the total number of human infections is now probably roughly on par with the total global population of $\sim$8-billion people.
+At this sampling intensity, the number of times a mutation is observed reflects more subtle reductions in transmission efficiency.
+We quantify the effect of each mutation as the logarithm of the ratio of actual to expected counts after summing counts for all nucleotides that encode the relevant amino-acid.
+The statistical noise is greater for mutations with fewer expected counts: the figures in this paper show mutations with $\ge10$ expected counts unless otherwise noted, with legends linking to interactive plots that enable adjustment of this threshold.
+
+\subsection*{Mutation-effect estimates are robust to subsampling, with some evidence of epistasis in spike}
+
+\begin{figure*}
+\centering
+%\includegraphics[width=\linewidth]{figs/corr.png}
+\caption{
+Correlations of mutation fitness effect estimates made using subsets of natural sequences.
+Correlations between estimates made {\bf (A)} just using sequences from the Delta or Omicron BA.5 clades or {\bf (B)} just from the USA or England.
+Each point is an amino-acid mutation, the orange line is a least-squares regression, and orange text at upper left shows the number of mutations and Pearson correlation coefficient.
+Only mutations with at least 10 expected counts are shown, which is why panels have different numbers of mutations shown (sequence subsets vary in size).
+Different subset size are also the reason why the regression line in (A) deviates from the identity $x=y$.
+{\bf (C)} Correlations between clade or geography subsets become higher with an increasingly large threshold for minimum expected counts.
+Spike mutations have a worse correlation when subsetting by viral clade (plot shows average correlation over all pairwise combinations of Delta, BA.1, BA.2, and BA.5), but not when subsetting by geography (USA or England).
+{\bf (D)} Correlations in estimated mutation effects decline for clades with higher protein divergence, with the effect most noticeable for spike since spike is more diverged among SARS-CoV-2 clades than other viral proteins.
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness/clade_corr_chart.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/subset_corr_chart.html} for versions of A and B that include all viral clades with at least 500,000 total expected counts (summed across all mutations) and have other interactive options.
+\label{fig:corr}
+}
+\end{figure*}
+
+We computed the correlations among mutation-effect estimates made using subsets of SARS-CoV-2 sequences from different viral clades or geographic locations.
+These estimates were well correlated, with some modest variation in estimates across sequence subsets (Figure~\ref{fig:corr}A,B).
+
+The modest variation in estimates from different sequence subsets could have two causes: statistical noise due to finite mutation counts, or real shifts in mutation effects during SARS-CoV-2 evolution~\citep{starr2022shifting,moulana2022compensatory}.
+To test for statistical noise, we computed correlations with different thresholds for how many expected counts are required before making an estimate for a mutation (Figure~\ref{fig:corr}C).
+Correlations increased with this count threshold, consistent with reduced statistical noise for larger mutation counts.
+But the correlation for spike mutations was consistently lower for cross-clade but not cross-geography comparisons (Figure~\ref{fig:corr}C).
+The lower cross-clade correlation for spike appears due to epistatic shifts in mutation effects~\citep{starr2022shifting, moulana2022compensatory, pollock2012amino, shah2015contingency, lee2018deep} or changes in the selective landscape~\citep{sun2023rapidly} between SARS-CoV-2 clades, since the correlation is lower between clades with higher spike divergence (Figure~\ref{fig:corr}D).
+In particular, the interactive version of Figure~\ref{fig:corr}A shows that mutations that are more beneficial in Omicron BA.5 than Delta are often antibody-escape mutations (eg, K444N or G446S in spike~\citep{greaney2022antibody})---a result that makes sense, since newer variants like Omicron BA.5 are evolving under increased immune selection compared to earlier variants like Delta that circulated in a more immunologically naive population.
+
+Despite evidence for some shifts in mutation effects in spike, for the rest of this paper we aggregate counts across viral clades to make a single estimate for each amino-acid mutation.
+The reason is that the accuracy of the estimates increases with the number of counts (Figure~\ref{fig:corr}C), and several mutation types only have enough counts for reasonable estimates when aggregating across clades (Figure~\ref{fig:expected_vs_actual}B).
+For the purposes of this paper, we deemed it preferable to have more accurate and comprehensive pan-SARS-CoV-2 estimates than noisier clade-specific estimates for fewer mutations.
+However, the interactive version of Figure~\ref{fig:corr}A linked in the legend enables exploration of mutations with disparate estimates among clades.
+
+An important question is whether the mutation fitness estimates are affected by noise from limited statistical sampling of mutations or whether sequencing errors and bioinformatic artefacts distort the estimates.
+To assess if this is the case, we repeated the entire fitness estimation using an even larger pre-built UShER mutation-annotated tree of all $\sim$14-million SARS-CoV-2 sequences in GISAID~\cite{shu2017gisaid} as of March-29-2023.
+There is an extremely high correlation between fitness estimates made using the $\sim$7-million publicly available sequences and the larger GISAID tree (Figure~S1).
+This concordance indicates that the set of $\sim$7-million public sequences is large enough that doubling the data does not appreciably shift the estimates, and so throughout this paper we use that sequence set due to our preference for publicly available data.
+Furthermore, fitness estimates using sequences from specific countries (USA and England, Figure~\ref{fig:corr}B) are also highly concordant, suggesting that sequencing and bioinformatic workflows are not driving the signal.
+Lastly, positions known to be under strong constraint {\it a priori} (e.g.~start codons, the ribosomal slippage site) typically have no or only few mutations, suggesting that sequencing errors in consensus sequences are rare.
+
+\subsection*{Structural and non-structural proteins are under strong purifying selection, but most accessory proteins are not}
+
+\begin{figure*}
+%\includegraphics[width=\linewidth]{figs/dist.pdf}
+\caption{
+Distribution of effects of different classes of mutations.
+{\bf (A)}
+Histograms of effects of synonymous, nonsynonymous, and stop-codon mutations across all viral genes.
+Neutral mutations have effects of zero (dashed gray vertical lines), and deleterious mutations have negative effects.
+{\bf (B)}
+Effects of each class of mutation for each viral gene.
+Dark squares indicate the median effect, and the lighter rectangles span the interquartile range.
+Mutation types are color-coded as in panel A.
+The apparent constraint on synonymous mutation in ORF9b is probably because this gene is encoded in an overlapping reading frame with N~\cite{jungreis2021conflicting}.
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness/effects_histogram.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/effects_dist.html} for plots that allow adjustment of the expected-count cutoff and other interactive options (such as separate histograms for each gene).
+See Figure~S3 for a version of panel B with genes ordered by genomic position rather than constraint on nonsynonymous mutations.
+\label{fig:dist}
+}
+\end{figure*}
+
+The distributions of mutation effects concur with biological intuition about how different classes of mutations impact protein function.
+Most synonymous mutations are nearly neutral, most stop codons are highly deleterious, and amino-acid mutations range from slightly beneficial to highly deleterious (Figure~\ref{fig:dist}A).
+The handful of synonymous or noncoding mutations with highly deleterious effects are in either regions of known non-coding constraint (e.g., the ORF1ab ribosomal slippage site~\cite{bhatt2021structural}) or two regions in the center of E and the end of M (Figure~S2).
+
+To investigate differences in functional constraint among viral proteins, we computed the distributions of mutation effects separately for each gene (Figures~\ref{fig:dist}B and S3).
+SARS-CoV-2 proteins are grouped into three categories: nonstructural (or nsp) proteins, structural proteins (spike, M, N, and E), and accessory proteins (names prefixed with ``ORF'')~\citep{v2021coronavirus}.
+The nonstructural and structural proteins are essential, and these proteins show strong selection against stop codons and clear although variable purifying selection against amino-acid mutations (Figures~\ref{fig:dist}B and S3; e.g., nsp13 is under stronger protein-level constraint than nsp1).
+
+However, most accessory proteins are under little constraint (Figures~\ref{fig:dist}B and S3).
+Stop-codon and amino-acid mutations to ORF7a and ORF8 are not more deleterious than synonymous mutations (although recall that our estimates are only sensitive to fitness costs greater than a few percent).
+The lack of deleterious mutations to ORF8 is consistent with the fact that viruses with deletions in this gene have spread in humans~\citep{su2020discovery} and that major variants had stop codons early in ORF8.
+Indeed, the loss of accessory proteins such as ORF8 appears to occur with some regularity during the early evolution of non-human viruses in humans~\citep{rochman2022molecular}.
+The only accessory protein under strong purifying selection against stop codons is ORF3a (Figure~\ref{fig:dist}B), for which stop codons in the first ~240 residues are clearly deleterious (Figure~S4).
+These observations concur with experiments showing SARS-CoV-2 is attenuated by deletion of ORF3a but there is little effect of deleting ORF6, ORF7a, or ORF8~\citep{mcgrath2022sars,silvas2021contribution,liu2022live}.
+However, ORF3a's function must be relatively insensitive to its protein sequence, since other than selection against stop codons there is only amino-acid level constraint at a few sites like 135 and 138 (Figure~S4).
+Observations such as these could help guide experimental studies to better understand protein function.
+
+The accessory proteins are encoded in the last 5kb of the SARS-CoV-2 genome, meaning that our results show that this portion of the genome (with the exception of the genes coding for nucleoprotein, E, and M) is under relatively weak purifying selection (Figure~S3).
+Note that some accessory proteins also vary in presence/absence across coronaviruses~\citep{v2021coronavirus,llanes2020betacoronavirus}, and are mostly dispensable in cell culture~\citep{mcgrath2022sars,silvas2021contribution,liu2022live,liu2014accessory}.
+Decreased purifying selection in genes encoded near the end of the genome is also observed in more distantly related orders of large single-stranded RNA viruses such as closteroviruses~\citep{wang2011genetic, dawson2013virus}.
+
+\subsection*{Mutation-effect estimates correlate with experiments}
+
+\begin{figure*}
+\centering
+%\includegraphics[width=0.7\linewidth]{figs/dms.png}
+\caption{
+Correlation of mutation-effect estimates with experimental deep mutational scanning measurements for {\bf (A)} the full spike~\citep{dadonaite2023pseudovirus} or its RBD~\citep{starr2022deep}, and {\bf (B)} Mpro~\citep{flynn2023,iketani2022functional}.
+Each point is an amino-acid mutation, the orange line is a least-squares regression, and orange text in the upper left shows the number of mutations and Pearson correlation coefficient.
+Each sub-panel shows a different set of mutations (depending on which mutations were measured in that experiment).
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_S_corr.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_nsp5_corr.html} for plots that also show the Mpro dataset from~\citep{flynn2022} and have various interactive options.
+The plots in this figure show the average of the multiple phenotypes measured in the deep mutational scanning of \cite{starr2022deep}; see \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_S_all_corr.html} for each phenotype separately.
+This figure only shows mutations with at least 20 expected counts, which is higher than the threshold of 10 used in most of the rest of this paper (this threshold can be adjusted in the interactive plots).
+\label{fig:dms}
+}
+\end{figure*}
+
+We examined how the mutation effects estimated using our approach compare with prior high-throughput deep mutational scanning measurements.
+For spike, two distinct experimental methodologies have been used to characterize large numbers of mutations: yeast display of the receptor-binding domain (RBD)~\citep{starr2020deep,starr2022deep} and spike pseudotyped lentiviruses~\citep{dadonaite2023pseudovirus}.
+For Mpro (also known as nsp5 or 3CLpro), two different labs have performed deep mutational scanning using the same basic methodology of assaying protease cleavage in yeast~\citep{flynn2022,flynn2023,iketani2022functional}.
+
+For spike, our estimates from natural sequences correlate with the experiments almost as well as the two experimental methodologies correlate with each other (Figure~\ref{fig:dms}A), with Pearson correlations of 0.66 between the estimates and experiments versus 0.72 between the two experiments.
+Neither experiment fully captures how mutations affect viral fitness, since both RBD yeast display and lentiviral pseudotyping are imperfect proxies for spike function during actual human infections.
+Therefore, it is unclear how much the differences between the mutation-effect estimates and experiments are due to noise in the estimates versus limitations of the experiments.
+However, the fact that the estimates correlate with the experiments almost as well as the experiments correlate with each (Figure~\ref{fig:dms}A) suggests the estimates are of comparable quality to experimental measurements.
+At least some of the mutations with the greatest divergence between our estimates and the deep mutational scanning likely represent experimental artifacts.
+For instance, P527L, which is favorable in the RBD deep mutational scan but deleterious in the sequence-based estimates and full-spike scan, is at the C-terminus of the yeast-displayed RBD~\citep{starr2020deep} where it may adopt a non-native conformation.
+
+The sequence-based estimates for Mpro also correlate with the deep mutational scans for that protein, although in this case the experiments correlate substantially better with each other than with our estimates (Figure~\ref{fig:dms}B).
+However, the Mpro experiments all use a similar yeast-based methodology~\citep{flynn2022,flynn2023,iketani2022functional} that fails to capture significant aspects of Mpro's function during human infections.
+For instance, a stop codon at Q306 is well tolerated in the deep mutational scans but extremely disfavorable in our sequence-based estimates, and such a mutation would clearly be highly deleterious to actual virus as it would truncate the polyprotein.
+Similarly, K61N is well tolerated in the deep mutational scans but extremely disfavorable in our estimates, probably because in the full viral polyprotein this residue mediates important interactions between Mpro and nsp7-10~\citep{yadav2022biochemical}
+
+\subsection*{Mutation-effect estimates better capture functional constraint than dN/dS ratios or predictions from other methods}
+A longstanding approach for analyzing protein constraint is to compare rates of nonsynonymous (dN) and synonymous (dS) substitutions at each site~\citep{nielsen1998likelihood,kosakovsky2005not}.
+These dN/dS ratios can be calculated by counting mutations or using phylogenetic substitution models~\citep{kosakovsky2005not,yang2000estimating}.
+A limitation of dN/dS ratios is they cannot be interpreted in terms of the fitness effects, since they simply represent the relative rate of amino-acid substitution rather than the effects of specific mutations~\citep{spielman2015relationship,kryazhimskiy2008population}.
+Nonetheless, we can compare dN/dS ratios to our mutation-effect estimates as measures of the average constraint at each site.
+The mutation-effect estimates greatly outperform dN/dS ratios as a measure of site-level constraint as assessed by correlation with deep mutational scanning experiments (Figure~S5).
+The reason is in part because some aspects of functional constraint cannot be captured by a dN/dS ratio.
+For instance, the ACE2-affinity enhancing spike mutation N501Y arose in several SARS-CoV-2 variants early in the pandemic, and has since remained fixed due its importance for receptor binding~\citep{starr2022deep}.
+Our mutation-effect estimates correctly reflect that site 501 is strongly prefers tyrosine, but the site has a high dN/dS ratio due to the early convergent evolution of this site to that preferred amino acid.
+
+Our mutation-effect estimates also correlate better with deep mutational scanning experiments than predictions from two algorithms trained to learn epistatic models of mutation effects from phylogenetically broader but more sparsely sampled sequence data~\cite{thadani2022learning,rodriguez2022epistatic} (Figure~S6).
+Our estimates also correlate better with experiments than predictions by a machine-learning algorithm that integrates sequence and epidemiological data~\cite{maher2022predicting} (Figure~S6).
+These results suggest that our straightforward approach of directly reading out the effects of mutations from their actual versus expected counts can outperform much more complex models when millions of sequences are available.
+
+\subsection*{Fixed mutations tend to have beneficial or neutral effects}
+Amino-acid mutations that have fixed in at least one viral clade are estimated to mostly have neutral or beneficial effects, whereas most other mutations are deleterious (Figure~S7).
+This fact is unsurprising: viral lineages that expand into new clades do so because they have acquired beneficial mutations while avoiding deleterious ones~\citep{luksza2014predictive, koelle2015effects, huddleston2020integrating}.
+But the fact that the beneficial effects of fixed mutations are correctly estimated by our approach, which simply counts mutation occurrences and does not incorporate information on lineage size, demonstrates such mutations occur independently in many viral lineages that are more successful than average.
+
+Most fixed mutations are estimated to be beneficial regardless of whether estimates are made using all viral clades, or just clades that did not fix the mutation (Figure~S8).
+However, a few beneficial fixed mutations show epistatic entrenchment~\citep{shah2015contingency, starr2018pervasive} in the sense that they are not particularly beneficial in clades in which they did not fix (Figure~S8).
+The most striking example is S373P in spike, which has experimentally been shown to be neutral or slightly deleterious in pre-Omicron clades, but strongly beneficial in the Omicron clades in which it fixed~\citep{starr2022deep, moulana2022compensatory}.
+
+\subsection*{Interactive exploration of amino-acid fitnesses}
+
+\begin{figure*}
+%\includegraphics[width=\linewidth]{figs/E_heatmap.pdf}
+\caption{
+Effects of amino-acid mutations to E protein.
+The area plot at top shows the average effects of mutations at each site, and the heatmap shows the effects of specific amino acids, with \textbf{x} denoting the amino-acid identity in the Wuhan-Hu-1 strain.
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness/E.html} for an interactive version of this plot that enables zooming, mouseovers, adjustment of the minimum expected count threshold, and layering of stop codon effects on the site plot.
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness} for comparable interactive plots for all SARS-CoV-2 proteins.
+\label{fig:E_heatmap}
+}
+\end{figure*}
+
+To enable easy access to the mutation-effect estimates, we created interactive plots to enable exploration of the data for each protein.
+A static view of one of these plots is in Figure~\ref{fig:E_heatmap}; see \url{https://jbloomlab.github.io/SARS2-mut-fitness} for interactive versions for all proteins.
+These plots enable both high-level inspection of functional constraint across each protein, and detailed interrogation of the effects of specific mutations.
+
+\section{Discussion}
+
+Enough SARS-CoV-2 viruses have now been sequenced that many independent occurrences of every tolerated single-nucleotide mutation have been observed along the viral phylogeny.
+Here we have described a new approach that leverages this fact to estimate the effects of these mutations.
+In essence, we treat natural evolution as a deep mutational scan, with the millions of publicly available SARS-CoV-2 sequences providing a readout of this experiment.
+The key is simply to calculate how many times each mutation has been ``tested'' along the history of sampled viral sequences, and compare that expectation to the actual observations of the mutation among viruses sufficiently fit to have been sequenced in actual human infections.
+
+The resulting estimates of mutational effects are robust to subsetting on specific viral clades or geographies, and correlate well with experimental measurements.
+In broad strokes, the mutation effects illuminate patterns of constraint: for instance, there is strong selection on structural and non-structural proteins, but only limited purifying selection on the accessory proteins.
+
+However, the real value of our approach is in the detailed maps of effects of specific mutations to all viral proteins, including proteins with poorly understood functions not easily characterized in the lab.
+These maps will be of value for designing drugs that target constrained sites, interpreting the consequences of mutations observed during viral surveillance, and guiding experiments to mechanistically characterize protein function.
+
+There are several caveats to our approach.
+First, because the number of observations of any given mutation is small compared to the millions of SARS-CoV-2 sequences being analyzed, our approach requires careful quality control to remove sequencing errors.
+Second, we assume the rate of each type of nucleotide mutation is uniform across the viral genome, and neglect higher-order context that may influence mutation rate~\citep{sadykov2021short,beale2004comparison}.
+Likewise, we neglect constraint on nucleotide identity beyond the encoded protein sequence~\citep{huston2021comprehensive,kuo2013functional}---although this probably has only a minor effect, since our analyses show just a handful of synonymous sites are under strong selection (Figure~S2).
+Third, the exact relationship between the statistics we calculate and viral fitness depend on the fraction of all infections that are sequenced (sampling intensity) and viral population dynamics.
+Although we derive this relationship, we do not adjust for sampling intensity and population dynamics when estimating mutation effects.
+Fourth, we make a single estimate for each mutation across all SARS-CoV-2, neglecting the epistasis that can affect some mutations~\citep{starr2022shifting,moulana2022compensatory}.
+Finally there are a few technical caveats to how we count mutations that are discussed in the Methods section.
+
+Conceptually, our approach differs from prior methods that aim to identify beneficial SARS-CoV-2 mutations associated with viral clades that increase in frequency~\citep{obermeyer2022analysis,lee2022inferring,maher2022predicting}.
+Those methods draw information primarily from what happens downstream of a mutation.
+In contrast, we treat all mutations equivalently regardless of whether they are on a tip node or at the base of a large clade.
+Our approach is better for estimating effects of deleterious or nearly neutral mutations, but clade-growth methods may be better for beneficial mutations.
+In particular, clade size carries information beyond that contained in mutation counts alone (Figure~S9).
+Hopefully future work can combine mutation-counting and clade-growth methods for even better estimates of SARS-CoV-2 mutation effects.
+Note our approach is conceptually similar to estimating fitness costs of HIV or polio mutations from mutation-selection balance in deep sequencing of intra-population viral quasispecies~\citep{zanini2017vivo, acevedo2014mutational}, except we analyze mutation occurrences rather than frequencies to account for the phylogenetic structure and genetic hitchhiking that characterize global SARS-CoV-2 evolution.
+
+The power of the approach we have described will increase with more viral sequencing.
+SARS-CoV-2 is the first virus with enough sequences that every tolerated mutation is observed multiple independent times.
+As costs drop, it is easy to imagine a future with even more viral sequences.
+As this occurs, viral genomic sequencing---which has traditionally been used primarily to track evolution and spread---will also become an increasingly precise tool to determine the effects of specific mutations.
+
+
+{\small
+
+\section{Methods}
+\subsection{Code and data availability}
+See the GitHub repository at \url{https://github.com/jbloomlab/SARS2-mut-fitness} for the computer code and processed data (eg, fitness estimates and mutation counts).
+That repository contains a README with links to specific data files as well as a description of the computational pipeline.
+See \url{https://github.com/jbloomlab/SARS2-mut-fitness/blob/main/results/aa_fitness/aa_fitness.csv} for final estimates of amino-acid fitnesses across all clades; other intermediate data files are also provided in the GitHub repository.
+The specific version of the repository used for this paper is tagged as ``bioRxiv-v2'' on GitHub (\url{https://github.com/jbloomlab/SARS2-mut-fitness/tree/bioRxiv-v2}).
+The pipeline is fully reproducible, and is run using \texttt{snakemake}~\citep{molder2021sustainable} with interactive plots rendered using \texttt{altair}~\citep{vanderplas2018altair}.
+
+The interactive plots are rendered at \url{https://jbloomlab.github.io/SARS2-mut-fitness} via GitHub pages.
+
+\subsection{Versioning of analyses of different sequence sets}
+The figures in this manuscript show analyses of the set of all publicly available sequences as of May-11-2023.
+However, the pipeline can be run on different sequence sets.
+The sequence sets on which the analysis is currently run include all sets listed under the ``mat\_trees'' key in \url{https://github.com/jbloomlab/SARS2-mut-fitness/blob/main/config.yaml}; these include the sets of all public sequences from several earlier dates (such as those available for the first version of this analysis), as well as the set of all sequences in GISAID as of March-29-2023.
+A version of the results for each sequence set is provided in the GitHub repository (\url{https://github.com/jbloomlab/SARS2-mut-fitness} ) in subdirectories with names like ``results\_public\_2023-05-11'', and the index page for the interactive plots (\url{https://jbloomlab.github.io/SARS2-mut-fitness}) links at the bottom to plots for each sequence set.
+The ``current\_mat'' key in \url{https://github.com/jbloomlab/SARS2-mut-fitness/blob/main/config.yaml} specifies which sequence set is used to generate the main results that in the ``results'' subdirectory in the GitHub repository and are shown by default in the interactive plats; we anticipate periodically updating this to newer sequence sets as more sequences become available.
+See \url{https://jbloomlab.github.io/SARS2-mut-fitness/mat_aa_fitness_correlations.html} for the correlations among mutation effects estimated from the different sequence sets.
+
+For the GISAID sequence set, we acknowledge the submitters of the sequences listed at the following URLs: \url{https://doi.org/10.55876/gis8.230403ab}, \url{https://doi.org/10.55876/gis8.230403hg}, \url{https://doi.org/10.55876/gis8.230403ht}, and \url{https://doi.org/10.55876/gis8.230403tg}.
+
+\subsection{Counting mutations along the phylogenetic tree}
+We counted occurrences of each mutation in each viral clade using the UShER pre-built mutation-annotated tree~\citep{mcbroome2021daily,turakhia2021ultrafast,lanfear2020} from May-11-2023 (\url{http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2023/05/11/public-2023-05-11.all.masked.nextclade.pangolin.pb.gz}), which contains all $\sim$7-million SARS-CoV-2 sequences that are available in public databases.
+To make these counts at a per-clade level, we first subsetted the mutation-annotated tree on all sequences for each Nexstrain clade~\citep{aksamentov2021nextclade}, retained only clades with at least $10^4$ sequences, and then used the matUtils program distributed with UShER to extract the nucleotide mutations on every branch of the each clade-subsetted mutation-annotated tree.
+For the analyses by geographic location (Figure~\ref{fig:corr}), we subsetted on all sequences that began with ``USA'' or ``England'' as these were the two locations with the most publicly available sequences.
+
+We then performed quality control by ignoring any branch that met any of the following criteria:
+\begin{itemize}
+\item it had more than four nucleotide mutations;
+\item it contained more than one nucleotide mutation that was a reversion to the Wuhan-Hu-1 reference sequence;
+\item it contained more than one nucleotide mutation that was a reversion to the founder sequence for that clade as provided at \url{https://raw.githubusercontent.com/neherlab/SC2_variant_rates/7e738194a8c6592082f1caa9a6ca70cb68289790/data/clade_gts.json} by \cite{neher2022contributions};
+\item it contained more than one nucleotide mutation to the same codon.
+\end{itemize}
+The rationale for the first exclusion is that highly mutated branches are often indicative of sequencing errors or viral evolution in chronically infected humans, neither of which correspond to the pattern of typical SARS-CoV-2 transmission in acute infections.
+Because the virus's evolution is very densely sampled, only a small fraction of branches have more than four mutations (Figure~S10).
+The rationale for the second and third exclusions is that excess reversions can arise from base-calling pipelines that erroneously call low-coverage sites as reference.
+We ignore branches with multiple nucleotide mutations to the same codon (this is very rare) because as detailed below our method is only designed to make estimates for mutations that represent single-nucleotide changes from the clade founder.
+Note also that the mutation-annotated tree does not include insertion or deletion mutations, and so we only consider (and make estimates for) point mutations.
+
+We then specified for exclusion certain mutations and sites that are prone to sequencing or base-calling errors.
+Specifically, we excluded
+\begin{itemize}
+\item the sites specified in Table S1 of \cite{turakhia2020stability} as being error prone;
+\item sites 5629, 6851, 7328, 28095, and 29362 since they had very high error rates in some clades;
+\item the problematic sites listed at \url{https://github.com/W-L/ProblematicSites_SARS-CoV2}, which are masked in the pre-built mutation-annotated tree;
+\item for each clade, the clade-specific sites listed in \url{https://github.com/jbloomlab/SARS2-mut-fitness/blob/main/data/usher_masked_sites.yaml}, which are masked in the pre-built mutation-annotated tree;
+\item for each clade, any mutation that was a reversion from the clade founder to the Wuhan-Hu-1 reference, and the reverse complements of these mutations.
+\end{itemize}
+The last exclusion criteria is because some bioinformatics pipelines called low-coverage sites as reference.
+
+See \url{https://github.com/jbloomlab/SARS2-mut-fitness/blob/main/results/mutation_counts/aggregated.csv} for the final counts of each nucleotide mutation in each clade; note that this file also contains excluded mutations.
+
+\subsection{Calculation of expected counts}
+To calculate the expected counts for each nucleotide mutation, we analyzed just the four-fold degenerate sites in each clade in an approach paralleling that of \cite{bloom2023evolution}.
+Specifically, we identify all non-excluded four-fold degenerate sites in each clade founder.
+We then count nucleotide mutations just at those sites in each clade, and calculate the expected per-site number of mutations from nucleotide $x$ to $y$ as the total number of $x$ to $y$ mutations at four-fold degenerate sites divided by the number of four-fold degenerate sites with $x$ as the parental identity.
+This analysis is done at the clade level for two reasons: referencing mutations to the clade founder (rather than the Wuhan-Hu-1 reference) limits problem with the approach that would arise at sites that substitute multiple times in the history of a sequence (since each clade is a relatively high-identity group multiple mutations at the same site within a clade are very rare), and because it is know that SARS-CoV-2 mutation rates vary somewhat among clades~\citep{bloom2023evolution,ruis2022mutational}.
+We only retain clades with at least 5000 mutations at four-fold degenerate sites in order to avoid inaccurate estimates of expected counts due to low sampling of mutations.
+
+\subsection{Mutational effects from actual versus expected counts}
+To estimate the effects of mutations, we simply compare the expected counts of each nucleotide mutation to the actual counts in the pre-built mutation-annotated tree.
+See \url{https://github.com/jbloomlab/SARS2-mut-fitness/blob/main/results/expected_vs_actual_mut_counts/expected_vs_actual_mut_counts.csv} for these expected versus actual counts on a per-clade basis; note that this file also includes counts at excluded sites.
+
+To estimate the effects of mutations, we first sum the counts of all non-excluded nucleotide mutations that encode each amino-acid mutation to convert the nucleotide counts to amino-acid counts.
+In doing this, we exclude any mutations that are not from the clade-founder codon identity: in other words, we ignore sequences with histories that involve multiple mutations at the same codon in the same clade (this is a caveat of the approach, although because each clade is relatively high identity it does not have a major effect).
+For the overall estimates reported in this paper, we also sum these counts across all retained clades; for the analyses in Figure~\ref{fig:corr} we also make estimates without summing across clades and only for counts from sequences from specific geographic locations.
+We then compute the estimated fitness $\Delta f$ of each mutation as simply the natural logarithm of the ratio of actual to expected counts after adding a pseudocount of $P - 0.5$ to each count, namely $ \Delta f = \log \left(\frac{n_{actual} + P}{n_{expected} + P}\right)$.
+
+Note that these mutation-effect estimates will have more statistical noise the smaller the value of the expected counts for each mutation.
+Therefore, we also track the expected counts alongside the estimates.
+In this paper, we only show estimates for mutations with expected counts of at least 10 unless otherwise noted.
+However, the figures link to interactive legends that allow adjustment of this threshold: larger values (eg, 20 or more) will lead to slightly more accurate estimates but drop some mutations, lower values can be used if you need a noisier estimate for a mutation that has less then 10 expected counts.
+
+See \url{https://github.com/jbloomlab/SARS2-mut-fitness/blob/main/results/aa_fitness/aamut_fitness_all.csv} for the estimates of amino-acid mutation effects across all clades, and see \url{https://github.com/jbloomlab/SARS2-mut-fitness/blob/main/results/aa_fitness/aamut_fitness_by_clade.csv} for the clade-specific estimates.
+The all-clade estimates of mutation effects are what are shown in Figure~\ref{fig:dist}.
+
+For the clade correlations plotting in Figure~\ref{fig:corr}, we only include clades with at least $5 \times 10^5$ expected counts across all sites, as only these clades have enough counts for reasonable per-clade estimates.
+
+\subsection{Mutation effects to amino-acid fitnesses}
+For the final estimates of amino-acid fitnesses shown in the heatmaps such as in Figure~\ref{fig:E_heatmap}, we need a single estimate for each amino acid.
+This is straightforward for sites that have the same amino-acid identity in all clade founders: the ``wildtype'' residue shared across all clades has a fitness of zero, and all other amino acids have fitnesses equal to the effect of mutating from the ``wildtype'' to that amino acid.
+However, for sites that change amino-acid identity between clade founders, things are more complicated and we need to take the extra step below.
+
+For each clade have estimated the change in fitness $\Delta f_{xy}$ caused by mutating a site from amino-acid $x$ to $y$, where $x$ is the amino acid in the clade founder sequence.
+For each such mutation, we also have $n_{xy}$ which is the number of expected mutations from the clade founder amino acid $x$ to $y$.
+These $n_{xy}$ values are important because they give some estimate of our "confidence" in the $\Delta f_{xy}$ values: if a mutation has high expected counts (large $n_{xy}$) then we can estimate the change in fitness caused by the mutation more accurately, and if $n_{xy}$ is small then the estimate will be much noisier.
+
+However, we would like to aggregate the data across multiple clades to estimate amino-acid fitness values at a site under the assumption that these are constant across clades.
+Things get complicated if not all clade founders have the same amino acid identity at a site.
+For instance, let's say at our site of interest, the clade founder amino acid is $x$ in one clade and $z$ in another clade.
+For each clade we then have a set of $\Delta f_{xy}$ and $n_{xy}$ values for the first clade (where $y$ ranges over the 20 amino acids, including stop codon, that aren't $x$), and another set of up to 20 $\Delta f_{zy}$ and $n_{zy}$ values for the second clade (where $y$ ranges over the 20 amino acids that aren't $z$).
+
+From these sets of mutation fitness changes, we'd like to estimate the fitness $f_x$ of each amino acid $x$, where the $f_x$ values satisfy $\Delta f_{xy} = f_y - f_x$ (in other words, a higher $f_x$ means higher fitness of that amino acid).
+When there are multiple clades with different founder amino acids at the site, there is no guarantee that we can find $f_x$ values that precisely satisfy the above equation since there are more $\Delta f_{xy}$ values than $f_x$ values and the $\Delta f_{xy}$ values may have noise (and is some cases even real shifts among clades due to epistasis).
+Nonetheless, we can try to find the $f_x$ values that come closest to satisfying the above equation.
+
+First, we choose one amino acid to have a fitness value of zero, since the scale of the $f_x$ values is arbitrary and there are really only 20 unique parameters among the 21 $f_x$ values (there are 21 amino acids since we consider stops, but we only measure differences among them, not absolute values).
+Typically if there was just one clade, we would set the wildtype value of $f_x = 0$ and then for mutations to all other amino acids $y$ we would simply have $f_y = \Delta f_{xy}$.
+However, when there are multiple clades with different founder amino acids, there is no longer a well defined "wildtype".
+So we choose the most common non-stop parental amino-acid for the observed mutations and set that to zero.
+In other words, we find $x$ that maximizes $\sum_y n_{xy}$ and set that $f_x$ value to zero.
+
+Next, we choose the $f_x$ values that most closely match the measured mutation effects, weighting more strongly mutation effects with higher expected counts (since these should be more accurate).
+Specifically, we define a loss function as
+$$
+L = \sum_x \sum_{y \ne x} n_{xy} \left(\Delta f_{xy} - \left[f_y - f_x\right]\right)^2
+$$
+where we ignore effects of synonymous mutations (the $x \ne y$ term in second summand) because we are only examining protein-level effects.
+We then use numerical optimization to find the $f_x$ values that minimize that loss $L$.
+
+Finally, we would still like to report an equivalent of the $n_{xy}$ values for the $\Delta f_{xy}$ values that give us some sense of how accurately we have estimated the fitness $f_x$ of each amino acid.
+To do that, we tabulate $N_x = \sum_y \left(n_{xy} + n_{yx} \right)$ as the total number of mutations either from or to amino-acid $x$ as the "count" for the amino acid.
+Amino acids with larger values of $N_x$ should have more accurate estimates of $f_x$.
+
+See \url{https://github.com/jbloomlab/SARS2-mut-fitness/blob/main/results/aa_fitness/aa_fitness.csv} for these overall amino-acid fitness estimates.
+
+\subsection{Site numbering and protein naming}
+All sites are numbered according to the sequential Wuhan-Hu-1 reference numbering scheme, using the reference sequence at \url{http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/bigZips/wuhCor1.fa.gz}.
+The protein annotations are taken from the associated GTF at \url{http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/bigZips/genes/ncbiGenes.gtf.gz}.
+Those protein annotations refer to the polyproteins encoding the non-structural proteins as ORF1a and ORF1ab.
+To convert to from ORF1ab numbering/naming to the nsp-based naming (eg, nsp1, nsp2, etc) we use the conversions specified under ``orf1ab\_to\_nsps'' in \url{https://github.com/jbloomlab/SARS2-mut-fitness/blob/main/config.yaml}, which are in turn taken from Theo Sanderson's annotations at \url{https://github.com/theosanderson/Codon2Nucleotide/blob/main/src/App.js}.
+
+\subsection{Comparison to deep mutational scanning}
+Deep mutational scanning data were taken from published studies~\citep{dadonaite2023pseudovirus,starr2022deep,flynn2022,flynn2023,iketani2022functional}, using the data at the links specified under the ``dms\_datasets'' key in \url{https://github.com/jbloomlab/SARS2-mut-fitness/blob/main/config.yaml}.
+For the spike deep mutational scanning~\citep{dadonaite2023pseudovirus} we only included mutations with ``times seen'' values of at least three in the deep mutational scanning.
+The RBD data~\citep{starr2022deep} include measurements for two phenotypes (ACE2 affinity and RBD expression), and one of the Mpro studies~\citep{flynn2022} includes measurements for three different phenotypes in yeast (growth, FRET, and transcription factor activity).
+Figures~\ref{fig:dms}, S5, and S6 shows the effect averaged across all phenotypes measured by each of these studies.
+For plots that break the correlations out by phenotype, see \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_S_all_corr.html} and \url{https://jbloomlab.github.io/SARS2-mut-fitness/dms_nsp5_all_corr.html}.
+
+\subsection{Comparison to dN/dS and other mutation-effect prediction algorithms}
+For the comparison to the dN/dS approaches shown in Figure~S5, we used the dN/dS values available at \url{https://github.com/spond/SARS-CoV-2-variation}~\cite{martin2021emergence} for all SARS-CoV-2 sequences, which were calculated using the FEL approach~\cite{kosakovsky2005not}.
+Specifically, the file \url{https://raw.githubusercontent.com/spond/SARS-CoV-2-variation/master/windowed-sites-fel-all.csv} contains dN/dS estimates made using large-scale sequence sets from GISAID in three-month windows starting with the earliest sequences from December 2019 and continuing up until Jan-31-2022.
+We averaged the dN/dS values for each site over all three month windows, and analyzed those time-window averaged dN/dS values.
+In order to ensure comparability in the sequence sets used, for the comparisons in Figure~S5, we used fitness estimates from our approach made using only sequences in the mutation-annotated tree as of Jan-31-2022.
+We restricted our analysis to this timeframe because the large-scale dN/dS analyses at \url{https://github.com/spond/SARS-CoV-2-variation} (which use state-of-the-art methods) were only available for that range of dates.
+
+The dN/dS ratios only provide a single number for each site, which cannot be directly compared to either the mutation-effect estimates or the deep mutational scanning, which estimate the effects of individual amino-acid mutations.
+We therefore computed site-summary metrics of the mutation-effect estimates and the deep mutational scanning as the average effect of all measured amino-acid mutations at each site, excluding stop codons.
+The correlations in Figure~S5 are with those site-summary metrics.
+
+We also compared both our mutation-effect estimates and the spike deep mutational scanning measurements~\citep{dadonaite2023pseudovirus} to predictions from three other algorithms:
+\begin{itemize}
+\item the EpiScores reported by Maher et al (2022)~\cite{maher2022predicting},
+\item the DCA mutability scores reported by Rodriguez-Rivas et al (2022)~\cite{rodriguez2022epistatic}, and
+\item the EVE scores reported by Thadani et al (2023)~\cite{thadani2022learning}.
+\end{itemize}
+These comparisons are shown in Figure~S6.
+The Maher et al (2022) and Thadani et al (2023) studies report mutation-level predictions and so are compared directly to the deep mutational scanning our mutation-effect estimates; Rodriguez-Rivas et al (2023) report only site-level metrics and so are compared to site-summary metrics as for the dN/dS analysis.
+
+\subsection{Derivation of relationship between actual to expected count ratio and viral fitness}
+The ratio of actual to expected counts that we calculate in this paper is related to the probability that we observe a viral lineage containing an occurrence of a specific mutation among sequenced human SARS-CoV-2.
+This probability depends on three factors: the fitness effect of the mutation, the fraction of all SARS-CoV-2 viruses that are sequenced (sampling intensity), and the growth dynamics of the viral population.
+In the supplementary appendix, we derive the approximate relationship between this probability as a function of the fitness cost $s$ and sampling intensity $\epsilon$ for deleterious mutations for both a constant and exponentially growing viral population.
+
+We show that for a constant viral population size, the probability of observing a lineage containing a deleterious mutation with cost $s$ is roughly $\frac{\epsilon}{s + \epsilon}$ when $s^2 > \epsilon$, and more weakly dependent on $s$ for smaller fitness costs (when $s^2 < \epsilon$).
+The intuitive explanation is that the average size of a mutant lineage with fitness cost $s$ is $1/s$ and we basically ask whether we sample the lineage before it disappears.
+If we sample more intensely (larger $\epsilon$), whether a lineage gets sampled depends primarily on the stochastic dynamics and little on the fitness effect.
+With a typical sampling intensity for SARS-CoV-2 between 1/1000 and 1/100, this means our approach is sensitive to fitness effects larger than a few percent per serial interval; mutations with fitness costs smaller than that will not show an appreciable difference from neutral mutations in their ratio of actual to expected accounts.
+
+In an exponentially growing population, the probability of observing a mutant lineage with fitness cost $s$ again scales as $\sim \frac{\epsilon}{\epsilon + s}$ if $sT>1$, where $T$ is the time over which the variant has expanded.
+If $T$ is $\sim$ months, that is 20 generations, which again corresponds to $s$ of at least a few percent for $sT > 1$.
+For mutations with smaller fitness costs, the dependence scales more as $\sim \epsilon\left(1-sT\right)$.
+
+Overall, these calculations indicate that for multiple different growth dynamics of the viral population, the ratio of expected to actual counts will scale inversely with the fitness cost of deleterious mutations for mutations with costs that exceed a few percent.
+Note that the approach we use in this paper does not account for variation in sampling intensity across space or time, does not attempt to adjust for changes in viral growth dynamics over time, uses the heuristic formula of calculating the effect as the log ratio of counts, and applies this same formula to all mutations regardless of whether they are deleterious, neutral, or beneficial.
+A more complete derivation might try to calculate the fitness effects from the full distribution of lineage sizes more rigorously and incorporate information about the sampling intensity and viral growth dynamics.
+However, such a derivation (if possible at all) is beyond the scope of this study, and we also note that good empirical data is generally lacking to precisely account for sampling intensity and viral growth dynamics over the full span of time and space from which the sequences we analyze are drawn.
+The key point of the derivations for our current study is simply that our approach should be sensitive to detecting the effects of mutations with fitness costs greater than a few percent.
+
+\section{Acknowledgments}
+We thank Angie Hinrichs for providing the pre-built mutation-annotated trees and thank the UShER team for promptly answering and addressing GitHub issues related to use of this package and its pre-built trees.
+We thank the sequence submitters to GISAID, who are listed in the tables cited in the Methods section.
+The work of JDB was supported in part by the NIH/NIAID under grants U19AI171399 and R01AI141707, and contract 75N93021C00015.
+JDB is an Investigator of the Howard Hughes Medical Institute.
+
+\section{Competing interests}
+JDB consults Apriori Bio, Aerium Therapeutics, Invivyd, the Vaccine Company, GSK, and Pfizer on topics related to viral evolution.
+JDB receives royalty payments as an inventor on Fred Hutch licensed patents related to deep mutational scanning of viral proteins.
+
+\begin{thebibliography}{76}
+
+\bibitem[{Abdool~Karim {\rm and} de~Oliveira}(2021)]{abdool2021new}
+{Abdool~Karim, S.~S. {\rm and} T.~de~Oliveira}, 2021 New {SARS-CoV-2}
+  variants—clinical, public health, and vaccine implications. New England
+  Journal of Medicine {\bf 384}: 1866--1868.
+
+\bibitem[{Acevedo {\em et~al.\/}}(2014){Acevedo, Brodsky, {\rm and}
+  Andino}]{acevedo2014mutational}
+{Acevedo, A., L.~Brodsky, {\rm and} R.~Andino}, 2014 Mutational and fitness
+  landscapes of an {RNA} virus revealed through population sequencing. Nature
+  {\bf 505}: 686--690.
+
+\bibitem[{Aksamentov {\em et~al.\/}}(2021){Aksamentov, Roemer, Hodcroft, {\rm
+  and} Neher}]{aksamentov2021nextclade}
+{Aksamentov, I., C.~Roemer, E.~B. Hodcroft, {\rm and} R.~A. Neher}, 2021
+  Nextclade: clade assignment, mutation calling and quality control for viral
+  genomes. Journal of Open Source Software {\bf 6}: 3773.
+
+\bibitem[{Beale {\em et~al.\/}}(2004){Beale, Petersen-Mahrt, Watt, Harris,
+  Rada, {\rm and} Neuberger}]{beale2004comparison}
+{Beale, R.~C., S.~K. Petersen-Mahrt, I.~N. Watt, R.~S. Harris, C.~Rada, {\em
+  et~al.\/}}, 2004 {Comparison of the differential context-dependence of DNA
+  deamination by APOBEC enzymes: correlation with mutation spectra in vivo}.
+  Journal of Molecular Biology {\bf 337}: 585--596.
+
+\bibitem[{Bhatt {\em et~al.\/}}(2021){Bhatt, Scaiola, Loughran, Leibundgut,
+  Kratzel, Meurs, Dreos, O’Connor, McMillan, Bode, {\em
+  et~al.\/}}]{bhatt2021structural}
+{Bhatt, P.~R., A.~Scaiola, G.~Loughran, M.~Leibundgut, A.~Kratzel, {\em
+  et~al.\/}}, 2021 Structural basis of ribosomal frameshifting during
+  translation of the {SARS-CoV-2 RNA} genome. Science {\bf 372}: 1306--1313.
+
+\bibitem[{Bloom {\em et~al.\/}}(2023){Bloom, Beichman, Neher, {\rm and}
+  Harris}]{bloom2023evolution}
+{Bloom, J.~D., A.~C. Beichman, R.~A. Neher, {\rm and} K.~Harris}, 2023
+  Evolution of the {SARS-CoV-2} mutational spectrum. Molecular Biology and
+  Evolution {\bf 40}: msad085.
+
+\bibitem[{Cao {\em et~al.\/}}(2022{a}){Cao, Jian, Wang, Yu, Song, Yisimayi, An,
+  Chen, Zhang, Wang, {\em et~al.\/}}]{cao2022imprinted}
+{Cao, Y., F.~Jian, J.~Wang, Y.~Yu, W.~Song, {\em et~al.\/}}, 2022{a} {Imprinted
+  SARS-CoV-2 humoral immunity induces convergent Omicron RBD evolution}. Nature
+  {\bf DOI 10.1038/s41586-022-05644-7}.
+
+\bibitem[{Cao {\em et~al.\/}}(2022{b}){Cao, Jian, Zhang, Yisimayi, Hao, Bao,
+  Yuan, Yu, Du, Wang, {\em et~al.\/}}]{cao2022rational}
+{Cao, Y., F.~Jian, Z.~Zhang, A.~Yisimayi, X.~Hao, {\em et~al.\/}}, 2022{b}
+  Rational identification of potent and broad sarbecovirus-neutralizing
+  antibody cocktails from {SARS} convalescents. Cell reports {\bf 41}: 111845.
+
+\bibitem[{Dadonaite {\em et~al.\/}}(2023){Dadonaite, Crawford, Radford,
+  Farrell, Timothy, Hannon, Zhou, Andrabi, Burton, Liu, {\em
+  et~al.\/}}]{dadonaite2023pseudovirus}
+{Dadonaite, B., K.~H. Crawford, C.~E. Radford, A.~G. Farrell, C.~Y. Timothy,
+  {\em et~al.\/}}, 2023 {A pseudovirus system enables deep mutational scanning
+  of the full SARS-CoV-2 spike}. Cell {\bf 186}: 1263--1278.
+
+\bibitem[{Dawson {\rm and} Folimonova}(2013)]{dawson2013virus}
+{Dawson, W.~O. {\rm and} S.~Y. Folimonova}, 2013 Virus-based transient
+  expression vectors for woody crops: a new frontier for vector design and use.
+  Annual Review of Phytopathology {\bf 51}: 321--337.
+
+\bibitem[{De~Maio {\em et~al.\/}}(2021){De~Maio, Walker, Turakhia, Lanfear,
+  Corbett-Detig, {\rm and} Goldman}]{de2021mutation}
+{De~Maio, N., C.~R. Walker, Y.~Turakhia, R.~Lanfear, R.~Corbett-Detig, {\em
+  et~al.\/}}, 2021 Mutation rates and selection on synonymous mutations in
+  {SARS-CoV-2}. Genome Biology and Evolution {\bf 13}: evab087.
+
+\bibitem[{DeGrace {\em et~al.\/}}(2022){DeGrace, Ghedin, Frieman, Krammer,
+  Grifoni, Alisoltani, Alter, Amara, Baric, Barouch, {\em
+  et~al.\/}}]{degrace2022defining}
+{DeGrace, M.~M., E.~Ghedin, M.~B. Frieman, F.~Krammer, A.~Grifoni, {\em
+  et~al.\/}}, 2022 Defining the risk of {SARS-CoV-2} variants on immune
+  protection. Nature {\bf 605}: 640--652.
+
+\bibitem[{Flynn {\em et~al.\/}}(2023){Flynn, Huang, Zvornicanin,
+  Schneider-Nachum, Shaqra, Kurt~Yilmaz, Moquin, Dovala, Schiffer, {\rm and}
+  Bolon}]{flynn2023}
+{Flynn, J.~M., Q.~Y.~M. Huang, S.~N. Zvornicanin, G.~Schneider-Nachum, A.~M.
+  Shaqra, {\em et~al.\/}}, 2023 Systematic analyses of the resistance potential
+  of drugs targeting {SARS-CoV-2} main protease. bioRxiv {\bf DOI
+  10.1101/2023.03.02.530652}.
+
+\bibitem[{Flynn {\em et~al.\/}}(2022){Flynn, Samant, Schneider-Nachum, Barkan,
+  Yilmaz, Schiffer, Moquin, Dovala, {\rm and} Bolon}]{flynn2022}
+{Flynn, J.~M., N.~Samant, G.~Schneider-Nachum, D.~T. Barkan, N.~K. Yilmaz, {\em
+  et~al.\/}}, 2022 Comprehensive fitness landscape of {SARS-CoV-2 Mpro} reveals
+  insights into viral resistance mechanisms. eLife {\bf 11}: e77433.
+
+\bibitem[{Greaney {\em et~al.\/}}(2022){Greaney, Starr, {\rm and}
+  Bloom}]{greaney2022antibody}
+{Greaney, A.~J., T.~N. Starr, {\rm and} J.~D. Bloom}, 2022 An antibody-escape
+  estimator for mutations to the {SARS-CoV-2} receptor-binding domain. Virus
+  Evolution {\bf 8}: veac021.
+
+\bibitem[{Greaney {\em et~al.\/}}(2021){Greaney, Starr, Gilchuk, Zost,
+  Binshtein, Loes, Hilton, Huddleston, Eguia, Crawford, {\em
+  et~al.\/}}]{greaney2021complete}
+{Greaney, A.~J., T.~N. Starr, P.~Gilchuk, S.~J. Zost, E.~Binshtein, {\em
+  et~al.\/}}, 2021 Complete mapping of mutations to the {SARS-CoV-2} spike
+  receptor-binding domain that escape antibody recognition. Cell Host \&
+  Microbe {\bf 29}: 44--57.
+
+\bibitem[{Harvey {\em et~al.\/}}(2021){Harvey, Carabelli, Jackson, Gupta,
+  Thomson, Harrison, Ludden, Reeve, Rambaut, Peacock, {\em
+  et~al.\/}}]{harvey2021sars}
+{Harvey, W.~T., A.~M. Carabelli, B.~Jackson, R.~K. Gupta, E.~C. Thomson, {\em
+  et~al.\/}}, 2021 {SARS-CoV-2} variants, spike mutations and immune escape.
+  Nature Reviews Microbiology {\bf 19}: 409--424.
+
+\bibitem[{Hiscox {\em et~al.\/}}(2021){Hiscox, Khoo, Stewart, {\rm and}
+  Owen}]{hiscox2021shutting}
+{Hiscox, J.~A., S.~H. Khoo, J.~P. Stewart, {\rm and} A.~Owen}, 2021 Shutting
+  the gate before the horse has bolted: is it time for a conversation about
+  {SARS-CoV-2} and antiviral drug resistance? Journal of Antimicrobial
+  Chemotherapy {\bf 76}: 2230--2233.
+
+\bibitem[{Huddleston {\em et~al.\/}}(2020){Huddleston, Barnes, Rowe, Xu,
+  Kondor, Wentworth, Whittaker, Ermetal, Daniels, McCauley, {\em
+  et~al.\/}}]{huddleston2020integrating}
+{Huddleston, J., J.~R. Barnes, T.~Rowe, X.~Xu, R.~Kondor, {\em et~al.\/}}, 2020
+  Integrating genotypes and phenotypes improves long-term forecasts of seasonal
+  influenza {A/H3N2} evolution. Elife {\bf 9}: e60067.
+
+\bibitem[{Huston {\em et~al.\/}}(2021){Huston, Wan, Strine, Tavares, Wilen,
+  {\rm and} Pyle}]{huston2021comprehensive}
+{Huston, N.~C., H.~Wan, M.~S. Strine, R.~d. C.~A. Tavares, C.~B. Wilen, {\em
+  et~al.\/}}, 2021 Comprehensive in vivo secondary structure of the
+  {SARS-CoV-2} genome reveals novel regulatory motifs and mechanisms. Molecular
+  Cell {\bf 81}: 584--598.
+
+\bibitem[{Iketani {\em et~al.\/}}(2022{a}){Iketani, Hong, Sheng, Bahari,
+  Culbertson, Atanaki, Aditham, Kratz, Luck, Tian, {\em
+  et~al.\/}}]{iketani2022functional}
+{Iketani, S., S.~J. Hong, J.~Sheng, F.~Bahari, B.~Culbertson, {\em et~al.\/}},
+  2022{a} {Functional map of SARS-CoV-2 3CL protease reveals tolerant and
+  immutable sites}. Cell Host \& Microbe {\bf 30}: 1354--1362.
+
+\bibitem[{Iketani {\em et~al.\/}}(2022{b}){Iketani, Mohri, Culbertson, Hong,
+  Duan, Luck, Annavajhala, Guo, Sheng, Uhlemann, {\em
+  et~al.\/}}]{iketani2022multiple}
+{Iketani, S., H.~Mohri, B.~Culbertson, S.~J. Hong, Y.~Duan, {\em et~al.\/}},
+  2022{b} Multiple pathways for {SARS-CoV-2} resistance to nirmatrelvir. Nature
+  {\bf DOI 10.1038/s41586-022-05514-2}.
+
+\bibitem[{Jungreis {\em et~al.\/}}(2021){Jungreis, Nelson, Ardern, Finkel,
+  Krogan, Sato, Ziebuhr, Stern-Ginossar, Pavesi, Firth, {\em
+  et~al.\/}}]{jungreis2021conflicting}
+{Jungreis, I., C.~W. Nelson, Z.~Ardern, Y.~Finkel, N.~J. Krogan, {\em
+  et~al.\/}}, 2021 {Conflicting and ambiguous names of overlapping ORFs in the
+  SARS-CoV-2 genome: A homology-based resolution}. Virology {\bf 558}:
+  145--151.
+
+\bibitem[{Koelle {\rm and} Rasmussen}(2015)]{koelle2015effects}
+{Koelle, K. {\rm and} D.~A. Rasmussen}, 2015 The effects of a deleterious
+  mutation load on patterns of influenza {A/H3N2's} antigenic evolution in
+  humans. Elife {\bf 4}: e07361.
+
+\bibitem[{Kosakovsky~Pond {\rm and} Frost}(2005)]{kosakovsky2005not}
+{Kosakovsky~Pond, S.~L. {\rm and} S.~D. Frost}, 2005 Not so different after
+  all: a comparison of methods for detecting amino acid sites under selection.
+  Molecular biology and evolution {\bf 22}: 1208--1222.
+
+\bibitem[{Kryazhimskiy {\rm and} Plotkin}(2008)]{kryazhimskiy2008population}
+{Kryazhimskiy, S. {\rm and} J.~B. Plotkin}, 2008 The population genetics of
+  {dN/dS}. PLoS Genetics {\bf 4}: e1000304.
+
+\bibitem[{Kuo {\rm and} Masters}(2013)]{kuo2013functional}
+{Kuo, L. {\rm and} P.~S. Masters}, 2013 Functional analysis of the murine
+  coronavirus genomic {RNA} packaging signal. Journal of Virology {\bf 87}:
+  5182--5192.
+
+\bibitem[{Lanfear}(2020)]{lanfear2020}
+{Lanfear, R.}, 2020 {A global phylogeny of SARS-CoV-2 sequences from GISAID}.
+  Zenodo {\bf DOI 10.5281/zenodo.3958883}.
+
+\bibitem[{Lee {\em et~al.\/}}(2022){Lee, Sohail, Finney, Ahmed, Quadeer, McKay,
+  {\rm and} Barton}]{lee2022inferring}
+{Lee, B., M.~S. Sohail, E.~Finney, S.~F. Ahmed, A.~A. Quadeer, {\em et~al.\/}},
+  2022 Inferring effects of mutations on {SARS}-{CoV}-2 transmission from
+  genomic surveillance data. medRxiv {\bf 10.1101/2021.12.31.21268591v1}:
+  2021.12.31.21268591.
+
+\bibitem[{Lee {\em et~al.\/}}(2018){Lee, Huddleston, Doud, Hooper, Wu, Bedford,
+  {\rm and} Bloom}]{lee2018deep}
+{Lee, J.~M., J.~Huddleston, M.~B. Doud, K.~A. Hooper, N.~C. Wu, {\em
+  et~al.\/}}, 2018 Deep mutational scanning of hemagglutinin helps predict
+  evolutionary fates of human {H3N2} influenza variants. Proceedings of the
+  National Academy of Sciences {\bf 115}: E8276--E8285.
+
+\bibitem[{Liu {\em et~al.\/}}(2014){Liu, Fung, Chong, Shukla, {\rm and}
+  Hilgenfeld}]{liu2014accessory}
+{Liu, D.~X., T.~S. Fung, K.~K.-L. Chong, A.~Shukla, {\rm and} R.~Hilgenfeld},
+  2014 Accessory proteins of {SARS-CoV} and other coronaviruses. Antiviral
+  Research {\bf 109}: 97--109.
+
+\bibitem[{Liu {\em et~al.\/}}(2022){Liu, Zhang, Liu, Xia, Zou, Muruato,
+  Periasamy, Kurhade, Plante, Bopp, {\em et~al.\/}}]{liu2022live}
+{Liu, Y., X.~Zhang, J.~Liu, H.~Xia, J.~Zou, {\em et~al.\/}}, 2022 A
+  live-attenuated {SARS-CoV-2} vaccine candidate with accessory protein
+  deletions. Nature Communications {\bf 13}: 1--14.
+
+\bibitem[{Llanes {\em et~al.\/}}(2020){Llanes, Restrepo, Caballero, Rajeev,
+  Kennedy, {\rm and} Lleonart}]{llanes2020betacoronavirus}
+{Llanes, A., C.~M. Restrepo, Z.~Caballero, S.~Rajeev, M.~A. Kennedy, {\em
+  et~al.\/}}, 2020 Betacoronavirus genomes: how genomic information has been
+  used to deal with past outbreaks and the {COVID-19} pandemic. International
+  Journal of Molecular Sciences {\bf 21}: 4546.
+
+\bibitem[{{\L}uksza {\rm and} L{\"a}ssig}(2014)]{luksza2014predictive}
+{{\L}uksza, M. {\rm and} M.~L{\"a}ssig}, 2014 A predictive fitness model for
+  influenza. Nature {\bf 507}: 57--61.
+
+\bibitem[{Maher {\em et~al.\/}}(2022){Maher, Bartha, Weaver, Di~Iulio, Ferri,
+  Soriaga, Lempp, Hie, Bryson, Berger, {\em et~al.\/}}]{maher2022predicting}
+{Maher, M.~C., I.~Bartha, S.~Weaver, J.~Di~Iulio, E.~Ferri, {\em et~al.\/}},
+  2022 Predicting the mutational drivers of future {SARS-CoV-2} variants of
+  concern. Science translational medicine {\bf 14}: eabk3445.
+
+\bibitem[{Markov {\em et~al.\/}}(2023){Markov, Ghafari, Beer, Lythgoe,
+  Simmonds, Stilianakis, {\rm and} Katzourakis}]{markov2023evolution}
+{Markov, P.~V., M.~Ghafari, M.~Beer, K.~Lythgoe, P.~Simmonds, {\em et~al.\/}},
+  2023 The evolution of {SARS}-{CoV}-2. Nature Reviews Microbiology pp. 1--19,
+  Publisher: Nature Publishing Group.
+
+\bibitem[{Martin {\em et~al.\/}}(2021){Martin, Weaver, Tegally, San, Shank,
+  Wilkinson, Lucaci, Giandhari, Naidoo, Pillay, {\em
+  et~al.\/}}]{martin2021emergence}
+{Martin, D.~P., S.~Weaver, H.~Tegally, J.~E. San, S.~D. Shank, {\em et~al.\/}},
+  2021 {The emergence and ongoing convergent evolution of the SARS-CoV-2 N501Y
+  lineages}. Cell {\bf 184}: 5189--5200.
+
+\bibitem[{McBroome {\em et~al.\/}}(2021){McBroome, Thornlow, Hinrichs, Kramer,
+  De~Maio, Goldman, Haussler, Corbett-Detig, {\rm and}
+  Turakhia}]{mcbroome2021daily}
+{McBroome, J., B.~Thornlow, A.~S. Hinrichs, A.~Kramer, N.~De~Maio, {\em
+  et~al.\/}}, 2021 A daily-updated database and tools for comprehensive
+  {SARS-CoV-2} mutation-annotated trees. Molecular Biology and Evolution {\bf
+  38}: 5819--5824.
+
+\bibitem[{McGrath {\em et~al.\/}}(2022){McGrath, Xue, Dillen, Oldfield,
+  Assad-Garcia, Zaveri, Singh, Baracco, Taylor, Vashee, {\em
+  et~al.\/}}]{mcgrath2022sars}
+{McGrath, M., Y.~Xue, C.~Dillen, L.~Oldfield, N.~Assad-Garcia, {\em et~al.\/}},
+  2022 {SARS-CoV-2} variant spike and accessory gene mutations alter
+  pathogenesis. Proceedings National Academy of Sciences USA {\bf 119}:
+  e2204717119.
+
+\bibitem[{Moghadasi {\em et~al.\/}}(2023){Moghadasi, Heilmann, Khalil,
+  Nnabuife, Kearns, Ye, Moraes, Costacurta, Esler, Aihara, Laer,
+  Martinez-Sobrido, Palzkill, Amaro, {\rm and} Harris}]{moghadasi2023}
+{Moghadasi, S.~A., E.~Heilmann, A.~M. Khalil, C.~Nnabuife, F.~L. Kearns, {\em
+  et~al.\/}}, 2023 Transmissible {SARS-CoV-2} variants with resistance to
+  clinical protease inhibitors. Science Advances {\bf 9}: eade8778.
+
+\bibitem[{M{\"o}lder {\em et~al.\/}}(2021){M{\"o}lder, Jablonski, Letcher,
+  Hall, Tomkins-Tinch, Sochat, Forster, Lee, Twardziok, Kanitz, {\em
+  et~al.\/}}]{molder2021sustainable}
+{M{\"o}lder, F., K.~P. Jablonski, B.~Letcher, M.~B. Hall, C.~H. Tomkins-Tinch,
+  {\em et~al.\/}}, 2021 Sustainable data analysis with snakemake. F1000Research
+  {\bf 10}.
+
+\bibitem[{Moulana {\em et~al.\/}}(2022){Moulana, Dupic, Phillips, Chang,
+  Nieves, Roffler, Greaney, Starr, Bloom, {\rm and}
+  Desai}]{moulana2022compensatory}
+{Moulana, A., T.~Dupic, A.~M. Phillips, J.~Chang, S.~Nieves, {\em et~al.\/}},
+  2022 {Compensatory epistasis maintains ACE2 affinity in SARS-CoV-2 Omicron
+  BA. 1}. Nature Communications {\bf 13}: 7011.
+
+\bibitem[{Neher}(2022)]{neher2022contributions}
+{Neher, R.~A.}, 2022 Contributions of adaptation and purifying selection to
+  {SARS-CoV-2} evolution. Virus Evolution {\bf 8}: veac113.
+
+\bibitem[{Nielsen {\rm and} Yang}(1998)]{nielsen1998likelihood}
+{Nielsen, R. {\rm and} Z.~Yang}, 1998 Likelihood models for detecting
+  positively selected amino acid sites and applications to the {HIV-1} envelope
+  gene. Genetics {\bf 148}: 929--936.
+
+\bibitem[{Obermeyer {\em et~al.\/}}(2022){Obermeyer, Jankowiak, Barkas,
+  Schaffner, Pyle, Yurkovetskiy, Bosso, Park, Babadi, MacInnis, Luban, Sabeti,
+  {\rm and} Lemieux}]{obermeyer2022analysis}
+{Obermeyer, F., M.~Jankowiak, N.~Barkas, S.~F. Schaffner, J.~D. Pyle, {\em
+  et~al.\/}}, 2022 Analysis of 6.4 million {SARS}-{CoV}-2 genomes identifies
+  mutations associated with fitness. Science {\bf 376}: 1327--1332.
+
+\bibitem[{Pollock {\em et~al.\/}}(2012){Pollock, Thiltgen, {\rm and}
+  Goldstein}]{pollock2012amino}
+{Pollock, D.~D., G.~Thiltgen, {\rm and} R.~A. Goldstein}, 2012 Amino acid
+  coevolution induces an evolutionary {Stokes} shift. Proceedings of the
+  National Academy of Sciences {\bf 109}: E1352--E1359.
+
+\bibitem[{Rappazzo {\em et~al.\/}}(2021){Rappazzo, Tse, Kaku, Wrapp, Sakharkar,
+  Huang, Deveau, Yockachonis, Herbert, Battles, {\em
+  et~al.\/}}]{rappazzo2021broad}
+{Rappazzo, C.~G., L.~V. Tse, C.~I. Kaku, D.~Wrapp, M.~Sakharkar, {\em
+  et~al.\/}}, 2021 Broad and potent activity against {SARS-like} viruses by an
+  engineered human monoclonal antibody. Science {\bf 371}: 823--829.
+
+\bibitem[{Rochman {\em et~al.\/}}(2022){Rochman, Wolf, {\rm and}
+  Koonin}]{rochman2022molecular}
+{Rochman, N.~D., Y.~I. Wolf, {\rm and} E.~V. Koonin}, 2022 Molecular
+  adaptations during viral epidemics. EMBO reports {\bf 23}: e55393.
+
+\bibitem[{Rodriguez-Rivas {\em et~al.\/}}(2022){Rodriguez-Rivas, Croce, Muscat,
+  {\rm and} Weigt}]{rodriguez2022epistatic}
+{Rodriguez-Rivas, J., G.~Croce, M.~Muscat, {\rm and} M.~Weigt}, 2022 Epistatic
+  models predict mutable sites in {SARS-CoV-2} proteins and epitopes.
+  Proceedings of the National Academy of Sciences {\bf 119}: e2113118119.
+
+\bibitem[{Ruis {\em et~al.\/}}(2022){Ruis, Peacock, Polo, Masone, Alvarez,
+  Hinrichs, Turakhia, Ye, McBroome, Corbett-Detig, {\em
+  et~al.\/}}]{ruis2022mutational}
+{Ruis, C., T.~P. Peacock, L.~M. Polo, D.~Masone, M.~S. Alvarez, {\em
+  et~al.\/}}, 2022 Mutational spectra distinguish {SARS-CoV-2} replication
+  niches. bioRxiv {\bf DOI 10.1101/2022.09.27.509649}.
+
+\bibitem[{Sadykov {\em et~al.\/}}(2021){Sadykov, Mourier, Guan, {\rm and}
+  Pain}]{sadykov2021short}
+{Sadykov, M., T.~Mourier, Q.~Guan, {\rm and} A.~Pain}, 2021 {Short sequence
+  motif dynamics in the SARS-CoV-2 genome suggest a role for cytosine
+  deamination in CpG reduction}. Journal of Molecular Cell Biology {\bf 13}:
+  225--227.
+
+\bibitem[{Shah {\em et~al.\/}}(2015){Shah, McCandlish, {\rm and}
+  Plotkin}]{shah2015contingency}
+{Shah, P., D.~M. McCandlish, {\rm and} J.~B. Plotkin}, 2015 Contingency and
+  entrenchment in protein evolution under purifying selection. Proceedings of
+  the National Academy of Sciences {\bf 112}: E3226--E3235.
+
+\bibitem[{Shu {\rm and} McCauley}(2017)]{shu2017gisaid}
+{Shu, Y. {\rm and} J.~McCauley}, 2017 {GISAID}: Global initiative on sharing
+  all influenza data--from vision to reality. Eurosurveillance {\bf 22}: 30494.
+
+\bibitem[{Silvas {\em et~al.\/}}(2021){Silvas, Vasquez, Park, Chiem,
+  Allu{\'e}-Guardia, Garcia-Vilanova, Platt, Miorin, Kehrer, Cupic, {\em
+  et~al.\/}}]{silvas2021contribution}
+{Silvas, J.~A., D.~M. Vasquez, J.-G. Park, K.~Chiem, A.~Allu{\'e}-Guardia, {\em
+  et~al.\/}}, 2021 {Contribution of SARS-CoV-2 accessory proteins to viral
+  pathogenicity in K18 human ACE2 transgenic mice}. Journal of Virology {\bf
+  95}: e00402--21.
+
+\bibitem[{Spielman {\rm and} Wilke}(2015)]{spielman2015relationship}
+{Spielman, S.~J. {\rm and} C.~O. Wilke}, 2015 The relationship between {dN/dS}
+  and scaled selection coefficients. Molecular biology and evolution {\bf 32}:
+  1097--1108.
+
+\bibitem[{Starr {\em et~al.\/}}(2021){Starr, Czudnochowski, Liu, Zatta, Park,
+  Addetia, Pinto, Beltramello, Hernandez, Greaney, {\em
+  et~al.\/}}]{starr2021sars}
+{Starr, T.~N., N.~Czudnochowski, Z.~Liu, F.~Zatta, Y.-J. Park, {\em et~al.\/}},
+  2021 {SARS-CoV-2 RBD} antibodies that maximize breadth and resistance to
+  escape. Nature {\bf 597}: 97--102.
+
+\bibitem[{Starr {\em et~al.\/}}(2018){Starr, Flynn, Mishra, Bolon, {\rm and}
+  Thornton}]{starr2018pervasive}
+{Starr, T.~N., J.~M. Flynn, P.~Mishra, D.~N. Bolon, {\rm and} J.~W. Thornton},
+  2018 Pervasive contingency and entrenchment in a billion years of {Hsp90}
+  evolution. Proceedings of the National Academy of Sciences {\bf 115}:
+  4453--4458.
+
+\bibitem[{Starr {\em et~al.\/}}(2022{a}){Starr, Greaney, Hannon, Loes, Hauser,
+  Dillen, Ferri, Farrell, Dadonaite, McCallum, {\em
+  et~al.\/}}]{starr2022shifting}
+{Starr, T.~N., A.~J. Greaney, W.~W. Hannon, A.~N. Loes, K.~Hauser, {\em
+  et~al.\/}}, 2022{a} Shifting mutational constraints in the {SARS-CoV-2}
+  receptor-binding domain during viral evolution. Science {\bf 377}: 420--424.
+
+\bibitem[{Starr {\em et~al.\/}}(2020){Starr, Greaney, Hilton, Ellis, Crawford,
+  Dingens, Navarro, Bowen, Tortorici, Walls, {\em et~al.\/}}]{starr2020deep}
+{Starr, T.~N., A.~J. Greaney, S.~K. Hilton, D.~Ellis, K.~H. Crawford, {\em
+  et~al.\/}}, 2020 {Deep mutational scanning of SARS-CoV-2 receptor binding
+  domain reveals constraints on folding and ACE2 binding}. Cell {\bf 182}:
+  1295--1310.
+
+\bibitem[{Starr {\em et~al.\/}}(2022{b}){Starr, Greaney, Stewart, Walls,
+  Hannon, Veesler, {\rm and} Bloom}]{starr2022deep}
+{Starr, T.~N., A.~J. Greaney, C.~M. Stewart, A.~C. Walls, W.~W. Hannon, {\em
+  et~al.\/}}, 2022{b} {Deep mutational scans for ACE2 binding, RBD expression,
+  and antibody escape in the SARS-CoV-2 Omicron BA. 1 and BA. 2
+  receptor-binding domains}. PLoS Pathogens {\bf 18}: e1010951.
+
+\bibitem[{Su {\em et~al.\/}}(2020){Su, Anderson, Young, Linster, Zhu,
+  Jayakumar, Zhuang, Kalimuddin, Low, Tan, {\em et~al.\/}}]{su2020discovery}
+{Su, Y.~C., D.~E. Anderson, B.~E. Young, M.~Linster, F.~Zhu, {\em et~al.\/}},
+  2020 {Discovery and genomic characterization of a 382-nucleotide deletion in
+  ORF7b and ORF8 during the early evolution of SARS-CoV-2}. mBio {\bf 11}:
+  e01610--20.
+
+\bibitem[{Sun {\em et~al.\/}}(2023){Sun, Tempia, Kleynhans, von Gottberg,
+  McMorrow, Wolter, Bhiman, Moyes, Carrim, Martinson, {\em
+  et~al.\/}}]{sun2023rapidly}
+{Sun, K., S.~Tempia, J.~Kleynhans, A.~von Gottberg, M.~L. McMorrow, {\em
+  et~al.\/}}, 2023 {Rapidly shifting immunologic landscape and severity of
+  SARS-CoV-2 in the Omicron era in South Africa}. Nature Communications {\bf
+  14}: 246.
+
+\bibitem[{Syed {\em et~al.\/}}(2021){Syed, Taha, Tabata, Chen, Ciling, Khalid,
+  Sreekumar, Chen, Hayashi, Soczek, {\em et~al.\/}}]{syed2021rapid}
+{Syed, A.~M., T.~Y. Taha, T.~Tabata, I.~P. Chen, A.~Ciling, {\em et~al.\/}},
+  2021 Rapid assessment of {SARS-CoV-2}--evolved variants using virus-like
+  particles. Science {\bf 374}: 1626--1632.
+
+\bibitem[{Tao {\em et~al.\/}}(2021){Tao, Tzou, Nouhin, Bonilla, Jagannathan,
+  {\rm and} Shafer}]{tao2021sars}
+{Tao, K., P.~L. Tzou, J.~Nouhin, H.~Bonilla, P.~Jagannathan, {\em et~al.\/}},
+  2021 {SARS-CoV-2} antiviral therapy. Clinical microbiology reviews {\bf 34}:
+  e00109--21.
+
+\bibitem[{Thadani {\em et~al.\/}}(2022){Thadani, Gurev, Notin, Youssef,
+  Rollins, Sander, Gal, {\rm and} Marks}]{thadani2022learning}
+{Thadani, N.~N., S.~Gurev, P.~Notin, N.~Youssef, N.~J. Rollins, {\em
+  et~al.\/}}, 2022 Learning from pre-pandemic data to forecast viral antibody
+  escape. bioRxiv {\bf DOI 10.1101/2022.07.21.501023}.
+
+\bibitem[{Thorne {\em et~al.\/}}(2022){Thorne, Bouhaddou, Reuschl,
+  Zuliani-Alvarez, Polacco, Pelin, Batra, Whelan, Hosmillo, Fossati, {\em
+  et~al.\/}}]{thorne2022evolution}
+{Thorne, L.~G., M.~Bouhaddou, A.-K. Reuschl, L.~Zuliani-Alvarez, B.~Polacco,
+  {\em et~al.\/}}, 2022 Evolution of enhanced innate immune evasion by
+  {SARS-CoV-2}. Nature {\bf 602}: 487--495.
+
+\bibitem[{Turakhia {\em et~al.\/}}(2020){Turakhia, De~Maio, Thornlow, Gozashti,
+  Lanfear, Walker, Hinrichs, Fernandes, Borges, Slodkowicz, {\em
+  et~al.\/}}]{turakhia2020stability}
+{Turakhia, Y., N.~De~Maio, B.~Thornlow, L.~Gozashti, R.~Lanfear, {\em
+  et~al.\/}}, 2020 Stability of {SARS-CoV-2} phylogenies. PLoS Genetics {\bf
+  16}: e1009175.
+
+\bibitem[{Turakhia {\em et~al.\/}}(2021){Turakhia, Thornlow, Hinrichs, De~Maio,
+  Gozashti, Lanfear, Haussler, {\rm and} Corbett-Detig}]{turakhia2021ultrafast}
+{Turakhia, Y., B.~Thornlow, A.~S. Hinrichs, N.~De~Maio, L.~Gozashti, {\em
+  et~al.\/}}, 2021 {Ultrafast Sample placement on Existing tRees (UShER)
+  enables real-time phylogenetics for the SARS-CoV-2 pandemic}. Nature Genetics
+  {\bf 53}: 809--816.
+
+\bibitem[{Tzou {\em et~al.\/}}(2022){Tzou, Tao, Pond, {\rm and}
+  Shafer}]{tzou2022coronavirus}
+{Tzou, P.~L., K.~Tao, S.~L.~K. Pond, {\rm and} R.~W. Shafer}, 2022 {Coronavirus
+  Resistance Database (CoV-RDB): SARS-CoV-2 susceptibility to monoclonal
+  antibodies, convalescent plasma, and plasma from vaccinated persons}. Plos
+  one {\bf 17}: e0261045.
+
+\bibitem[{VanderPlas {\em et~al.\/}}(2018){VanderPlas, Granger, Heer, Moritz,
+  Wongsuphasawat, Satyanarayan, Lees, Timofeev, Welsh, {\rm and}
+  Sievert}]{vanderplas2018altair}
+{VanderPlas, J., B.~Granger, J.~Heer, D.~Moritz, K.~Wongsuphasawat, {\em
+  et~al.\/}}, 2018 Altair: interactive statistical visualizations for {Python}.
+  Journal of Open Source Software {\bf 3}: 1057.
+
+\bibitem[{V’kovski {\em et~al.\/}}(2021){V’kovski, Kratzel, Steiner,
+  Stalder, {\rm and} Thiel}]{v2021coronavirus}
+{V’kovski, P., A.~Kratzel, S.~Steiner, H.~Stalder, {\rm and} V.~Thiel}, 2021
+  Coronavirus biology and replication: implications for {SARS-CoV-2}. Nature
+  Reviews Microbiology {\bf 19}: 155--170.
+
+\bibitem[{Wang {\em et~al.\/}}(2011){Wang, Sharma, Duffy, {\rm and}
+  Almeida}]{wang2011genetic}
+{Wang, J., A.~M. Sharma, S.~Duffy, {\rm and} R.~P. Almeida}, 2011 Genetic
+  diversity in the 3' terminal 4.7-kb region of grapevine leafroll-associated
+  virus 3. Phytopathology {\bf 101}: 445--450.
+
+\bibitem[{Weisblum {\em et~al.\/}}(2020){Weisblum, Schmidt, Zhang, DaSilva,
+  Poston, Lorenzi, Muecksch, Rutkowska, Hoffmann, Michailidis, {\em
+  et~al.\/}}]{weisblum2020escape}
+{Weisblum, Y., F.~Schmidt, F.~Zhang, J.~DaSilva, D.~Poston, {\em et~al.\/}},
+  2020 Escape from neutralizing antibodies by {SARS-CoV-2} spike protein
+  variants. eLife {\bf 9}: e61312.
+
+\bibitem[{Yadav {\em et~al.\/}}(2022){Yadav, Courouble, Dey, Harrison, Timm,
+  Hopkins, Slack, Sarafianos, Ruiz, Griffin, {\em
+  et~al.\/}}]{yadav2022biochemical}
+{Yadav, R., V.~V. Courouble, S.~K. Dey, J.~J.~E. Harrison, J.~Timm, {\em
+  et~al.\/}}, 2022 {Biochemical and structural insights into SARS-CoV-2
+  polyprotein processing by Mpro}. Science Advances {\bf 8}: eadd2191.
+
+\bibitem[{Yang {\rm and} Nielsen}(2000)]{yang2000estimating}
+{Yang, Z. {\rm and} R.~Nielsen}, 2000 Estimating synonymous and nonsynonymous
+  substitution rates under realistic evolutionary models. Molecular biology and
+  evolution {\bf 17}: 32--43.
+
+\bibitem[{Zanini {\em et~al.\/}}(2017){Zanini, Puller, Brodin, Albert, {\rm
+  and} Neher}]{zanini2017vivo}
+{Zanini, F., V.~Puller, J.~Brodin, J.~Albert, {\rm and} R.~A. Neher}, 2017 In
+  vivo mutation rates and the landscape of fitness costs of {HIV}-1. Virus
+  Evolution {\bf 3}: vex003.
+
+\end{thebibliography}
+
+}
+
+\end{document}
