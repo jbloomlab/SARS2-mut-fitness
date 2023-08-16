@@ -832,12 +832,12 @@ rule create_dms_viz_json:
         os.path.join("results_{mat}/dms-viz/", "{protein}", "{protein}.json"),
     params:
         fitness_df=lambda wildcards: os.path.join(
-            "results_{wildcards.mat}/dms-viz/",
+            "results_{wildcards.mat}/dms-viz/fitness",
             "{wildcards.protein}",
             "{wildcards.protein}_fitness.csv",
         ),
         sitemap_df=lambda wildcards: os.path.join(
-            "results_{wildcards.mat}/dms-viz/",
+            "results_{wildcards.mat}/dms-viz/fitness",
             "{wildcards.protein}",
             "{wildcards.protein}_sitemap.csv",
         ),
