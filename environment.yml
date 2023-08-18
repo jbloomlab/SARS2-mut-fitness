@@ -9,7 +9,7 @@ dependencies:
   - biopython=1.79
   - entrez-direct=16.2
   - git-lfs
-  - jupyter_contrib_nbextensions
+  # - jupyter_contrib_nbextensions
   - jupyterlab
   - markdown
   - matplotlib=3.6
@@ -20,6 +20,3 @@ dependencies:
   - scikit-learn=1.1.1
   - snakemake=7.18.2
   - usher=0.5.6
-  - pip
-  - pip:
-      - configure-dms-viz==0.1.4

@@ -817,30 +817,20 @@ rule format_fitness_for_dms_viz:
         clade_founder_aas=rules.clade_founder_aas.output.clade_founder_aas,
         structure_info="data/proteins.csv",
     output:
-        outdir=directory("results_{mat}/dms-viz/fitness"),
-    log:
-        notebook="results_{mat}/dms-viz/format-data-for-dms-viz.ipynb",
-    notebook:
-        "notebooks/format-data-for-dms-viz.py.ipynb"
+        fitness_df="results_{mat}/dms-viz/{protein}/{protein}_fitness.csv",
+        sitemap_df="results_{mat}/dms-viz/{protein}/{protein}_sitemap.csv",
+    script:
+        "scripts/format-data-for-dms-viz.py"
 
 
 # Create JSON files for each protein
 rule create_dms_viz_json:
     input:
-        fitness_dir=rules.format_fitness_for_dms_viz.output.outdir,
+        fitness_df=("results_{mat}/dms-viz/{protein}/{protein}_fitness.csv"),
+        sitemap_df=("results_{mat}/dms-viz/{protein}/{protein}_sitemap.csv"),
     output:
         os.path.join("results_{mat}/dms-viz/", "{protein}", "{protein}.json"),
     params:
-        fitness_df=lambda wildcards: os.path.join(
-            "results_{wildcards.mat}/dms-viz/fitness",
-            "{wildcards.protein}",
-            "{wildcards.protein}_fitness.csv",
-        ),
-        sitemap_df=lambda wildcards: os.path.join(
-            "results_{wildcards.mat}/dms-viz/fitness",
-            "{wildcards.protein}",
-            "{wildcards.protein}_sitemap.csv",
-        ),
         name=lambda wildcards: wildcards.protein,
         structure=lambda wildcards: proteins.loc[
             proteins["selection"] == wildcards.protein, "pdb"
@@ -861,12 +851,13 @@ rule create_dms_viz_json:
         tooltip_cols={"expected_count": "Expected Count"},
         metric="fitness",
         metric_name="Fitness",
+    conda: "envs/configure-dms-viz.yml"
     shell:
         """
         configure-dms-viz \
-            --input {params.fitness_df} \
-            --name {params.name} \
-            --sitemap {params.sitemap_df} \
+            --input {input.fitness_df} \
+            --name "{params.name}" \
+            --sitemap {input.sitemap_df} \
             --metric {params.metric} \
             --structure {params.structure} \
             --metric-name {params.metric_name} \
@@ -884,8 +875,6 @@ rule create_dms_viz_json:
 
 # Combine JSON files into one
 proteins = pd.read_csv("data/proteins.csv")
-
-
 rule combine_dms_viz_jsons:
     input:
         input_files=lambda wildcards: [
