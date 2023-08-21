@@ -49,5 +49,4 @@ results*/dms/*/*
 results*/dms-viz/*
 !results*/dms-viz/mut_fitness.json
 
-envs/
 tmp/

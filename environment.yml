@@ -9,7 +9,7 @@ dependencies:
   - biopython=1.79
   - entrez-direct=16.2
   - git-lfs
-  # - jupyter_contrib_nbextensions
+  - jupyter_contrib_nbextensions
   - jupyterlab
   - markdown
   - matplotlib=3.6
