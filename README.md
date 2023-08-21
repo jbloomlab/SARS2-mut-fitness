@@ -15,7 +15,7 @@ For details, see the following references:
     - The mutational data are extracted from publicly available SARS-CoV-2 sequences using the UShER package described by [Turakhia et al (2021)](https://www.nature.com/articles/s41588-021-00862-7).
 
 ## Interactive plots of results
-The easiest way to access the results is through a set of interactive plots available at [https://jbloomlab.github.io/SARS2-mut-fitness](https://jbloomlab.github.io/SARS2-mut-fitness)
+The easiest way to access the results is through a set of interactive plots available at [https://jbloomlab.github.io/SARS2-mut-fitness](https://jbloomlab.github.io/SARS2-mut-fitness). You can also visualize the fitness effects of mutations in the context of a 3D protein structure [here](https://dms-viz.github.io/?data=https%3A%2F%2Fraw.githubusercontent.com%2Fjbloomlab%2FSARS2-mut-fitness%2Fadd-dms-viz%2Fresults%2Fdms-viz%2Fmut_fitness.json).
 
 ## CSV files with numerical results
 Here are links to files with major numerical results:
