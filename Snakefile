@@ -11,6 +11,7 @@ import yaml
 
 configfile: "config.yaml"
 
+
 with open(config["docs_plot_annotations"]) as f:
     docs_plot_annotations = yaml.safe_load(f)
 
@@ -33,8 +34,10 @@ results_files = [
     "nt_fitness/nt_fitness.csv",
     "nt_fitness/synonymous_constraint_figure.pdf",
     "comparator_studies/comparator_corr.html",
+    "dms-viz/mut_fitness.json",
     *[f"dms/{dms_dataset}/processed.csv" for dms_dataset in config["dms_datasets"]],
 ]
+
 
 rule all:
     """Target rule with desired output files."""
@@ -64,7 +67,7 @@ rule get_mat_tree:
     params:
         url=lambda wc: config["mat_trees"][wc.mat],
     output:
-        mat="results_{mat}/mat/mat_tree.pb.gz"
+        mat="results_{mat}/mat/mat_tree.pb.gz",
     shell:
         "curl {params.url} > {output.mat}"
 
@@ -92,7 +95,7 @@ rule get_ref_gtf:
 rule edit_ref_gtf:
     """Edit the reference GTF with manual additions."""
     input:
-        gtf=rules.get_ref_gtf.output.ref_gtf
+        gtf=rules.get_ref_gtf.output.ref_gtf,
     output:
         gtf="results_{mat}/ref/edited_ref.gtf",
     params:
@@ -128,11 +131,10 @@ checkpoint mat_samples:
 def clades_w_adequate_counts(wc):
     """Return list of all clades with adequate sample counts."""
     return [
-        clade for clade in
-        (
+        clade
+        for clade in (
             pd.read_csv(checkpoints.mat_samples.get(**wc).output.clade_counts)
-            .query("adequate_sample_counts")
-            ["nextstrain_clade"]
+            .query("adequate_sample_counts")["nextstrain_clade"]
             .tolist()
         )
         if clade not in config["clades_to_exclude"]
@@ -146,13 +148,12 @@ rule samples_by_clade_subset:
     output:
         txt="results_{mat}/mat_by_clade_subset/{clade}_{subset}.txt",
     params:
-        match_regex=lambda wc: config["sample_subsets"][wc.subset]
+        match_regex=lambda wc: config["sample_subsets"][wc.subset],
     run:
         (
             pd.read_csv(input.csv)
             .query("nextstrain_clade == @wildcards.clade")
-            .query(f"sample.str.match('{params.match_regex}')")
-            ["sample"]
+            .query(f"sample.str.match('{params.match_regex}')")["sample"]
             .to_csv(output.txt, index=False, header=False)
         )
 
@@ -526,14 +527,16 @@ rule process_dms_dataset:
 rule fitness_dms_corr:
     """Correlate the fitness estimates with those from deep mutational scanning."""
     input:
-        aafitness=rules.aa_fitness.output.aa_fitness,
-        neher_fitness=config["neher_fitness"],
         **{
-            dms_dataset: os.path.join("results_{mat}", "dms", dms_dataset, "processed.csv")
+            dms_dataset: os.path.join(
+                "results_{mat}", "dms", dms_dataset, "processed.csv"
+            )
             for dms_dataset in config["dms_datasets"]
         },
+        aafitness=rules.aa_fitness.output.aa_fitness,
+        neher_fitness=config["neher_fitness"],
     output:
-        plotsdir=directory("results_{mat}/fitness_dms_corr/plots")
+        plotsdir=directory("results_{mat}/fitness_dms_corr/plots"),
     params:
         min_expected_count=config["min_expected_count"],
         dms_datasets=config["dms_datasets"],
@@ -598,7 +601,7 @@ rule synonymous_figures:
 rule correlate_mats:
     """Correlate mutation effects for different MATs (sequence sets)."""
     input:
-        aa_fitnesses=expand(rules.aa_fitness.output.aa_fitness, mat=config["mat_trees"])
+        aa_fitnesses=expand(rules.aa_fitness.output.aa_fitness, mat=config["mat_trees"]),
     output:
         fitness_corrs_chart="results_{mat}/mat_corrs/mat_aa_fitness_correlations.html",
     params:
@@ -623,12 +626,14 @@ rule get_dnds_data:
 rule analyze_dnds:
     """Analyze dN/dS versus amino-acid fitness and DMS data."""
     input:
-        dnds=rules.get_dnds_data.output.csv,
-        aa_fitness=rules.aa_fitness.output.aa_fitness,
         **{
-            dms_dataset: os.path.join("results_{mat}", "dms", dms_dataset, "processed.csv")
+            dms_dataset: os.path.join(
+                "results_{mat}", "dms", dms_dataset, "processed.csv"
+            )
             for dms_dataset in config["dms_datasets"]
         },
+        dnds=rules.get_dnds_data.output.csv,
+        aa_fitness=rules.aa_fitness.output.aa_fitness,
     output:
         corr_html="results_{mat}/dnds/dnds_corr.html",
     params:
@@ -643,15 +648,17 @@ rule analyze_dnds:
 rule analyze_comparator_studies:
     """Analyze comparator studies versus fitness estimates and DMS data."""
     input:
-        aa_fitness=rules.aa_fitness.output.aa_fitness,
         **{
             study: f"data/comparator_studies/{study}.csv"
             for study in config["comparator_studies"]
         },
         **{
-            dms_dataset: os.path.join("results_{mat}", "dms", dms_dataset, "processed.csv")
+            dms_dataset: os.path.join(
+                "results_{mat}", "dms", dms_dataset, "processed.csv"
+            )
             for dms_dataset in config["dms_datasets"]
         },
+        aa_fitness=rules.aa_fitness.output.aa_fitness,
     output:
         corr_html="results_{mat}/comparator_studies/comparator_corr.html",
     params:
@@ -712,7 +719,7 @@ rule format_plot_for_docs:
     params:
         annotations=lambda wc: docs_plot_annotations["plots"][wc.plot],
         url=config["docs_url"],
-        legend_suffix=docs_plot_annotations["legend_suffix"]
+        legend_suffix=docs_plot_annotations["legend_suffix"],
     shell:
         """
         echo "## {params.annotations[title]}\n" > {output.markdown}
@@ -798,6 +805,91 @@ rule export_fitness_to_json:
         citation=config["citation"],
         authors=config["authors"],
         source=config["source"],
-        description=config["description"]
+        description=config["description"],
     script:
         "scripts/export_fitness_to_json.py"
+
+
+# Format the data for each protein
+rule format_fitness_for_dms_viz:
+    input:
+        aa_fitness=rules.aa_fitness.output.aa_fitness,
+        clade_founder_aas=rules.clade_founder_aas.output.clade_founder_aas,
+        structure_info="data/proteins.csv",
+    output:
+        fitness_df="results_{mat}/dms-viz/{protein}/{protein}_fitness.csv",
+        sitemap_df="results_{mat}/dms-viz/{protein}/{protein}_sitemap.csv",
+    script:
+        "scripts/format-data-for-dms-viz.py"
+
+
+# Create JSON files for each protein
+rule create_dms_viz_json:
+    input:
+        fitness_df=("results_{mat}/dms-viz/{protein}/{protein}_fitness.csv"),
+        sitemap_df=("results_{mat}/dms-viz/{protein}/{protein}_sitemap.csv"),
+    output:
+        os.path.join("results_{mat}/dms-viz/", "{protein}", "{protein}.json"),
+    params:
+        name=lambda wildcards: wildcards.protein,
+        structure=lambda wildcards: proteins.loc[
+            proteins["selection"] == wildcards.protein, "pdb"
+        ].item(),
+        include_chains=lambda wildcards: proteins.loc[
+            proteins["selection"] == wildcards.protein, "dataChains"
+        ].item(),
+        exclude_chains=lambda wildcards: proteins.loc[
+            proteins["selection"] == wildcards.protein, "excludedChains"
+        ].item(),
+        description=lambda wildcards: proteins.loc[
+            proteins["selection"] == wildcards.protein, "description"
+        ].item(),
+        title=lambda wildcards: proteins.loc[
+            proteins["selection"] == wildcards.protein, "title"
+        ].item(),
+        filter_cols={"expected_count": "Expected Count"},
+        tooltip_cols={"expected_count": "Expected Count"},
+        metric="fitness",
+        metric_name="Fitness",
+    conda: "envs/configure-dms-viz.yml"
+    shell:
+        """
+        configure-dms-viz \
+            --input {input.fitness_df} \
+            --name "{params.name}" \
+            --sitemap {input.sitemap_df} \
+            --metric {params.metric} \
+            --structure {params.structure} \
+            --metric-name {params.metric_name} \
+            --output {output} \
+            --alphabet "RKHDEQNSTYWFAILMVGPC*" \
+            --included-chains "{params.include_chains}" \
+            --excluded-chains "{params.exclude_chains}" \
+            --filter-cols "{params.filter_cols}" \
+            --tooltip-cols "{params.tooltip_cols}" \
+            --exclude-amino-acids "*" \
+            --description "{params.description}" \
+            --title "{params.title}"
+        """
+
+
+# Combine JSON files into one
+proteins = pd.read_csv("data/proteins.csv")
+rule combine_dms_viz_jsons:
+    input:
+        input_files=lambda wildcards: [
+            os.path.join(
+                f"results_{wildcards.mat}/dms-viz/", protein, f"{protein}.json"
+            )
+            for protein in proteins.selection.unique()
+        ],
+    output:
+        output_file="results_{mat}/dms-viz/mut_fitness.json",
+    run:
+        combined_data = {}
+        for input_file in input.input_files:
+            with open(input_file) as f:
+                data = json.load(f)
+                combined_data.update(data)
+        with open(output.output_file, "w") as f:
+            json.dump(combined_data, f)

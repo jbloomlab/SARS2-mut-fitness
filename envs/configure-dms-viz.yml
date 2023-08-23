@@ -1,0 +1,9 @@
+channels:
+  - conda-forge
+  - defaults
+  - bioconda
+dependencies:
+  - python=3.9
+  - pip
+  - pip:
+      - configure-dms-viz==0.1.4

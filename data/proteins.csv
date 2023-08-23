@@ -1,0 +1,24 @@
+selection,pdb,dataChains,excludedChains,type,description,title,offset,indexChain
+S,6VYB,polymer,none,structural,The Spike Glycoprotein. The Structure is has one RBD in the up position. [Structure: 6VYB],Spike Glycoprotein,
+E,data/structures/E.pdb,polymer,none,structural,The Envelope protien. The structure was computationally determined in this paper [https://doi.org/10.1038/s41594-020-00536-8].,Envelope protein,-7,None
+M,8CTK,polymer,none,structural,The Membrane protein. The structure is cryo-EM of the dimer. [Structure: 8CTK],Membrane protein,
+N,8FD5,polymer,none,accessory,The Nucleoprotein. The structure was determined with cryo-EM. [Structure: 8FD5],Nucleoprotein,
+ORF3a,8EQJ,polymer,none,accessory,A membrane protein involved in some endosomal pathway. The structure was determined with cryo-EM. [Structure: 8EQJ],ORF3a,
+ORF6,data/structures/ORF6.pdb,polymer,none,accessory,A protein that binds to STAT-1 and inhibits it's localization. The structure was computationally determined in this paper [https://doi.org/10.1038/s41594-020-00536-8].,ORF6,
+ORF7a,7CI3,polymer,none,accessory,An immunomodulatory protein. The structure is a crystal structure of the ectodomain. [Structure: 7CI3],ORF7a,
+ORF7b,data/structures/ORF7b.pdb,polymer,none,accessory,A transmembrane protein. Structure is from RosettaTTAfold [https://www.ebi.ac.uk/interpro/entry/InterPro/IPR021532/].,ORF7b,
+ORF8,7JX6,polymer,none,accessory,A protein that alters the ER stress response. Structure is a crystal structure. [Structure: 7JX6],ORF8,
+ORF9b,6Z4U,polymer,none,accessory,A protein that interacts with the mitochondria. Structure is a crystal structure. [Structure: 6Z4U],ORF9b,
+nsp1,7K3N,polymer,none,non-structural,A protein that interferes with translation by binding to the ribosomal exit channel. Structure is a crystal structure. [Structure: 7K3N],nsp1,-9,None
+nsp2,7MSX,polymer,none,non-structural,A protein that modulates the translation of viral proteins. Structure is AlphaFold and Cyro-EM determined. [Structure: 7MSX],nsp2,
+nsp3,6WUU,polymer,none,non-structural,Papin-like protease (PLpro). This is only a structure of the PLpro domain. [Structure: 6WUU],nsp3 (PLpro),-745,A
+nsp5,6LU7,polymer,none,non-structural,Main protease (Mpro or 3CLpro). Structure is a cyrstal structure. [Structure: 6LU7],nsp5 (Mpro),
+nsp7,6YYT,C,none,non-structural,A co-factor of the RdRP polymerase complex. Structure is of the whole complex. [Structure: 6YYT],nsp7 (RdRP cofactor),
+nsp8,6YYT,B D,none,non-structural,A co-factor of the RdRP polymerase complex. Structure is of the whole complex. [Structure: 6YYT],nsp8 (RdRP cofactor),
+nsp9,6WXD,polymer,none,non-structural,A DNA/RNA binding protein that forms part of the Replication/Transcription complex. Structure is a crystal of the homodimer. [Structure: 6WXD],nsp9,
+nsp10,6ZPE,polymer,none,non-structural,A protein involved in methylation that interacts with both nsp14 and nsp16. Structure is a crystal of the protein alone. [Structure: 6ZPE],nsp10,
+nsp12,6YYT,A,none,non-structural,The RNA-dependent RNA polymerase (RdRP). Structure is of the whole complex. [Structure: 6YYT],nsp12 (RdRP),
+nsp13,7NNG,polymer,none,non-structural,This protein has helicase activtiy. Structure is a crystal structure. [Structure: 7NNG],nsp13 (helicase),
+nsp14,7N0C,B,none,non-structural,This protein associates with nsp10 and has some proofreading activity. The structure is in complex with nsp10. [Structure: 7N0C],nsp14 (proofreading exonuclease),
+nsp15,6WXC,polymer,none,non-structural,This protein has endonuclease activity. Structure is a crystal structure. [Structure: 6WXC],nsp15 (endoRNAse),1,A
+nsp16,6WVN,A,none,non-structural,This protein is a 2'-O-methyltransferase that associates with nsp10. Structure is a crystal that includes nsp10. [Structure: 6WVN],nsp16 (2'-O-methyltransferase),6798,A
