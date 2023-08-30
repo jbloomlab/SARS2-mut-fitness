@@ -848,6 +848,7 @@ rule create_dms_viz_json:
             proteins["selection"] == wildcards.protein, "title"
         ].item(),
         filter_cols={"expected_count": "Expected Count"},
+        filter_limits={"expected_count": [0, 100]},
         tooltip_cols={"expected_count": "Expected Count"},
         metric="fitness",
         metric_name="Fitness",
@@ -866,6 +867,7 @@ rule create_dms_viz_json:
             --included-chains "{params.include_chains}" \
             --excluded-chains "{params.exclude_chains}" \
             --filter-cols "{params.filter_cols}" \
+            --filter-limits "{params.filter_limits}" \
             --tooltip-cols "{params.tooltip_cols}" \
             --exclude-amino-acids "*" \
             --description "{params.description}" \

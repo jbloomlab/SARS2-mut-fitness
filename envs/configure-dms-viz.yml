@@ -6,4 +6,4 @@ dependencies:
   - python=3.9
   - pip
   - pip:
-      - configure-dms-viz==0.1.4
+      - configure-dms-viz==0.3.0
