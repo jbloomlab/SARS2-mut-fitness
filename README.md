@@ -1,17 +1,17 @@
 # Fitness effects of SARS-CoV-2 amino-acid mutations estimated from observed versus expected mutation counts
 
 ## Overview
-This repository estimates the fitness effects of mutations to all SARS-CoV-2 proteins as described in [this paper](https://www.biorxiv.org/content/10.1101/2023.01.30.526314v1).
+This repository estimates the fitness effects of mutations to all SARS-CoV-2 proteins as described in [this paper](https://academic.oup.com/ve/article/9/2/vead055/7265011).
 It does this by analyzing mutations in millions human SARS-CoV-2 sequences, and quantifying how the observed counts of each mutation compares to the expected counts from the underlying neutral mutation rate.
 
 The analysis is by [Jesse Bloom](https://scholar.google.com/citations?user=S12x_eQAAAAJ&hl=en) and [Richard Neher](https://neherlab.org/), and makes use of the SARS-CoV-2 mutation-annotated tree provided by the [developers of UShER](https://usher-wiki.readthedocs.io/).
 
 ## References
 For details, see the following references:
- - The main paper describing this work is [Bloom and Neher (2023)](https://www.biorxiv.org/content/10.1101/2023.01.30.526314v1).
+ - The main paper describing this work is [Bloom and Neher (2023)](https://academic.oup.com/ve/article/9/2/vead055/7265011).
  - Secondary references:
     - The approach builds on ideas initially described in [Neher (2022)](https://doi.org/10.1093/ve/veac113).
-    - The estimation of the neutral mutation rate is done as described in [Bloom, Beichman, Neher, & Harris (2022)](https://www.biorxiv.org/content/10.1101/2022.11.19.517207v1).
+    - The estimation of the neutral mutation rate is done as described in [Bloom, Beichman, Neher, & Harris (2023)](https://academic.oup.com/mbe/article/40/4/msad085/7113660).
     - The mutational data are extracted from publicly available SARS-CoV-2 sequences using the UShER package described by [Turakhia et al (2021)](https://www.nature.com/articles/s41588-021-00862-7).
 
 ## Interactive plots of results
@@ -46,7 +46,7 @@ That command will create a `conda` environment named `SARS2-mut-fitness` which y
 
 Then run the [snakemake](https://snakemake.readthedocs.io/) pipeline in [Snakefile](Snakefile), which reads its configuration from [config.yaml](config.yaml) by running:
 
-    snakemake -j <n_cpus>
+    snakemake -j <n_cpus> --use-conda
 
 where `<n_cpus>` is the number of CPUs to use.
 

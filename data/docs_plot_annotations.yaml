@@ -2,7 +2,7 @@
 
 # suffix added to all legends
 legend_suffix: |
-  See [Bloom and Neher (2023)](https://www.biorxiv.org/content/10.1101/2023.01.30.526314v1) for a paper describing the work.
+  See [Bloom and Neher (2023)](https://academic.oup.com/ve/article/9/2/vead055/7265011) for a paper describing the work.
 
   See [https://github.com/jbloomlab/SARS2-mut-fitness](https://github.com/jbloomlab/SARS2-mut-fitness) for full computer code and data.
 
@@ -13,7 +13,7 @@ index_title: Interactive plots of estimated fitness effects of SARS-CoV-2 amino-
 index_abstract: |
   Fitness effects estimated from observed versus expected counts of mutations.
 
-  Analysis described in [Bloom and Neher (2023)](https://www.biorxiv.org/content/10.1101/2023.01.30.526314v1).
+  Analysis described in [Bloom and Neher (2023)](https://academic.oup.com/ve/article/9/2/vead055/7265011).
 
 # ordering of plots into sections
 sections:
@@ -46,7 +46,7 @@ plots:
       specific mutation types, and click/shift-click on the legend at right to select
       specific clades.
 
-      See [Bloom, Beichman, Neher, & Harris (2022)](https://www.biorxiv.org/content/10.1101/2022.11.19.517207v1)
+      See [Bloom, Beichman, Neher, & Harris (2023)](https://academic.oup.com/mbe/article/40/4/msad085/7113660)
       for more details on the mutation rates are estimated.
 
   avg_counts:

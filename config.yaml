@@ -5,6 +5,7 @@
 # The most recent public trees are at
 # http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/
 mat_trees:
+  public_2023-10-01: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2023/10/01/public-2023-10-01.all.masked.nextclade.pangolin.pb.gz
   public_2023-06-21: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2023/06/21/public-2023-06-21.all.masked.nextclade.pangolin.pb.gz
   public_2023-05-11: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2023/05/11/public-2023-05-11.all.masked.nextclade.pangolin.pb.gz
   public_2023-03-27: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2023/03/27/public-2023-03-27.all.masked.nextclade.pangolin.pb.gz
@@ -14,7 +15,7 @@ mat_trees:
 
 # specify one of the mutation-annotated trees in `mat_trees` as the "current" one that is
 # linked to by default as the best current estimates.
-current_mat: public_2023-06-21
+current_mat: public_2023-10-01
 
 # Reference GTF and FASTA, and location of spike coding sequence
 ref_fasta: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/bigZips/wuhCor1.fa.gz
@@ -241,7 +242,7 @@ docs_url: https://jbloomlab.github.io/SARS2-mut-fitness  # base URL for GitHub p
 docs_plot_annotations: data/docs_plot_annotations.yaml  # lists plots and their annotations
 
 # Metadata for aa_fitness JSON
-citation: https://doi.org/10.1101/2023.01.30.526314
+citation: https://academic.oup.com/ve/article/9/2/vead055/7265011
 authors: [Jesse Bloom, Richard Neher]
 source: https://github.com/jbloomlab/SARS2-mut-fitness/tree/main
 description: Estimated fitness for amino acid mutations in each SARS-CoV-2 gene from natural occurrences.
