@@ -46,7 +46,10 @@ clade_founders:
 roemer_nextstrain_to_pango:
   23A: XBB.1.5
   23B: XBB.1.16
-
+  23C: CH.1.1
+  23D: XBB.1.9
+  23E: XBB.2.3
+  23F: EG.5.1
 # Exclude these clades, for instance if no clade founder defined for them
 clades_to_exclude:
   - 21A
@@ -172,9 +175,13 @@ clade_synonyms:
   22C: Omicron BA.2.12.1
   22D: Omicron BA.2.75
   22E: Omicron BQ.1
-  22F: Omicron XBB
-  23A: Omicron XBB.1.5
-  23B: Omicron XBB.1.16
+  22F: XBB
+  23A: XBB.1.5
+  23B: BB.1.16
+  23C: CH.1.1
+  23D: XBB.1.9
+  23E: XBB.2.3
+  23F: EG.5.1
 
 # Deep mutational scanning datasets to correlate fitness estimates with:
 dms_datasets:
