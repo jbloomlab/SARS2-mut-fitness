@@ -188,6 +188,11 @@ clade_synonyms:
   23D: XBB.1.9
   23E: XBB.2.3
   23F: EG.5.1
+  23G: XBB.1.5.70
+  23H: HK.3
+  23I: BA.2.86
+  24A: JN.1
+  24B: JN.1.11.1
 
 # Deep mutational scanning datasets to correlate fitness estimates with:
 dms_datasets:
