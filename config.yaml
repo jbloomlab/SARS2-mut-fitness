@@ -5,6 +5,7 @@
 # The most recent public trees are at
 # http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/
 mat_trees:
+  public_2024-04-19: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2024/04/19/public-2024-04-19.all.masked.pb.gz
   public_2023-10-01: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2023/10/01/public-2023-10-01.all.masked.nextclade.pangolin.pb.gz
   public_2023-06-21: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2023/06/21/public-2023-06-21.all.masked.nextclade.pangolin.pb.gz
   public_2023-05-11: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2023/05/11/public-2023-05-11.all.masked.nextclade.pangolin.pb.gz
@@ -15,7 +16,7 @@ mat_trees:
 
 # specify one of the mutation-annotated trees in `mat_trees` as the "current" one that is
 # linked to by default as the best current estimates.
-current_mat: public_2023-10-01
+current_mat: public_2024-04-19
 
 # Reference GTF and FASTA, and location of spike coding sequence
 ref_fasta: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/bigZips/wuhCor1.fa.gz
@@ -50,6 +51,11 @@ roemer_nextstrain_to_pango:
   23D: XBB.1.9
   23E: XBB.2.3
   23F: EG.5.1
+  23G: XBB.1.5.70
+  23H: HK.3
+  23I: BA.2.86
+  24A: JN.1
+  24B: JN.1.11.1
 # Exclude these clades, for instance if no clade founder defined for them
 clades_to_exclude:
   - 21A
