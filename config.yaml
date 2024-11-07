@@ -5,19 +5,18 @@
 # The most recent public trees are at
 # http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/
 mat_trees:
-  gisaid_2024-04-24: https://hgwdev.gi.ucsc.edu/~angie/be4910e/gisaidAndPublic.2024-04-24.masked.pb.gz
+  public_2024-11-06: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2024/11/06/public-2024-11-06.all.masked.pb.gz
   public_2024-04-19: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2024/04/19/public-2024-04-19.all.masked.pb.gz
   public_2023-10-01: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2023/10/01/public-2023-10-01.all.masked.nextclade.pangolin.pb.gz
   public_2023-06-21: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2023/06/21/public-2023-06-21.all.masked.nextclade.pangolin.pb.gz
   public_2023-05-11: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2023/05/11/public-2023-05-11.all.masked.nextclade.pangolin.pb.gz
   public_2023-03-27: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2023/03/27/public-2023-03-27.all.masked.nextclade.pangolin.pb.gz
   public_2022-12-18: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2022/12/18/public-2022-12-18.all.masked.nextclade.pangolin.pb.gz
-  gisaid_2023-03-29: https://hgwdev.gi.ucsc.edu/~angie/2847b92/gisaidAndPublic.2023-03-29.masked.pb.gz
   public_2022-01-31: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2022/01/31/public-2022-01-31.all.masked.nextclade.pangolin.pb.gz
 
 # specify one of the mutation-annotated trees in `mat_trees` as the "current" one that is
 # linked to by default as the best current estimates.
-current_mat: gisaid_2024-04-24
+current_mat: public_2024-11-06
 
 # Reference GTF and FASTA, and location of spike coding sequence
 ref_fasta: http://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/bigZips/wuhCor1.fa.gz
@@ -57,6 +56,11 @@ roemer_nextstrain_to_pango:
   23I: BA.2.86
   24A: JN.1
   24B: JN.1.11.1
+  24C: KP.3
+  24D: XDV.1
+  24E: KP.3.1.1
+  24F: XEC
+  24G: KP.2.3
 # Exclude these clades, for instance if no clade founder defined for them
 clades_to_exclude:
   - 21A
@@ -194,6 +198,11 @@ clade_synonyms:
   23I: BA.2.86
   24A: JN.1
   24B: JN.1.11.1
+  24C: KP.3
+  24D: XDV.1
+  24E: KP.3.1.1
+  24F: XEC
+  24G: KP.2.3
 
 # Deep mutational scanning datasets to correlate fitness estimates with:
 dms_datasets:
