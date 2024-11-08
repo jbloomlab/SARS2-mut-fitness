@@ -29,7 +29,14 @@ if clade in neher_founder_muts:
 elif clade in roemer_nextstrain_to_pango:
     pango = roemer_nextstrain_to_pango[clade]
     muts = roemer_founder_muts[pango]["nucSubstitutions"]
-    assert roemer_founder_muts[pango]["nextstrainClade"] == clade
+    if (roemer_founder_muts[pango]["nextstrainClade"] != clade):
+        if (
+            (clade in {"24A", "24B", "24C", "24E"})
+            and (roemer_founder_muts[pango]["nextstrainClade"] == "23I")
+        ):
+            pass  # known error in the JSON of Cornelius
+        else:
+            raise ValueError(f"{roemer_founder_muts[pango]['nextstrainClade']=}, {clade=}")
 
 else:
     raise ValueError(f"no founder for {clade=}")
