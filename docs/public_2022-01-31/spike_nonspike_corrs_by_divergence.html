@@ -1,19 +1,26 @@
 <!DOCTYPE html>
 <html>
  <head>
+  <meta charset="utf-8"/>
   <style>
-   .error {
-        color: red;
+   #vis.vega-embed {
+      width: 100%;
+      display: flex;
+    }
+
+    #vis.vega-embed details,
+    #vis.vega-embed details summary {
+      position: relative;
     }
    #vis {margin-left: 2.5%; margin-left: 2.5%; width: 95vw; overflow-x: auto;}
    #markdown {margin-left: 2.5%; margin-right: 2.5%; margin-top: 10px; }
    #vis input, #vis label, #vis span {font-size: 14px; margin: 0px 3px 1px 0px;}
   </style>
-  <script src="https://cdn.jsdelivr.net/npm//vega@5" type="text/javascript">
+  <script src="https://cdn.jsdelivr.net/npm/vega@5" type="text/javascript">
   </script>
-  <script src="https://cdn.jsdelivr.net/npm//vega-lite@4.17.0" type="text/javascript">
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.20.1" type="text/javascript">
   </script>
-  <script src="https://cdn.jsdelivr.net/npm//vega-embed@6" type="text/javascript">
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6" type="text/javascript">
   </script>
   <meta content="summary" name="twitter:card"/>
   <meta content="https://jbloomlab.github.io/SARS2-mut-fitness" name="twitter:site"/>
@@ -26,11 +33,11 @@
   </div>
   <script>
    (function(vegaEmbed) {
-      var spec = {"config": {"view": {"continuousWidth": 400, "continuousHeight": 300}}, "data": {"name": "data-74c81173f2c5ed689e82e198171387fa"}, "mark": "text", "encoding": {"text": {"field": "text", "type": "nominal"}, "x": {"field": "x", "type": "quantitative"}, "y": {"field": "y", "type": "quantitative"}}, "$schema": "https://vega.github.io/schema/vega-lite/v4.17.0.json", "datasets": {"data-74c81173f2c5ed689e82e198171387fa": [{"x": 0.5, "y": 0.5, "text": "empty chart"}]}};
+      var spec = {"config": {"view": {"continuousWidth": 300, "continuousHeight": 300}}, "data": {"name": "data-9ac237bf5a8936a965c1061489e9292e"}, "mark": {"type": "text"}, "encoding": {"text": {"field": "text", "type": "nominal"}, "x": {"field": "x", "type": "quantitative"}, "y": {"field": "y", "type": "quantitative"}}, "$schema": "https://vega.github.io/schema/vega-lite/v5.20.1.json", "datasets": {"data-9ac237bf5a8936a965c1061489e9292e": [{"x": 0.5, "y": 0.5, "text": "empty chart"}]}};
       var embedOpt = {"mode": "vega-lite"};
 
       function showError(el, error){
-          el.innerHTML = ('<div class="error" style="color:red;">'
+          el.innerHTML = ('<div style="color:red;">'
                           + '<p>JavaScript Error: ' + error.message + '</p>'
                           + "<p>This usually means there's a typo in your chart specification. "
                           + "See the javascript console for the full traceback.</p>"

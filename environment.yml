@@ -4,7 +4,7 @@ channels:
   - bioconda
 
 dependencies:
-  - altair=4.2
+  - altair=5
   - biopython=1.79
   - entrez-direct=16.2
   - git-lfs
