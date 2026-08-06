@@ -1,19 +1,26 @@
 <!DOCTYPE html>
 <html>
  <head>
+  <meta charset="utf-8"/>
   <style>
-   .error {
-        color: red;
+   #vis.vega-embed {
+      width: 100%;
+      display: flex;
+    }
+
+    #vis.vega-embed details,
+    #vis.vega-embed details summary {
+      position: relative;
     }
    #vis {margin-left: 2.5%; margin-left: 2.5%; width: 95vw; overflow-x: auto;}
    #markdown {margin-left: 2.5%; margin-right: 2.5%; margin-top: 10px; }
    #vis input, #vis label, #vis span {font-size: 14px; margin: 0px 3px 1px 0px;}
   </style>
-  <script src="https://cdn.jsdelivr.net/npm//vega@5" type="text/javascript">
+  <script src="https://cdn.jsdelivr.net/npm/vega@5" type="text/javascript">
   </script>
-  <script src="https://cdn.jsdelivr.net/npm//vega-lite@4.17.0" type="text/javascript">
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.20.1" type="text/javascript">
   </script>
-  <script src="https://cdn.jsdelivr.net/npm//vega-embed@6" type="text/javascript">
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6" type="text/javascript">
   </script>
   <meta content="summary" name="twitter:card"/>
   <meta content="https://jbloomlab.github.io/SARS2-mut-fitness" name="twitter:site"/>
@@ -26,11 +33,11 @@
   </div>
   <script>
    (function(vegaEmbed) {
-      var spec = {"config": {"view": {"continuousWidth": 400, "continuousHeight": 300}}, "data": {"name": "data-9cc7aef0a2e2d4ba47167fd1d3625415"}, "mark": {"type": "point", "size": 50}, "encoding": {"color": {"field": "protein", "scale": {"range": ["#999999", "#D55E00"]}, "type": "nominal"}, "column": {"field": "subset_type", "header": {"labelFontSize": 11, "labelFontWeight": "bold"}, "spacing": 20, "title": null, "type": "nominal"}, "fill": {"field": "protein", "scale": {"range": ["#999999", "white"]}, "type": "nominal"}, "fillOpacity": {"field": "protein", "scale": {"range": [0.6, 0]}, "type": "nominal"}, "shape": {"field": "protein", "type": "nominal"}, "tooltip": [{"field": "subset_type", "type": "nominal"}, {"field": "count_threshold", "type": "quantitative"}, {"field": "protein", "type": "nominal"}, {"field": "correlation", "format": ".3f", "type": "quantitative"}], "x": {"field": "count_threshold", "title": "min expected counts", "type": "nominal"}, "y": {"field": "correlation", "scale": {"domain": [0, 1]}, "title": "average correlation among subsets", "type": "quantitative"}}, "height": 190, "width": {"step": 25}, "$schema": "https://vega.github.io/schema/vega-lite/v4.17.0.json", "datasets": {"data-9cc7aef0a2e2d4ba47167fd1d3625415": [{"subset_type": "subset by clade", "count_threshold": 5, "protein": "non-spike", "correlation": 0.8666670952963038}, {"subset_type": "subset by clade", "count_threshold": 5, "protein": "spike", "correlation": 0.7902742198561702}, {"subset_type": "subset by clade", "count_threshold": 10, "protein": "non-spike", "correlation": 0.8852622240111248}, {"subset_type": "subset by clade", "count_threshold": 10, "protein": "spike", "correlation": 0.8186707541607642}, {"subset_type": "subset by clade", "count_threshold": 20, "protein": "non-spike", "correlation": 0.8931857265144939}, {"subset_type": "subset by clade", "count_threshold": 20, "protein": "spike", "correlation": 0.835622301329164}, {"subset_type": "subset by clade", "count_threshold": 40, "protein": "non-spike", "correlation": 0.927194246145863}, {"subset_type": "subset by clade", "count_threshold": 40, "protein": "spike", "correlation": 0.8411095365768578}, {"subset_type": "subset by geography", "count_threshold": 5, "protein": "non-spike", "correlation": 0.9303226360811921}, {"subset_type": "subset by geography", "count_threshold": 5, "protein": "spike", "correlation": 0.9259708223284708}, {"subset_type": "subset by geography", "count_threshold": 10, "protein": "non-spike", "correlation": 0.9444606478574661}, {"subset_type": "subset by geography", "count_threshold": 10, "protein": "spike", "correlation": 0.9375038138263335}, {"subset_type": "subset by geography", "count_threshold": 20, "protein": "non-spike", "correlation": 0.9555810550974237}, {"subset_type": "subset by geography", "count_threshold": 20, "protein": "spike", "correlation": 0.9567115970498019}, {"subset_type": "subset by geography", "count_threshold": 40, "protein": "non-spike", "correlation": 0.9574732151127888}, {"subset_type": "subset by geography", "count_threshold": 40, "protein": "spike", "correlation": 0.9653946783037975}]}};
+      var spec = {"config": {"view": {"continuousWidth": 300, "continuousHeight": 300}}, "data": {"name": "data-8be41ae771e527bc63c3d6fce08974cb"}, "mark": {"type": "point", "size": 50}, "encoding": {"color": {"field": "protein", "scale": {"range": ["#999999", "#D55E00"]}, "type": "nominal"}, "column": {"field": "subset_type", "header": {"labelFontSize": 11, "labelFontWeight": "bold"}, "spacing": 20, "title": null, "type": "nominal"}, "fill": {"field": "protein", "scale": {"range": ["#999999", "white"]}, "type": "nominal"}, "fillOpacity": {"field": "protein", "scale": {"range": [0.6, 0]}, "type": "nominal"}, "shape": {"field": "protein", "type": "nominal"}, "tooltip": [{"field": "subset_type", "type": "nominal"}, {"field": "count_threshold", "type": "quantitative"}, {"field": "protein", "type": "nominal"}, {"field": "correlation", "format": ".3f", "type": "quantitative"}], "x": {"field": "count_threshold", "title": "min expected counts", "type": "nominal"}, "y": {"field": "correlation", "scale": {"domain": [0, 1]}, "title": "average correlation among subsets", "type": "quantitative"}}, "height": 190, "width": {"step": 25}, "$schema": "https://vega.github.io/schema/vega-lite/v5.20.1.json", "datasets": {"data-8be41ae771e527bc63c3d6fce08974cb": [{"subset_type": "subset by clade", "count_threshold": 5, "protein": "non-spike", "correlation": 0.8666670952963038}, {"subset_type": "subset by clade", "count_threshold": 5, "protein": "spike", "correlation": 0.7902742198561702}, {"subset_type": "subset by clade", "count_threshold": 10, "protein": "non-spike", "correlation": 0.8852622240111248}, {"subset_type": "subset by clade", "count_threshold": 10, "protein": "spike", "correlation": 0.8186707541607642}, {"subset_type": "subset by clade", "count_threshold": 20, "protein": "non-spike", "correlation": 0.8931857265144939}, {"subset_type": "subset by clade", "count_threshold": 20, "protein": "spike", "correlation": 0.835622301329164}, {"subset_type": "subset by clade", "count_threshold": 40, "protein": "non-spike", "correlation": 0.927194246145863}, {"subset_type": "subset by clade", "count_threshold": 40, "protein": "spike", "correlation": 0.8411095365768578}, {"subset_type": "subset by geography", "count_threshold": 5, "protein": "non-spike", "correlation": 0.9303226360811921}, {"subset_type": "subset by geography", "count_threshold": 5, "protein": "spike", "correlation": 0.9259708223284708}, {"subset_type": "subset by geography", "count_threshold": 10, "protein": "non-spike", "correlation": 0.9444606478574661}, {"subset_type": "subset by geography", "count_threshold": 10, "protein": "spike", "correlation": 0.9375038138263335}, {"subset_type": "subset by geography", "count_threshold": 20, "protein": "non-spike", "correlation": 0.9555810550974237}, {"subset_type": "subset by geography", "count_threshold": 20, "protein": "spike", "correlation": 0.9567115970498019}, {"subset_type": "subset by geography", "count_threshold": 40, "protein": "non-spike", "correlation": 0.9574732151127888}, {"subset_type": "subset by geography", "count_threshold": 40, "protein": "spike", "correlation": 0.9653946783037975}]}};
       var embedOpt = {"mode": "vega-lite"};
 
       function showError(el, error){
-          el.innerHTML = ('<div class="error" style="color:red;">'
+          el.innerHTML = ('<div style="color:red;">'
                           + '<p>JavaScript Error: ' + error.message + '</p>'
                           + "<p>This usually means there's a typo in your chart specification. "
                           + "See the javascript console for the full traceback.</p>"
